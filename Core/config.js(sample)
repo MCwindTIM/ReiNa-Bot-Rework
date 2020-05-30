@@ -1,0 +1,10 @@
+module.exports = class Config {
+  constructor(option) {
+    this.prefix = "rnt!";
+    this.ownerID = "209598158152531968";
+    this.token = "";
+    this.YoutubeAPI = "";
+    this.R6API = "";
+    this.PicAPI = "";
+  }
+}

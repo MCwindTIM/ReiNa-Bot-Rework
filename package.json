@@ -1,0 +1,27 @@
+{
+  "name": "reina-bot-rework",
+  "version": "1.0.0",
+  "description": "ReiNa Bot Rework for MCwind's Discord Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "MCwind",
+  "license": "MIT",
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "canvas": "^2.6.1",
+    "cheerio": "^1.0.0-rc.3",
+    "discord.js": "^12.2.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "fs-path": "0.0.24",
+    "nhentai-api-js": "^1.1.4",
+    "node-fetch": "^2.6.0",
+    "opusscript": "0.0.7",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+    "simple-youtube-api": "^5.2.1",
+    "superagent": "^5.2.2",
+    "ytdl-core": "^2.1.5"
+  }
+}
