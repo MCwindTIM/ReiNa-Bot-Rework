@@ -1,9 +1,51 @@
 const Discord = require('discord.js');
 const Config = require('./config');
 const Util = require('./util');
+const http = require('http');
+const EventEmitter = require('events').EventEmitter;
+const url = require('url');
+const fs = require('fs');
+const io = require('socket.io');
+
 
 module.exports = class ReiNaRework {
 	constructor(option) {
+		this.server = http.createServer((req, res) => {
+			let path = url.parse(req.url).pathname;
+			switch(path){
+				case '/':
+					fs.readFile(`${__dirname}/../WebSocket/Discord.html`, (err, data) => {
+						if(err){
+							res.writeHead(404);
+							res.write('404 Server Error');
+						}else{
+							res.writeHead(200, {'Content-Type':'text/html'});
+							res.write(data, 'utf8');
+						}
+						res.end();
+					});
+					break;
+				case '/style.css':
+					fs.readFile(`${__dirname}/../WebSocket/style.css`, (err, data) => {
+						if(err){
+							res.writeHead(404);
+						}else{
+							res.writeHead(200, {'Content-Type': 'text/css'});
+							res.write(data, 'utf8');
+						}
+						res.end();
+					})
+					break;
+				default:
+					res.writeHead(404);
+					res.write('404 Server Error');
+					res.end();
+					break;
+			}
+		});;
+		this.server_io = require('socket.io');
+		this.event = new EventEmitter();
+		this.event.setMaxListeners(0);
 		this.bot = new Discord.Client();
 		this.config = new Config(option);
 		this.util = new Util(this);
@@ -41,7 +83,14 @@ module.exports = class ReiNaRework {
 				lopginTime = Date.now();
 			});
 			this.bot.on('message', message => {
-				if(message.author.bot || !message.guild) return;
+				if(!message.guild) return;
+				if(message.author.bot){
+					this.event.emit('DC_MSG', message);
+					return;
+				}else{
+					this.event.emit('DC_MSG', message);
+				}
+				
 
 				//Some MessageChecking for MCwind personal customize function (Maybe hardcoded) Delete function if making error
 				const nHentai = require('../Customize/MessageChecking/nHentai.js');
@@ -128,6 +177,25 @@ module.exports = class ReiNaRework {
 				guildMemberRemove.sendByeMessage(member);
 			});
 			this.bot.login(this.config.token).catch(console.log);
-		})
+		});
+
+		//Start HTTP Server
+		let Port = this.config.Port || 3000;
+		this.server.listen(Port, function(){
+			console.log(`程式正在監聽端口${Port}的連線!`);
+		});
+		
+		this.server_io = io.listen(this.server);
+		this.server_io.sockets.on('connection', socket => {
+			this.event.on('DC_MSG', message => {
+				socket.emit('DC_MSG', {
+					'Author': `${message.author.tag}`,
+					'Date': `[${message.createdAt.toString().slice(16, 21)}]`,
+					'Content': `${message.content}`,
+					'Guild': `${message.guild.name}`,
+					'Channel': `${message.channel.name}`
+				});
+			});
+		});
 	}
 }

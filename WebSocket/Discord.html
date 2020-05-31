@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <script>
+      var socket = io.connect();
+	  
+	  socket.on('DC_MSG', data =>{
+    document.body.innerHTML += `
+    <p class="Guild">${data.Guild}</p> 
+    <p class="Channel">${data.Channel}</p> 
+    <p class="Author">${data.Author}</p> 
+    <p class="Date">${data.Date}</p> 
+    <p class="Content">: ${data.Content}</p><br>
+    `;
+	  });
+    </script>
+    <div>ReiNa Bot Rework WebSocket</div>
+  </body>
+</html>
