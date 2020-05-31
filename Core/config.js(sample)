@@ -6,5 +6,6 @@ module.exports = class Config {
     this.YoutubeAPI = "";
     this.R6API = "";
     this.PicAPI = "";
+    this.Port = 3000;
   }
 }
