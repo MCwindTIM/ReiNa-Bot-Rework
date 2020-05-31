@@ -1,5 +1,6 @@
 const Command = require('../../Core/command');
 const os = require('os');
+const request = require('request');
 
 module.exports = class InfoCommand extends Command {
     constructor(main){
@@ -45,8 +46,17 @@ module.exports = class InfoCommand extends Command {
         .addField('程序開始運作時間', `**${_guptime}**`)
         .addField('Bot上線運行時間', `**${uptime}**`)
         .addField('服務數量', `**${this.main.bot.guilds.cache.size}**個伺服器, **${this.main.bot.channels.cache.size}**個頻道, **${this.main.bot.users.cache.size}**個用戶!`);
-        try {
-            await this.main.util.SDM(message.channel, infoMSG, message.author);
-        }catch(e){}
+        request.get('https://api.ipify.org/?format=json', {}, async (err, res, body) => {
+            if(!err){
+                infoMSG.addField('IPv4 IP Address', `${JSON.parse(body).ip}`);
+				try {
+					await this.main.util.SDM(message.channel, infoMSG, message.author);
+				}catch(e){}
+            }else{
+                try {
+					await this.main.util.SDM(message.channel, infoMSG, message.author);
+				}catch(e){}
+            }
+        })
     }
 }
