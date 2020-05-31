@@ -4,18 +4,22 @@ body {
 
 p {
     display: inline;
+    
 }
 
 p.Guild {
     background-color: chartreuse;
+    font-weight: bold;
 }
 
 p.Channel {
     background-color: cyan;
+    font-weight: bold;
 }
 
 p.Author {
     color: red;
+    text-shadow: -1px 0 white;
 }
 
 p.Date {
@@ -28,4 +32,11 @@ p.Content {
 
 div{
     color: white;
+    font-weight: bold;
+}
+
+a.File{
+    color: hotpink;
+    font-weight: bold;
+    text-shadow: 1px 0 orange;
 }

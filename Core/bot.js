@@ -19,7 +19,7 @@ module.exports = class ReiNaRework {
 							res.writeHead(404);
 							res.write('404 Server Error');
 						}else{
-							res.writeHead(200, {'Content-Type':'text/html'});
+							res.writeHead(200, {'Content-Type':'text/html', 'charset': 'utf-8'});
 							res.write(data, 'utf8');
 						}
 						res.end();
@@ -30,7 +30,7 @@ module.exports = class ReiNaRework {
 						if(err){
 							res.writeHead(404);
 						}else{
-							res.writeHead(200, {'Content-Type': 'text/css'});
+							res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
 							res.write(data, 'utf8');
 						}
 						res.end();
@@ -187,13 +187,22 @@ module.exports = class ReiNaRework {
 		
 		this.server_io = io.listen(this.server);
 		this.server_io.sockets.on('connection', socket => {
-			this.event.on('DC_MSG', message => {
+			this.event.on('DC_MSG',message => {
+				let attachmentURL = [];
+				if(message.attachments.size > 0){
+					
+					for (let i=0; i<message.attachments.size; i++){
+						attachmentURL.push(`${message.attachments.array()[i].url}`);
+					}
+				}
 				socket.emit('DC_MSG', {
 					'Author': `${message.author.tag}`,
 					'Date': `[${message.createdAt.toString().slice(16, 21)}]`,
 					'Content': `${message.content}`,
 					'Guild': `${message.guild.name}`,
-					'Channel': `${message.channel.name}`
+					'Channel': `${message.channel.name}`,
+					'Attachment': attachmentURL,
+					'fileString': '附加檔案'
 				});
 			});
 		});

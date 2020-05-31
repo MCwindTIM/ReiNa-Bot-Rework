@@ -7,16 +7,21 @@
     <script>
       var socket = io.connect();
 	  
-	  socket.on('DC_MSG', data =>{
-    document.body.innerHTML += `
-    <p class="Guild">${data.Guild}</p> 
-    <p class="Channel">${data.Channel}</p> 
-    <p class="Author">${data.Author}</p> 
-    <p class="Date">${data.Date}</p> 
-    <p class="Content">: ${data.Content}</p><br>
-    `;
-	  });
+	  socket.on('DC_MSG', data => {
+      document.body.innerHTML += `
+      <p class="Guild">${data.Guild}</p> 
+      <p class="Channel">${data.Channel}</p> 
+      <p class="Author">${data.Author}</p> 
+      <p class="Date">${data.Date}</p> 
+      <p class="Content">: ${data.Content}</p>
+      `;
+      if(data.Attachment[0]){
+        document.body.innerHTML += `<a class="File" href="${data.Attachment[0]}" target="_blank">${data.fileString}</a><br>`;
+      }else{
+        document.body.innerHTML += `<br>`;
+      }
+    });
     </script>
-    <div>ReiNa Bot Rework WebSocket</div>
+    <div>ReiNa Bot Rework WebSocket<br></div>
   </body>
 </html>
