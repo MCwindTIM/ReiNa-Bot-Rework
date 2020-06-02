@@ -68,7 +68,7 @@ module.exports = class ReiNaRework {
 				let ReiNa = this;
 				//Set Stat channel name (Time)
 				const CurrentTime = require('../Customize/Event/CurrentTime.js');
-				setInterval(() => CurrentTime.UpdateTime(ReiNa), 5000);
+				setInterval(() => CurrentTime.UpdateTime(ReiNa), 30000);
 
 				//Set Stat channel name (user)
 				const GuildUser = require('../Customize/Event/UpdateUser.js');
