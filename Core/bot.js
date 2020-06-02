@@ -57,6 +57,9 @@ module.exports = class ReiNaRework {
 			this.musictimer = data.musictimer;
 			let finishLoad = Date.now();
 
+			//Set Customize Event's Variable
+			this.WeatherWarningMSG;
+
 			this.bot.once('ready', () => {
 				process.title = `${this.bot.user.tag} - Discord ReiNa Bot Rework`;
 				console.log(`${this.bot.user.tag}上線!`);
@@ -65,18 +68,18 @@ module.exports = class ReiNaRework {
 				this.bot.user.setActivity(`${this.config.prefix}help | ReiNa Is Here! Nya~~~~`, {type: 3});
 
 				//MCwind Customize Interval function Delete If don't want
-				let ReiNa = this;
-				//Set Stat channel name (Time)
-				const CurrentTime = require('../Customize/Event/CurrentTime.js');
-				setInterval(() => CurrentTime.UpdateTime(ReiNa), 30000);
 
 				//Set Stat channel name (user)
 				const GuildUser = require('../Customize/Event/UpdateUser.js');
-				setInterval(() => GuildUser.UpdateUser(ReiNa), 60000);
+				setInterval(() => GuildUser.UpdateUser(this), 60000);
 
 				//Check User Status (giving Role)
 				const CheckUserStatus = require('../Customize/Event/CheckUserStatus.js');
-				setInterval(() => CheckUserStatus.CheckUserStatus(ReiNa), 5000);
+				setInterval(() => CheckUserStatus.CheckUserStatus(this), 5000);
+
+				//WeatherWarning
+				const WeatherWarning = require('../Customize/Event/WeatherWarning.js');
+				setInterval(() => WeatherWarning.CheckWeatherWarning(this), 5000);
 
 			});
 			this.bot.on('disconnect', () => {
@@ -205,6 +208,16 @@ module.exports = class ReiNaRework {
 					'fileString': '附加檔案'
 				});
 			});
+		});
+
+		//MCwind Customize Event
+		this.event.on('WWarning', async warningMSG => {
+			this.WeatherWarningMSG = warningMSG;
+			let Warning = this.util.createEmbed(null, `ReiNa Bot Rework 天氣警告`, `自動警告`);
+			for(let i of warningMSG){
+				Warning.addField(`${i}`, warningMSG[i]);
+			}
+			await this.util.SDM(this.bot.channels.cache.get('398062441948512257'), Warning, this.bot.user);
 		});
 	}
 }
