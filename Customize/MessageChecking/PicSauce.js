@@ -24,7 +24,7 @@ module.exports.PicFind = async (ReiNa, message) => {
                     if (isNaN(image_id)) return;
                     let illust = await fetchInfo(image_id);
                     return ReiNa.util.SDM(message.channel, {
-                        embed: await genEmbed(illust, true, ReiNa)
+                        embed: await genEmbed(illust, true, ReiNa, message)
                     }, message.author);
                 }
             } catch (e) {
@@ -53,16 +53,16 @@ module.exports.PicFind = async (ReiNa, message) => {
                                     try {
                                         switch (true) {
                                             case content.indexOf("Pixiv") > -1:
-                                                embed = await genEmbed(await fetchInfo(i.match(/illust_id=(\d+)/)[1]), true, ReiNa);
+                                                embed = await genEmbed(await fetchInfo(i.match(/illust_id=(\d+)/)[1]), true, ReiNa, message);
                                                 break;
                                             case content.indexOf("yande.re") > -1:
-                                                embed = sgenEmbed("yan", await fetchImg("yan", i.match(/yande\.re\/post\/show\/(\d+)/)[1]), ReiNa);
+                                                embed = sgenEmbed("yan", await fetchImg("yan", i.match(/yande\.re\/post\/show\/(\d+)/)[1]), ReiNa, message);
                                                 break;
                                             case content.indexOf("konachan") > -1:
-                                                embed = sgenEmbed("kon", await fetchImg("kon", i.match(/konachan\.com\/post\/show\/(\d+)/)[1]), ReiNa);
+                                                embed = sgenEmbed("kon", await fetchImg("kon", i.match(/konachan\.com\/post\/show\/(\d+)/)[1]), ReiNa, message);
                                                 break;
                                             case content.indexOf("danbooru") > -1:
-                                                embed = sgenEmbed("dan", await fetchImg("dan", i.match(/danbooru\.donmai\.us\/post\/show\/(\d+)/)[1]), ReiNa);
+                                                embed = sgenEmbed("dan", await fetchImg("dan", i.match(/danbooru\.donmai\.us\/post\/show\/(\d+)/)[1]), ReiNa, message);
                                                 break;
                                             default:
                                                 break;
@@ -125,7 +125,7 @@ async function fetchInfo(image_id) {
     return res && res.illust;
 }
 
-async function genEmbed(illust, show_image = true, ReiNa) {
+async function genEmbed(illust, show_image = true, ReiNa, message) {
     var embed = new Discord.MessageEmbed()
         .setAuthor(
             (illust.title || "Pixiv圖片") + (illust.page_count > 1 ? " (" + illust.page_count + ")" : ""),
@@ -138,16 +138,14 @@ async function genEmbed(illust, show_image = true, ReiNa) {
             "Pixiv 來源: ",
             "[作品id: " + illust.id + "](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + illust.id + ")\t[作者: " + illust.user.name + "]( https://www.pixiv.net/member.php?id=" + illust.user.id + ")"
 		)
-		.setFooter('ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487 作品發佈日期:', ReiNa.bot.user.avatarURL);
+		.setFooter('ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487 作品發佈日期:', ReiNa.bot.user.avatarURL());
 		if(illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '').toString().length > 1024 ){
-			embed.addField(
-				"說明: ", "因為字數超過1024, 無法顯示於Discord MessageEmbed Field 內!"
-			)
+            embed.addField("說明: ", "因為字數超過1024, 無法顯示於Discord MessageEmbed Field 內!");
+            embed.addField("信息發送者: ", `${message.author}`);
 		}else{
-			embed.addField(
-				"說明: ",
-				illust.caption ? illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '') : "(無)"
-		)}
+            embed.addField("說明: ", illust.caption ? illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '') : "(無)");
+            embed.addField("信息發送者: ", `${message.author}`);
+    }
     return embed;
 }
 
@@ -189,7 +187,7 @@ async function fetchImg(prov = "kon", id) {
     return res[0];
 }
 
-function sgenEmbed(prov = "kon", image, ReiNa) {
+function sgenEmbed(prov = "kon", image, ReiNa, message) {
     if (!Object.keys(image).length) throw new Error("Invalid image " + image);
 
     let embed = new Discord.MessageEmbed()
@@ -198,8 +196,9 @@ function sgenEmbed(prov = "kon", image, ReiNa) {
         .setDescription("[ID: " + image["id"] + "](" + portal[prov] + "/post/show/" + image["id"] + ")")
 
         .setTimestamp()
-		.addField("來源: ", (image["source"] == "" ? "(未知)" : image["source"]).toString().replace("i.pximg.net", "i.pixiv.cat"))
-		.setFooter('ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487', ReiNa.user.avatarURL);
+        .addField("來源: ", (image["source"] == "" ? "(未知)" : image["source"]).toString().replace("i.pximg.net", "i.pixiv.cat"))
+        .addField("信息發送者: ", `${message.author}`)
+		.setFooter('ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487', ReiNa.bot.user.avatarURL());
 
 
     if (["kon", "yan"].indexOf(prov) > -1) {
