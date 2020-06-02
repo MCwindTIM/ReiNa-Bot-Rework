@@ -129,7 +129,7 @@ module.exports = class ReiNaRework {
 
 
 				//MCwind Discord Server not allow invite link
-				if(message.content.includes('discord.gg/' || 'discordapp.com/invite/') && message.guild.id === '398062441516236800'){
+				if(message.content.includes('discord.gg/' || 'discordapp.com/invite/' || 'discord.com/invite') && message.guild.id === '398062441516236800'){
 					message.delete().catch();
 					let NotAllow = this.util.createEmbed(message.author, null, `這裡不允許發送Discord邀請連結!`, null, red);
 					try{
