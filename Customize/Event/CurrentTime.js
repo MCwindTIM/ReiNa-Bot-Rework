@@ -6,7 +6,8 @@ module.exports.UpdateTime = async (ReiNa) => {
     async (error, response, rawHK) => {
         if(error) return;
         if(!error && response.statusCode === 200){
-            let timeHK = await JSON.parse(rawHK);
+            let objHK = await JSON.parse(rawHK);
+            let timeHK = objHK.datetime;
             var hkh = timeHK.slice(11,13).toString().replace(/[0123456789]/g, m=> numchars[m]);
             var hkm = timeHK.slice(14,16).toString().replace(/[0123456789]/g, m=> numchars[m]);
             try{
@@ -20,7 +21,8 @@ module.exports.UpdateTime = async (ReiNa) => {
     async function(error, response, rawTK){
         if(error) return;
         if(!error && response.statusCode === 200){
-            let timeTK = await JSON.parse(rawTK);
+            let objTK = await JSON.parse(rawTK);
+            let timeTK = objTK.datetime;
             var tkh = timeTK.slice(11,13).toString().replace(/[0123456789]/g, m=> numchars[m]);
             var tkm = timeTK.slice(14,16).toString().replace(/[0123456789]/g, m=> numchars[m]);
             try{
