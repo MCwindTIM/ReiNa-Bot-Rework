@@ -58,7 +58,7 @@ module.exports = class ReiNaRework {
 			let finishLoad = Date.now();
 
 			//Set Customize Event's Variable
-			this.WeatherWarningMSG;
+			//this.WeatherWarningMSG;
 
 			this.bot.once('ready', () => {
 				process.title = `${this.bot.user.tag} - Discord ReiNa Bot Rework`;
@@ -78,8 +78,8 @@ module.exports = class ReiNaRework {
 				setInterval(() => CheckUserStatus.CheckUserStatus(this), 5000);
 
 				//WeatherWarning
-				const WeatherWarning = require('../Customize/Event/WeatherWarning.js');
-				setInterval(() => WeatherWarning.CheckWeatherWarning(this), 5000);
+				//const WeatherWarning = require('../Customize/Event/WeatherWarning.js');
+				//setInterval(() => WeatherWarning.CheckWeatherWarning(this), 5000);
 
 			});
 			this.bot.on('disconnect', () => {
@@ -126,7 +126,6 @@ module.exports = class ReiNaRework {
 
 				const ChatLog = require('../Customize/MessageChecking/ChatLog.js');
 				if(!message.author.bot) ChatLog.log(`./ChatLog/${message.guild.id}/${message.channel.id}.log`, message);
-
 
 				//MCwind Discord Server not allow invite link
 				if(message.guild.id === '398062441516236800'){
@@ -213,13 +212,13 @@ module.exports = class ReiNaRework {
 		});
 
 		//MCwind Customize Event
-		this.event.on('WWarning', async warningMSG => {
-			this.WeatherWarningMSG = warningMSG;
-			let Warning = this.util.createEmbed(null, `ReiNa Bot Rework 天氣警告`, `自動警告`);
-			for(let i of warningMSG){
-				Warning.addField(`${i}`, warningMSG[i]);
-			}
-			await this.util.SDM(this.bot.channels.cache.get('398062441948512257'), Warning, this.bot.user);
-		});
+		// this.event.on('WWarning', async warningMSG => {
+			// this.WeatherWarningMSG = warningMSG;
+			// let Warning = this.util.createEmbed(null, `ReiNa Bot Rework 天氣警告`, `自動警告`);
+			// for(let i of warningMSG){
+				// Warning.addField(`${i}`, warningMSG[i]);
+			// }
+			// await this.util.SDM(this.bot.channels.cache.get('398062441948512257'), Warning, this.bot.user);
+		// });
 	}
 }
