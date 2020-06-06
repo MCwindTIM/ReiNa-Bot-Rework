@@ -36,7 +36,7 @@ module.exports.sendWelcomeMessage = async (member) => {
     ctx.closePath();
     ctx.clip();
 
-    const avatar = await Canvas.loadImage(member.user.displayAvatarURL());
+    const avatar = await Canvas.loadImage(member.user.displayAvatarURL({ format: 'png'}));
     ctx.drawImage(avatar, 25, 25, 200, 200);
     let attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'Welcome-image.png');
     channel.send(`?! 是野生的 ${member}！ 🎉歡迎加入 **${member.guild.name}**！🎊 :wink: `, attachment);
