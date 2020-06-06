@@ -15,21 +15,21 @@ module.exports = class MusicPauseCommand extends Command {
         if(!serverQueue){
             let NotPlayingSong = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 此伺服器沒有在播放音樂, 所以沒有東西能繼續播放哦!`, null, 0xcc0000);
             try{
-                await this.main.util.SDM(message.channel, { NotPlayingSong }, message.author);
+                await this.main.util.SDM(message.channel, NotPlayingSong, message.author);
             }catch(e){}
             return;
         }
         if(!message.member.voice.channel){
             let NotInVC = this.main.util.createEmbed(message.author, null, `${message.author} 你不在語音頻道呀!`, null, 0xcc0000);
             try{
-                await this.main.util.SDM(message.channel, { NotInVC }, message.author);
+                await this.main.util.SDM(message.channel, NotInVC, message.author);
             }catch(e){}
             return;
         }
         if(message.member.voice.channel != serverQueue.voiceChannel){
             let NotInSameVC = this.main.util.createEmbed(message.author, null, `${message.author} 你不在音樂播放的語音頻道中, 無法繼續播放音樂!`, null, 0xcc0000);
             try{
-                await this.main.util.SDM(message.channel, { NotInSameVC }, message.author);
+                await this.main.util.SDM(message.channel, NotInSameVC, message.author);
             }catch(e){}
             return;
         }
