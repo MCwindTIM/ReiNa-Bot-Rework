@@ -3,6 +3,7 @@ V12 重寫 MCwind's Discord Server --- ReiNa
 
 - **npm install**
 - R6 api **https://tabstats.com/contact**
+- OSU api **https://osu.ppy.sh/p/api/**
 - 此Discord Bot 為MCwind's Discord Server而設
 
 
