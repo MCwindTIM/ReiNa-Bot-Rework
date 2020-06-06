@@ -7,5 +7,6 @@ module.exports = class Config {
     this.R6API = "";
     this.PicAPI = "";
     this.Port = 3000;
+    this.osuAPI = '';
   }
 }
