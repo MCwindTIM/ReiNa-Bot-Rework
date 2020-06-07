@@ -37,7 +37,7 @@ module.exports = class R6Command extends Command {
                 }
                 let player = Object.keys(obj.players)[0];
                     request.get.call(this, `https://r6.apitab.com/update/${player}${api}`, {},
-                    (error, response, rawdata) => {
+                    async (error, response, rawdata) => {
                         var obj = JSON.parse(rawdata);
                         var rank = "";
                         let UTime = new Date(obj.refresh.utime * 1000);
@@ -141,7 +141,7 @@ module.exports = class R6Command extends Command {
                             rank = "Champion!!! 冠軍階級";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/23.png";
                         }
-                        let playerInfo = this.main.util.createEmbed(message.author, `R6 玩家查詢 (詳細資料請點我 (=ﾟωﾟ)ﾉ)`, `${message.author} Senpai, 你請求的R6 Siege 玩家資料找到了~`, `https://r6tab.com/player/${obj.player.p_id}`, `'#0099ff'`);
+                        let playerInfo = await this.main.util.createEmbed(message.author, `R6 玩家查詢 (詳細資料請點我 (=ﾟωﾟ)ﾉ)`, `${message.author} Senpai, 你請求的R6 Siege 玩家資料找到了~`, `https://r6tab.com/player/${obj.player.p_id}`, `'#0099ff'`);
                         playerInfo
                             .setThumbnail(rankpic)
                             .addField('玩家UID: ', obj.player.p_name, true)
@@ -162,32 +162,18 @@ module.exports = class R6Command extends Command {
                             .addField('數據更新於: ', `${commonUTime} GMT +8 香港標準時間`, true)
                             .setImage(`https://ubisoft-avatars.akamaized.net/${obj.player.p_id}/default_146_146.png`)
                             try {
-                                this.main.util.SDM(message.channel, playerInfo, message.author);
-                            }   catch (err) {
-                                console.error(err);
-                            }
-                    })
-                
+                                await this.main.util.SDM(message.channel, playerInfo, message.author);
+                            }   catch (e) {}
+                    });
             }
             })
         }
         else{
-            const embed = new Discord.RichEmbed()
-            embed
-            .setAuthor(message.author.tag, message.author.avatarURL)
-            .setDescription("請輸入正確資料")
-            .setColor(0xcc0000)
-            .setTitle('ReiNa Bot 錯誤')
-            .setURL("https://mcwind.tk")
-            .addField('使用方法: ', "rn!r6 [平台] [玩家UID]\n平台輸入 `uplay` `psn` `xbl` 分別為Uplay, PlayStationNetwork, Xbox")
-            .setTimestamp()
-            .setFooter('ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487', bot.user.avatarURL);
+            let wronginfo = await this.main.util.createEmbed(message.author, 'ReiNa Bot Rework 錯誤', `請輸入正確資料`, null, 0xcc0000);
+            wronginfo.addField('使用方法: ', "rn!r6 [平台] [玩家UID]\n平台輸入 `uplay` `psn` `xbl` 分別為Uplay, PlayStationNetwork, Xbox");
             try {
-                util.sendDeletableMessage(message.channel, { embed }, message.author);
-            }   catch (err) {
-                    console.error(err);
-            }
-            return;
+                this.main.util.SDM(message.channel, wronginfo, message.author);
+            }   catch (e) {}
         }
     }
 }
