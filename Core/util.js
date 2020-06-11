@@ -91,7 +91,8 @@ module.exports = class Util {
             url: `https://www.youtube.com/watch?v=${video.id}`,
             length: `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
-            guildtag: message.guild.name
+            guildtag: message.guild.name,
+            live: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? true : false
         };
         if(!serverQueue){
             const queueConstruct = {
@@ -158,74 +159,105 @@ module.exports = class Util {
         }
 
         let dispatcher;
-        fs.readFile.call(this, `./MusicCache/${song.id}.mp3`, { encoding: 'utf-8'}, (err, data) => {
-			if(!err){
-				let size = fs.statSync(`./MusicCache/${song.id}.mp3`)["size"];
-				if(size == 0){
-					let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
-					let proc = new ffmpeg({source: stream});
-					proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
-					dispatcher = serverQueue.connection.play(ytdl(song.url))
-					.on('finish', end => {
-						if(serverQueue.loop == false){serverQueue.songs.shift();}
-						else {
-							if(serverQueue.loop == true){
-								serverQueue.songs.unshift(serverQueue.songs[0]);
-								serverQueue.songs.shift();
-							}
-						}
-						this.play(guild, serverQueue.songs[0]);
-						this.main.musictimer.set(guild.id, Date.now());
-					})
-					.on('error', e => console.trace(e));
-				}else{
-					dispatcher = serverQueue.connection.play(`./MusicCache/${song.id}.mp3`)
-					.on('finish', end => {
-						if(serverQueue.loop == false){serverQueue.songs.shift();}
-						else {
-							if(serverQueue.loop == true){
-								serverQueue.songs.unshift(serverQueue.songs[0]);
-								serverQueue.songs.shift();
-							}
-						}
-						this.play(guild, serverQueue.songs[0]);
-						this.main.musictimer.set(guild.id, Date.now());
-					})
-					.on('error', e => console.trace(e));
-					}
-			}
-			else{
-				fsPath.writeFileSync(`./MusicCache/${song.id}.mp3`, "");
-				let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
-				let proc = new ffmpeg({source: stream});
-				proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
-				dispatcher = serverQueue.connection.play(ytdl(song.url))
-				.on('finish', end => {
-					if(serverQueue.loop == false){serverQueue.songs.shift();}
-					else {
-						if(serverQueue.loop == true){
-							serverQueue.songs.unshift(serverQueue.songs[0]);
-							serverQueue.songs.shift();
-						}
-					}
-					this.play(guild, serverQueue.songs[0]);
-					this.main.musictimer.set(guild.id, Date.now());
-				})
-				.on('error', e => console.trace(e));
-			}
-			
-			dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-			let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**${song.title}**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
-			serverQueue.textChannel.send(embed)
-				.then(msg => {
-				msg.delete({timeout: 5000}).catch(console.error);
-				}).catch();
-			let looping = '';
-			if(serverQueue.loop == true){looping = "開啟"}
-			if(serverQueue.loop == false){looping = "關閉"}
-			this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${looping}]||`, {type:2});
-			this.main.musictimer.set(guild.id, Date.now());
-		});
+        //Check video is live or not
+        if(song.live){
+            //youtube live (always dont cache)
+            dispatcher = serverQueue.connection.play(ytdl(song.url))
+            .on('finish', end => {
+                if(serverQueue.loop == false){serverQueue.songs.shift();}
+                else {
+                    if(serverQueue.loop == true){
+                        serverQueue.songs.unshift(serverQueue.songs[0]);
+                        serverQueue.songs.shift();
+                    }
+                }
+                this.play(guild, serverQueue.songs[0]);
+                this.main.musictimer.set(guild.id, Date.now());
+            })
+            .on('error', e => console.trace(e));
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+            let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**${song.title}**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
+            serverQueue.textChannel.send(embed)
+                .then(msg => {
+                msg.delete({timeout: 5000}).catch(console.error);
+                }).catch();
+            let looping = '';
+            if(serverQueue.loop == true){looping = "開啟"}
+            if(serverQueue.loop == false){looping = "關閉"}
+            this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${looping}]||`, {type:2});
+            this.main.musictimer.set(guild.id, Date.now());
+            
+        }else{
+            //youtube video cache
+            fs.readFile.call(this, `./MusicCache/${song.id}.mp3`, { encoding: 'utf-8'}, (err, data) => {
+                if(!err){
+                    let size = fs.statSync(`./MusicCache/${song.id}.mp3`)["size"];
+                    if(size == 0){
+                        let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
+                        let proc = new ffmpeg({source: stream});
+                        proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
+                        dispatcher = serverQueue.connection.play(ytdl(song.url))
+                        .on('finish', end => {
+                            if(serverQueue.loop == false){serverQueue.songs.shift();}
+                            else {
+                                if(serverQueue.loop == true){
+                                    serverQueue.songs.unshift(serverQueue.songs[0]);
+                                    serverQueue.songs.shift();
+                                }
+                            }
+                            this.play(guild, serverQueue.songs[0]);
+                            this.main.musictimer.set(guild.id, Date.now());
+                        })
+                        .on('error', e => console.trace(e));
+                    }else{
+                        dispatcher = serverQueue.connection.play(`./MusicCache/${song.id}.mp3`)
+                        .on('finish', end => {
+                            if(serverQueue.loop == false){serverQueue.songs.shift();}
+                            else {
+                                if(serverQueue.loop == true){
+                                    serverQueue.songs.unshift(serverQueue.songs[0]);
+                                    serverQueue.songs.shift();
+                                }
+                            }
+                            this.play(guild, serverQueue.songs[0]);
+                            this.main.musictimer.set(guild.id, Date.now());
+                        })
+                        .on('error', e => console.trace(e));
+                        }
+                }
+                else{
+                    fsPath.writeFileSync(`./MusicCache/${song.id}.mp3`, "");
+                    let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
+                    let proc = new ffmpeg({source: stream});
+                    proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
+                    dispatcher = serverQueue.connection.play(ytdl(song.url))
+                    .on('finish', end => {
+                        if(serverQueue.loop == false){serverQueue.songs.shift();}
+                        else {
+                            if(serverQueue.loop == true){
+                                serverQueue.songs.unshift(serverQueue.songs[0]);
+                                serverQueue.songs.shift();
+                            }
+                        }
+                        this.play(guild, serverQueue.songs[0]);
+                        this.main.musictimer.set(guild.id, Date.now());
+                    })
+                    .on('error', e => console.trace(e));
+                }
+                
+                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+                let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**${song.title}**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
+                serverQueue.textChannel.send(embed)
+                    .then(msg => {
+                    msg.delete({timeout: 5000}).catch(console.error);
+                    }).catch();
+                let looping = '';
+                if(serverQueue.loop == true){looping = "開啟"}
+                if(serverQueue.loop == false){looping = "關閉"}
+                this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${looping}]||`, {type:2});
+                this.main.musictimer.set(guild.id, Date.now());
+            });
+        }
     }
 
     //Get ServerQueue
