@@ -35,7 +35,7 @@ module.exports = class Util {
         author = author || this.main.bot.user;
         title = title || `ReiNa Bot Rework`;
         color = color || `#0099ff`;
-        url = url || `https://mcwind.tk`;
+        url = url || `https://github.com/MCwindTIM/ReiNa-Bot-Rework`;
         Footer = Footer || `ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487`;
         let embed = new Discord.MessageEmbed()
         .setAuthor(author.tag, author.avatarURL())
