@@ -1,14 +1,16 @@
 const request = require('request');
 
 module.exports.CheckWeatherWarning = async (ReiNa) => {
-request(`https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc`, {}, 
-    async (error, response, body) => {
-        if(error && response.statusCode != 200) return;
-        let obj = await JSON.parse(body);
-        if(obj.warningMessage.length === 0 || obj.warningMessage.equals(ReiNa.WeatherWarningMSG)) return;
-		    ReiNa.event.emit('WWarning', obj.warningMessage);
-            ReiNa.WeatherWarningMSG = obj.warningMessage;
-    });
+    try{
+        request(`https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc`, {}, 
+            async (error, response, body) => {
+                if(error && response.statusCode != 200) return;
+                let obj = await JSON.parse(body);
+                if(obj.warningMessage.length === 0 || obj.warningMessage.equals(ReiNa.WeatherWarningMSG)) return;
+                    ReiNa.event.emit('WWarning', obj.warningMessage);
+                    ReiNa.WeatherWarningMSG = obj.warningMessage;
+            });
+        }catch(e){}
 }
 
 Array.prototype.equals = function (array) {
