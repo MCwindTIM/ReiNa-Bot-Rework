@@ -1,7 +1,6 @@
 const fs = require('fs');
 const fsPath = require('fs-path');
 const Discord = require('discord.js');
-
 //音樂模塊
 const ytdl = require('ytdl-core');
 const YouTube = require('simple-youtube-api');
@@ -36,7 +35,7 @@ module.exports = class Util {
         title = title || `ReiNa Bot Rework`;
         color = color || `#0099ff`;
         url = url || `https://github.com/MCwindTIM/ReiNa-Bot-Rework`;
-        Footer = Footer || `ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487`;
+        Footer = Footer || `ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#7832`;
         let embed = new Discord.MessageEmbed()
         .setAuthor(author.tag, author.avatarURL())
         .setColor(color)
