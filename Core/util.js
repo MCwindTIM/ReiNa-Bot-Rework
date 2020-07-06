@@ -285,6 +285,16 @@ module.exports = class Util {
         return sentMsg;
     }
 
+    //function that prevent xss
+    htmlEscape(text) {
+        return text.replace(/&/g, '&amp;').
+        replace(/</g, '&lt;').
+        replace(/"/g, '&quot;').
+        replace(/'/g, '&#027;').
+        replace(/>/g, '&gt').
+        replace(/\//g, '&#047');
+     }
+
     //Get MusicTimer
     getMusicTimer(gid){
         return this.main.musictimer.get(gid);
