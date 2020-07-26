@@ -7,6 +7,10 @@ const YouTube = require('simple-youtube-api');
 //ffmpeg 導入
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
+
+//request module
+const request = require("request");
+
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 module.exports = class Util {
@@ -311,6 +315,19 @@ module.exports = class Util {
             return false;
         }
         return true;
+    }
+
+    //fetch (return obj)
+    fetchJSON(url){
+        request.get(url, {}, async (err, req, body) => {
+            if(err || req.statusCode != 200){
+                return;
+            }
+            if(!err && req.statusCode === 200){
+                let obj = await JSON.parse(body);
+                return obj;
+            }
+        });
     }
 
     load() {
