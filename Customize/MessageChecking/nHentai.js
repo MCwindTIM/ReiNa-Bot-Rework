@@ -1,7 +1,6 @@
 const request = require('request');
 const nHentaiAPI = require('nhentai-js');
 
-let napi = new nHentaiAPI();
 let fetch_tranMap;
 
 module.exports.run = async (ReiNa, message) =>{
