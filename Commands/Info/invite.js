@@ -13,6 +13,6 @@ module.exports = class Invite extends Command {
     async run(message, args, prefix){
         message.delete().catch();
             let invitemsg = this.main.util.createEmbed(message.author, null, `${message.author}, 我的邀請連結是 https://discord.com/api/oauth2/authorize?client_id=${this.main.bot.user.id}&permissions=8&scope=bot`);
-            await this.main.util.SDM(message.channel, appmsg, message.author);
+            await this.main.util.SDM(message.channel, invitemsg, message.author);
     }
 }
