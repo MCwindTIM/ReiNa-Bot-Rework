@@ -1,5 +1,4 @@
 const Command = require('../../Core/command');
-const request = require('request');
 
 module.exports = class Invite extends Command {
     constructor(main){
