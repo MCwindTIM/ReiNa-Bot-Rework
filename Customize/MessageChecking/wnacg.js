@@ -40,6 +40,9 @@ function getData(url, message, doujinid, ReiNa){
                 }catch(e){}
             }else{
                 dataArray[o+1] = dataArray[o+1].replace("////", "https://");
+                if(dataArray[o+1].startsWith("/")){
+                    dataArray[o+1] = dataArray[o+1].replace("//", "https://");
+                }
                 let doujinMSG = ReiNa.util.createEmbed(message.author, `點我進入新世界!!!`, `${message.author}, 你要求查詢的資料找到了!`, `${url}`, 0xcc0000);
                 doujinMSG
                 .setThumbnail(`${dataArray[o+1]}`)
