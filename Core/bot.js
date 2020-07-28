@@ -97,16 +97,20 @@ module.exports = class ReiNaRework {
 
 				//Some MessageChecking for MCwind personal customize function (Maybe hardcoded) Delete function if making error
 				const nHentai = require('../Customize/MessageChecking/nHentai.js');
+				const wnacg = require('../Customize/MessageChecking/wnacg.js');
 				if(message.content.match(/(?<=[\[{])(https?:\/\/nhentai\.net\/g\/)?(\d+)\/?.*?(?=[}\]])/gi) && message.content.startsWith('[') && message.content.endsWith(']')){
 					nHentai.run(this,message);
 					console.log(`${nHentai.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
-				}else{if(message.content.match(/w(\d+)\/?.*?(?=[}\]])?(\d+)\/?/gi)){}else{if(message.channel.id === "655516899832233986"){message.delete().catch(console.log)}}};
-
-				const wnacg = require('../Customize/MessageChecking/wnacg.js');
-				if(message.content.match(/w(\d+)\/?.*?(?=[}\]])?(\d+)\/?/gi) && message.content.startsWith('[') && message.content.endsWith(']')){
-					wnacg.run(this,message);
-					console.log(`${wnacg.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
-				}else{if(message.content.match(/(?<=[\[{])(https?:\/\/nhentai\.net\/g\/)?(\d+)\/?.*?(?=[}\]])/gi)){}else{if(message.channel.id === "655516899832233986"){message.delete().catch()}}};
+				}else{
+					if(message.content.match(/w(\d+)\/?.*?(?=[}\]])?(\d+)\/?/gi) && message.content.startsWith('[') && message.content.endsWith(']')){
+						wnacg.run(this,message);
+						console.log(`${wnacg.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+					}else{
+						if(message.channel.id === "655516899832233986"){
+							message.delete().catch(console.log)
+						}
+					}
+				};
 
 				const MSGsync = require('../Customize/MessageChecking/sync.js');
 				if(message.guild.id === '407171840746848258') MSGsync.run(this, message);
