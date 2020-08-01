@@ -35,7 +35,7 @@ module.exports.PicFind = async (ReiNa, message) => {
                     let loopi;
                     for (loopi = 0; loopi < message.attachments.size; loopi++) {
                         if (message.attachments.every(attachIsImage)) {
-                            let res;
+                            var res;
                             if(!saucetoken || saucetoken == ""){
                                 res = await request.get("http://saucenao.com/search.php?db=999" + "&url=" + message.attachments.array()[loopi].url);
                             }else{
