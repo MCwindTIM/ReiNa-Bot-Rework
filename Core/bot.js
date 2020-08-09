@@ -222,7 +222,7 @@ module.exports = class ReiNaRework {
 			for(let i = 0; i < warningMSG.length; i ++){
 			Warning.addField(`信息${i + 1}`, warningMSG[i]);
 			}
-			 await this.util.SDM(this.bot.channels.cache.get('398062441948512257'), Warning, this.bot.user);
+			 await this.util.SDM(this.bot.channels.cache.get('741890517050196058'), Warning, this.bot.user);
 		});
 	}
 }
