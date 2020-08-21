@@ -23,7 +23,9 @@ module.exports = class EvalCommand extends Command {
 
                 if(!toEval) {
                     let NothingEval = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author}, 請輸入參數!`);
-                    this.main.util.SDM(message.channel, NothingEval, message.author);
+                    try{
+                        this.main.util.SDM(message.channel, NothingEval, message.author);
+                    }catch(e){}
                     return;
                 } else {
                     let hrStart = process.hrtime();
@@ -57,6 +59,9 @@ module.exports = class EvalCommand extends Command {
                     let errMSG = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 哎呀, 出錯啦!`);
                     errMSG.addField('輸入', `\`\`\`js\n${toEval}\n\`\`\``);
                     errMSG.addField("eval 錯誤", `錯誤信息字串長度超過1024 無法輸出到 Discord`);
+                    try{
+                        this.main.util.SDM(message.channel, errMSG, message.author);
+                    }catch(e){}
                 }
             }
         }else{

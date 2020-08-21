@@ -288,8 +288,16 @@ module.exports = class Util {
                 } catch (err) { }
                 return;
             }
-            if(sentMsg.guild.me.hasPermission('MANAGE_MESSAGES')) { await sentMsg.reactions.removeAll() }
-            else{ sentMsg.reactions.removeAll() }
+            if(sentMsg.guild.me.hasPermission('MANAGE_MESSAGES')) { 
+                try{
+                    await sentMsg.reactions.removeAll() ;
+                } catch(e){}
+            }
+            else{ 
+                try{
+                    sentMsg.reactions.removeAll() 
+                } catch(e){}
+            }
         })
         return sentMsg;
     }
