@@ -54,7 +54,26 @@ module.exports.run = async (ReiNa, message) =>{
             }
 
             request.get(`https://duckduckdoc.tk/wp-content/uploads/drive/ReiNa-Bot-Rework/translate.json`, {}, async (error, request, body) => {
-                if(request.statusCode != 200) return;
+                if(request.statusCode != 200) {
+                    //if tran server down / error
+                    //Send result without tag translate
+                    let doujinEmbed = ReiNa.util.createEmbed(message.author, `點我進入新世界!!!`, `${message.author}, 你要求查詢的資料找到了!`, `${doujin.link}`, 0xcc0000, null);
+                    doujinEmbed
+                    .setThumbnail(doujin.pages[0])
+                    .addField(doujin.title, "(･ω<)☆")
+                    .addField("原作: ", napiparodyString)
+                    .addField("角色: ", napicharacterString)
+                    .addField("標籤: ", napitagString)
+                    .addField("作者: ", napiartistString)
+                    .addField("團隊: ", napigroupString)
+                    .addField("語言: ", napilanguageString)
+                    .addField("分類: ", napicategoryString)
+                    .addField("頁數: ", doujin.pages.length);
+                    try {
+                        ReiNa.util.SDM(message.channel, doujinEmbed, message.author);
+                    }   catch (e) {}
+                    return;
+                }
                 fetch_tranMap = await JSON.parse(body);
 
                 napicategoryString = await replaceAll(napicategoryString, fetch_tranMap.tranMap_Cate);
