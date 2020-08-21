@@ -97,7 +97,7 @@ module.exports = class Util {
             id: video.id,
             title: Discord.escapeMarkdown(video.title),
             url: `https://www.youtube.com/watch?v=${video.id}`,
-            length: `${vdh}:${vdm}:${vds}`,
+            length: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
             guildtag: message.guild.name,
             live: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? true : false
