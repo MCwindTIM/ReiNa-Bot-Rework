@@ -10,6 +10,12 @@ const io = require('socket.io');
 
 module.exports = class ReiNaRework {
 	constructor(option) {
+		process.on('uncaughtException', error => {
+			console.error('Unhandled Exception:', error);
+		});
+		process.on('unhandledRejection', error => {
+			console.error('Unhandled promise rejection:', error);
+		});
 		this.server = http.createServer((req, res) => {
 			let path = url.parse(req.url).pathname;
 			switch(path){
@@ -65,7 +71,10 @@ module.exports = class ReiNaRework {
 				console.log(`${this.bot.user.tag}上線!`);
 				console.log(`上線耗時: ${Date.now() - finishLoad}ms`);
 				this.loginTime = new Date().toString();
-				this.bot.user.setActivity(`${this.config.prefix}help | ReiNa Is Here! Nya~~~~`, {type: 3});
+				this.setActivity(this);
+				setInterval(() => {
+					this.setActivity(this);
+				}, 60000);
 
 				//MCwind Customize Interval function Delete If don't want
 
@@ -224,5 +233,11 @@ module.exports = class ReiNaRework {
 			}
 			 await this.util.SDM(this.bot.channels.cache.get('741890517050196058'), Warning, this.bot.user);
 		});
+	}
+
+	setActivity(ReiNaRework){
+		if(this.queue.size === 0){
+			this.bot.user.setActivity(`${this.config.prefix}help | ReiNa Is Here! Nya~~~~`, {type: 3});
+		}
 	}
 }
