@@ -235,7 +235,7 @@ module.exports = class ReiNaRework {
 		});
 	}
 
-	setActivity(ReiNaRework){
+	setActivity(){
 		if(this.queue.size === 0){
 			this.bot.user.setActivity(`${this.config.prefix}help | ReiNa Is Here! Nya~~~~`, {type: 3});
 		}
