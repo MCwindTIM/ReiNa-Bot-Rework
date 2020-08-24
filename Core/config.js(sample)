@@ -8,5 +8,6 @@ module.exports = class Config {
     this.PicAPI = "";
     this.Port = 3000;
     this.osuAPI = '';
+    this.apexAPI = '';
   }
 }
