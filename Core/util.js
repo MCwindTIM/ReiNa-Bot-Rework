@@ -204,6 +204,7 @@ module.exports = class Util {
                         let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
                         let proc = new ffmpeg({source: stream});
                         proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
+                        console.log(`${song.id}上次緩存失敗 重新緩存!`);
                         dispatcher = serverQueue.connection.play(ytdl(song.url))
                         .on('finish', end => {
                             if(serverQueue.loop == false){serverQueue.songs.shift();}
@@ -238,6 +239,7 @@ module.exports = class Util {
                     let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
                     let proc = new ffmpeg({source: stream});
                     proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
+                    console.log(`${song.id}為首次播放 開始緩存!`);
                     dispatcher = serverQueue.connection.play(ytdl(song.url))
                     .on('finish', end => {
                         if(serverQueue.loop == false){serverQueue.songs.shift();}
