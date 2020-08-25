@@ -4,6 +4,7 @@ V12 重寫 MCwind's Discord Server --- ReiNa
 - **npm install**
 - R6 api **https://tabstats.com/contact**
 - OSU api **https://osu.ppy.sh/p/api/**
+- Apex api **https://apexlegendsapi.com/**
 - 此Discord Bot 為MCwind's Discord Server而設
 
 Bot invite link: https://discord.com/oauth2/authorize?client_id=418095978273570846&scope=bot&permissions=8
