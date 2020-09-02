@@ -1,6 +1,10 @@
 const request = require('request-promise');
 const Discord = require('discord.js');
-
+const portal = {
+	kon: "http://konachan.net",
+	yan: "https://yande.re",
+	dan: "https://danbooru.donmai.us"
+}
 module.exports.PicFind = async (ReiNa, message) => {
     const saucetoken = ReiNa.config.PicAPI;
         try {
