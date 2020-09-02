@@ -12,7 +12,7 @@ module.exports = class MusicShuffleCommand extends Command {
     async run(message, args, prefix){
         message.delete().catch();
         const serverQueue = this.main.util.getServerQueue(message.guild.id);
-        if(!message.member.voiceChannel){
+        if(!message.member.voice.channel){
             let NotInVC = this.main.util.createEmbed(message.author, null, `${message.author} 你不在語音頻道呀!`, null, 0xcc0000);
             try{
                 await this.main.util.SDM(message.channel, NotInVC, message.author);
@@ -26,7 +26,7 @@ module.exports = class MusicShuffleCommand extends Command {
             }catch(e){}
             return;
         }
-        if(message.member.voiceChannel != serverQueue.voiceChannel){
+        if(message.member.voice.channel != serverQueue.voiceChannel){
             let NotInSameVC = this.main.util.createEmbed(message.author, null, `${message.author} 你不在播放音樂的語音頻道呀!`, null, 0xcc0000);
             try{
                 await this.main.util.SDM(message.channel, NotInSameVC, message.author)
