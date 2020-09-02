@@ -7,12 +7,12 @@ module.exports = class IPv6Command extends Command {
             category: "功能性",
             help: "Compress/expand IPv6 Address",
             args: [{
-                name: '',
-                desc: ''
+                name: '模式',
+                desc: 'expand / compress'
             },
             {
-                name: '',
-                desc: ''
+                name: 'IP地址',
+                desc: '輸入要轉換的IP地址'
             }],
             caseSensitive: true
         });
