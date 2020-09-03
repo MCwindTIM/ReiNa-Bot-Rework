@@ -9,7 +9,7 @@ module.exports.PicFind = async (ReiNa, message) => {
     const saucetoken = ReiNa.config.PicAPI;
         try {
             try {
-                if (message.channel.id === "407171840746848260" || message.author.ReiNa) {
+                if (message.author.ReiNa) {
                     return
                 }
                 if (message.content.match(/https?:\/\/(www\.)?[pixiv]{1,256}\.[a-zA-Z0-9()]{1,6}\b\/artworks\/[0-9()]{1,15}/g) || message.content.match(/https?:\/\/(www\.)?[pixiv]{1,256}\.[a-zA-Z0-9()]{1,6}\b\/[a-zA-Z][a-zA-Z]\/artworks\/[0-9()]{1,15}/g)) {
