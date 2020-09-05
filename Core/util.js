@@ -118,6 +118,7 @@ module.exports = class Util {
 
             try{
                 let connection = await voiceChannel.join();
+                connection.voice.setSelfDeaf(true);
                 queueConstruct.connection = connection;
                 this.play(message.guild, queueConstruct.songs[0]);
             }catch(err){
@@ -277,6 +278,7 @@ module.exports = class Util {
 
     //信息發送模塊
     async SDM(channel, message, author, trigger){
+        channel.startTyping();
         const sentMsg = await channel.send(message);
         await sentMsg.react('🗑');
         const collector = sentMsg.createReactionCollector((reaction, user) => reaction.emoji.name === '🗑' && !user.bot && user.id === author.id || reaction.message.member.hasPermission('MANAGE_MESSAGES') === true && !user.bot, { time:1000 * 60 * 10, max: 1});
@@ -301,6 +303,7 @@ module.exports = class Util {
                 } catch(e){}
             }
         })
+        channel.stopTyping();
         return sentMsg;
     }
 
