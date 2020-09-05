@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 module.exports.run = async (ReiNa, message) =>{
     //filter Only MCwind's Discord Server can trigger this
     if(message.guild.id != "398062441516236800") return;
+    if(!message.embeds[0]) return;
         //filter .fm message
         if(message.embeds[0].author.name.startsWith('Now playing -')){
             let fullSong = getSongName(message.embeds[0].description);
@@ -58,3 +59,5 @@ function getSongName(string){
 
     return fullSongTrack;
 }
+
+module.exports.name = "Last.fm";
