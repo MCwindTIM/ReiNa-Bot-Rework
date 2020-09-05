@@ -12,17 +12,17 @@
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "canvas": "^2.6.1",
     "cheerio": "^1.0.0-rc.3",
-    "discord.js": "^12.2.0",
+    "discord.js": "^12.3.1",
     "fluent-ffmpeg": "^2.1.2",
     "fs-path": "0.0.24",
     "nhentai-js": "^4.0.0",
     "node-fetch": "^2.6.0",
     "opusscript": "0.0.7",
     "request": "^2.88.2",
-    "request-promise": "^4.2.5",
+    "request-promise": "^4.2.6",
     "simple-youtube-api": "^5.2.1",
     "socket.io": "^2.3.0",
-    "superagent": "^5.2.2",
-    "ytdl-core": "^2.1.5"
+    "superagent": "^5.3.1",
+    "ytdl-core": "^2.1.7"
   }
 }
