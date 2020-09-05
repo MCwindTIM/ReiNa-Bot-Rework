@@ -102,8 +102,9 @@ module.exports = class ReiNaRework {
 					//Customize - Check lastfm bot embeds
 					const lastfm = require('../Customize/MessageChecking/lastfm.js');
 					//check lastfm bot message embed
-					if(message.author.id === '493845886166630443'){
+					if(message.author.id === '493845886166630443' || message.author.id === '356268235697553409'){
 						lastfm.run(this, message);
+						console.log(`${lastfm.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
 					}
 					return;
 				}else{
