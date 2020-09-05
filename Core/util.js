@@ -191,8 +191,7 @@ module.exports = class Util {
                 msg.delete({timeout: 5000}).catch(console.error);
                 }).catch();
             let looping = '';
-            if(serverQueue.loop == true){looping = "開啟"}
-            if(serverQueue.loop == false){looping = "關閉"}
+            (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${looping}]||`, {type:2});
             this.main.musictimer.set(guild.id, Date.now());
             
@@ -263,8 +262,7 @@ module.exports = class Util {
                     msg.delete({timeout: 5000}).catch(console.error);
                     }).catch();
                 let looping = '';
-                if(serverQueue.loop == true){looping = "開啟"}
-                if(serverQueue.loop == false){looping = "關閉"}
+                (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
                 this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${looping}]||`, {type:2});
                 this.main.musictimer.set(guild.id, Date.now());
             });
