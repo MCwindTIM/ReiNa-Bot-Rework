@@ -203,8 +203,12 @@ module.exports = class Util {
                     if(size == 0){
                         let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
                         let proc = new ffmpeg({source: stream});
-                        proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
-                        console.log(`${song.title} → ${song.id}上次緩存失敗 重新緩存!`);
+                        try{
+                            proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
+                            console.log(`${song.title} → ${song.id} 上次緩存失敗 重新緩存!`);
+                        }catch(e){
+                            console.log(`${song.title} → ${song.id} 緩存發生問題!`);
+                        }
                         dispatcher = serverQueue.connection.play(ytdl(song.url))
                         .on('finish', end => {
                             if(serverQueue.loop == false){serverQueue.songs.shift();}
@@ -238,8 +242,12 @@ module.exports = class Util {
                     fsPath.writeFileSync(`./MusicCache/${song.id}.mp3`, "");
                     let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
                     let proc = new ffmpeg({source: stream});
+                    try{
                     proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
-                    console.log(`${song.title} → ${song.id}為首次播放 開始緩存!`);
+                    console.log(`${song.title} → ${song.id} 為首次播放 開始緩存!`);
+                    }catch(e){
+                        console.log(`${song.title} → ${song.id} 緩存發生問題!`);
+                    }
                     dispatcher = serverQueue.connection.play(ytdl(song.url))
                     .on('finish', end => {
                         if(serverQueue.loop == false){serverQueue.songs.shift();}
