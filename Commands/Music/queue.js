@@ -31,7 +31,18 @@ module.exports = class MusicQueueCommand extends Command {
             playtime = playtime % 1000;
             if (playtime < 10) playtime = "0" + playtime;
             
-            let queueMSGcontent = "\n" + `${message.author}` + "\n因為Discord有限制信息最多只能有1024個字符, 所以我最多只會顯示15 首音樂哦!\n" + `__**歌曲列表:**__` + "\n" + `${serverQueue.songs.map(song => `⌛ <@${song.author.id}>添加的${song.title} ${song.length}`).slice(0, 15).join('\n')}` + "\n\n總共有:**" + serverQueue.songs.length + "**首音樂\n\n" + `**現正播放:** ${serverQueue.songs[0].title}\n${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`;
+            let bar;
+            if(!serverQueue.songs[0].live){
+                let TotalArray = serverQueue.songs[0].length.split(":");
+                let barTotal = parseInt(TotalArray[0])*60*60 + parseInt(TotalArray[1])*60 + parseInt(TotalArray[2]);
+                let CurrentArray = `${h}:${m}:${s}`.split(":");
+                let barCurrent = parseInt(CurrentArray[0])*60*60 + parseInt(CurrentArray[1])*60 + parseInt(CurrentArray[2]);
+                bar = this.main.util.progressbar(barTotal, barCurrent);
+            }else{
+                bar = this.main.util.progressbar(100, 100);
+            }
+
+            let queueMSGcontent = "\n" + `${message.author}` + "\n因為Discord有限制信息最多只能有1024個字符, 所以我最多只會顯示15 首音樂哦!\n" + `__**歌曲列表:**__` + "\n" + `${serverQueue.songs.map(song => `⌛ <@${song.author.id}>添加的${song.title} ${song.length}`).slice(0, 15).join('\n')}` + "\n\n總共有:**" + serverQueue.songs.length + "**首音樂\n\n" + `**現正播放:** ${serverQueue.songs[0].title}\n${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n${bar}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`;
             let queueMSG = this.main.util.createEmbed(message.author, null, queueMSGcontent, null, 0xcc0000);
             try{
                 await this.main.util.SDM(message.channel, queueMSG, message.author);

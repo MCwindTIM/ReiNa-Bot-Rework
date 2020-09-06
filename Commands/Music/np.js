@@ -20,6 +20,7 @@ module.exports = class MusicNowplayingCommand extends Command {
             return;
         }
         let playtime = Date.now() - this.main.util.getMusicTimer(message.guild.id);
+
         let h = Math.floor(playtime / 3600000);
         if (h < 10) h = "0" + h;
         playtime = playtime % 3600000;
@@ -30,7 +31,17 @@ module.exports = class MusicNowplayingCommand extends Command {
         if (s < 10) s = "0" + s;
         playtime = playtime % 1000;
         if (playtime < 10) playtime = "0" + playtime;
-        let Nowplaying = this.main.util.createEmbed(message.author, null, `${message.author}\n\n🎶 現正播放: ${serverQueue.songs[0].author}添加的**${serverQueue.songs[0].title}** ${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n\n如果Senpai想要網址的話, 我放在下面哦!\n${serverQueue.songs[0].url}`, null, 0xcc0000);
+        let bar;
+        if(!serverQueue.songs[0].live){
+            let TotalArray = serverQueue.songs[0].length.split(":");
+            let barTotal = parseInt(TotalArray[0])*60*60 + parseInt(TotalArray[1])*60 + parseInt(TotalArray[2]);
+            let CurrentArray = `${h}:${m}:${s}`.split(":");
+            let barCurrent = parseInt(CurrentArray[0])*60*60 + parseInt(CurrentArray[1])*60 + parseInt(CurrentArray[2]);
+            bar = this.main.util.progressbar(barTotal, barCurrent);
+        }else{
+            bar = this.main.util.progressbar(100, 100);
+        }
+        let Nowplaying = this.main.util.createEmbed(message.author, null, `${message.author}\n\n🎶 現正播放: ${serverQueue.songs[0].author}添加的**${serverQueue.songs[0].title}** ${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n${bar}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n\n如果Senpai想要網址的話, 我放在下面哦!\n${serverQueue.songs[0].url}`, null, 0xcc0000);
         try{    
             this.main.util.SDM(message.channel, Nowplaying, message.author);
         }catch(e){}
