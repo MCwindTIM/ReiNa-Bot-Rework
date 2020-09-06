@@ -8,6 +8,9 @@ const YouTube = require('simple-youtube-api');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 
+//progressbar import
+const pb = require('string-progressbar');
+
 //request module
 const request = require("request");
 
@@ -311,6 +314,11 @@ module.exports = class Util {
         })
         channel.stopTyping();
         return sentMsg;
+    }
+
+    progressbar(total, current, size){
+        size = size || 25;
+        return `[${pb(total, current, size)[0]}`;
     }
 
     //function that prevent xss
