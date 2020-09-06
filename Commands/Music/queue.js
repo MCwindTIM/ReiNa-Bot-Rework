@@ -19,7 +19,7 @@ module.exports = class MusicQueueCommand extends Command {
             }catch(e){}
             return;
         }else{
-            let playtime = Date.now() - this.main.util.getMusicTimer(message.guild.id);
+            let playtime = Date.now() - this.main.util.getMusicTimer(message.guild.id) + (parseInt(serverQueue.songs[0].startFrom.replace('s', '')) * 1000);
             let h = Math.floor(playtime / 3600000);
             if (h < 10) h = "0" + h;
             playtime = playtime % 3600000;

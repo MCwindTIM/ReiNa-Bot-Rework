@@ -86,9 +86,9 @@ module.exports = class Util {
 
 
     //處理Youtube影片
-    async handleVideo(video, message, songAuthor, voiceChannel, playlist = false){
+    async handleVideo(video, message, songAuthor, voiceChannel, playlist = false, startTime){
         const serverQueue = this.main.queue.get(message.guild.id);
-
+        startTime = `${startTime}` || `0s`;
         let vdh = video.duration.hours;
         let vdm = video.duration.minutes;
         let vds = video.duration.seconds;
@@ -96,13 +96,14 @@ module.exports = class Util {
         if(vdm < 10) vdm = `0${vdm}`;
         if(vds < 10) vds = `0${vds}`;
 
-        const song = {
+        var song = {
             id: video.id,
             title: Discord.escapeMarkdown(video.title),
             url: `https://www.youtube.com/watch?v=${video.id}`,
             length: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
             guildtag: message.guild.name,
+            startFrom: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `0s` : startTime,
             live: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? true : false
         };
         if(!serverQueue){
@@ -204,6 +205,7 @@ module.exports = class Util {
                 if(!err){
                     let size = fs.statSync(`./MusicCache/${song.id}.mp3`)["size"];
                     if(size == 0){
+                        song.startFrom = `0s`;
                         let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
                         let proc = new ffmpeg({source: stream});
                         try{
@@ -212,7 +214,7 @@ module.exports = class Util {
                         }catch(e){
                             console.log(`${song.title} → ${song.id} 緩存發生問題!`);
                         }
-                        dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 }))
+                        dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
                         .on('finish', end => {
                             if(serverQueue.loop == false){serverQueue.songs.shift();}
                             else {
@@ -226,7 +228,7 @@ module.exports = class Util {
                         })
                         .on('error', e => console.trace(e));
                     }else{
-                        dispatcher = serverQueue.connection.play(`./MusicCache/${song.id}.mp3`)
+                        dispatcher = serverQueue.connection.play(`./MusicCache/${song.id}.mp3`, { seek: song.startFrom })
                         .on('finish', end => {
                             if(serverQueue.loop == false){serverQueue.songs.shift();}
                             else {
@@ -245,13 +247,14 @@ module.exports = class Util {
                     fsPath.writeFileSync(`./MusicCache/${song.id}.mp3`, "");
                     let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
                     let proc = new ffmpeg({source: stream});
+                    song.startFrom = `0s`;
                     try{
                     proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
                     console.log(`${song.title} → ${song.id} 為首次播放 開始緩存!`);
                     }catch(e){
                         console.log(`${song.title} → ${song.id} 緩存發生問題!`);
                     }
-                    dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 }))
+                    dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25}))
                     .on('finish', end => {
                         if(serverQueue.loop == false){serverQueue.songs.shift();}
                         else {

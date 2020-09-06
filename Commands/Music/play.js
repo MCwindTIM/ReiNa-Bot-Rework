@@ -9,6 +9,9 @@ module.exports = class MusicPlayCommand extends Command {
             args: [{
                 name: `url / 搜尋關鍵字`,
                 desc:`放入Youtube連結或者搜尋關鍵字以播放音樂`
+            },{
+                name: `[可選填]秒數`,
+                desc: `輸入秒數可以令我由指定的時間開始播放 (已緩存影片限定)`
             }],
             caseSensitive: true
         });
@@ -99,7 +102,7 @@ module.exports = class MusicPlayCommand extends Command {
                     return;
                 }
             }
-            return this.main.util.handleVideo(video, message, message.author, voiceChannel);
+            return this.main.util.handleVideo(video, message, message.author, voiceChannel, false, args[1]? `${parseInt(args[1])}s` : `0s`);
         }
     }
 }
