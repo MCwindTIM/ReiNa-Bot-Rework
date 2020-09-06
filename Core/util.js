@@ -171,7 +171,7 @@ module.exports = class Util {
         //Check video is live or not
         if(song.live){
             //youtube live (always dont cache)
-            dispatcher = serverQueue.connection.play(ytdl(song.url))
+            dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 }))
             .on('finish', end => {
                 if(serverQueue.loop == false){serverQueue.songs.shift();}
                 else {
@@ -201,7 +201,7 @@ module.exports = class Util {
                 if(!err){
                     let size = fs.statSync(`./MusicCache/${song.id}.mp3`)["size"];
                     if(size == 0){
-                        let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
+                        let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
                         let proc = new ffmpeg({source: stream});
                         try{
                             proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
@@ -209,7 +209,7 @@ module.exports = class Util {
                         }catch(e){
                             console.log(`${song.title} → ${song.id} 緩存發生問題!`);
                         }
-                        dispatcher = serverQueue.connection.play(ytdl(song.url))
+                        dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 }))
                         .on('finish', end => {
                             if(serverQueue.loop == false){serverQueue.songs.shift();}
                             else {
@@ -240,7 +240,7 @@ module.exports = class Util {
                 }
                 else{
                     fsPath.writeFileSync(`./MusicCache/${song.id}.mp3`, "");
-                    let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
+                    let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
                     let proc = new ffmpeg({source: stream});
                     try{
                     proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
@@ -248,7 +248,7 @@ module.exports = class Util {
                     }catch(e){
                         console.log(`${song.title} → ${song.id} 緩存發生問題!`);
                     }
-                    dispatcher = serverQueue.connection.play(ytdl(song.url))
+                    dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 }))
                     .on('finish', end => {
                         if(serverQueue.loop == false){serverQueue.songs.shift();}
                         else {
