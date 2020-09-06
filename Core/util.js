@@ -192,7 +192,7 @@ module.exports = class Util {
                 }).catch();
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
-            this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${looping}]||`, {type:2});
+            this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, {type:2});
             this.main.musictimer.set(guild.id, Date.now());
             
         }else{
@@ -271,7 +271,7 @@ module.exports = class Util {
                     }).catch();
                 let looping = '';
                 (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
-                this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${looping}]||`, {type:2});
+                this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, {type:2});
                 this.main.musictimer.set(guild.id, Date.now());
             });
         }

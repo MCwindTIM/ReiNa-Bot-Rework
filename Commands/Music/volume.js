@@ -8,7 +8,7 @@ module.exports = class MusicVolumeCommand extends Command {
             help: "調整音量大小",
             args: [{
                 name: "音量",
-                desc: "0.1 - 3.0"
+                desc: "0.1 - 5.0"
             }]
         });
     }
@@ -23,7 +23,7 @@ module.exports = class MusicVolumeCommand extends Command {
             return;
         }
         if(!args[0] || isNaN(args[0])){
-            let nowVolume = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 現在的音量是: **${serverQueue.volume}**\n\n如果要更改音量 請輸入有效數值 **0.1-3.0**`, null, 0xcc0000);
+            let nowVolume = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 現在的音量是: **${serverQueue.volume}**\n\n如果要更改音量 請輸入有效數值 **0.1-5.0**`, null, 0xcc0000);
             try{
                 await this.main.util.SDM(message.channel, nowVolume, message.author);
             }catch(e){}
@@ -43,9 +43,9 @@ module.exports = class MusicVolumeCommand extends Command {
             }catch(e){}
             return;
         }
-        if(args[0] > 3) args[0] = 3;
+        if(args[0] > 5) args[0] = 5;
         if(args[0] < 0) args[0] = 0.1;
-        let volumeSetting = this.main.util.createEmbed(message.author, null, `${message.author}是的Senpai, 我把音量調整到: **${args[0]}** 了哦!\n(為了大家的耳朵著想, 音量範圍為 **0.1** 到 **3**)`, null, 0xcc0000);
+        let volumeSetting = this.main.util.createEmbed(message.author, null, `${message.author}是的Senpai, 我把音量調整到: **${args[0]}** 了哦!\n(為了大家的耳朵著想, 音量範圍為 **0.1** 到 **5**)`, null, 0xcc0000);
         try{
             await this.main.util.SDM(message.channel, volumeSetting, message.author);
         } catch (e){}
