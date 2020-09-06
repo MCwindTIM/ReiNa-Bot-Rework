@@ -318,7 +318,7 @@ module.exports = class Util {
 
     progressbar(total, current, size){
         size = size || 25;
-        return `[${pb(total, current, size)[0]}`;
+        return `[${pb(total, current, size)[0]}]`;
     }
 
     //function that prevent xss
