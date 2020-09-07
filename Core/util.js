@@ -293,7 +293,7 @@ module.exports = class Util {
         channel.startTyping();
         const sentMsg = await channel.send(message);
         await sentMsg.react('🗑');
-        const collector = sentMsg.createReactionCollector((reaction, user) => reaction.emoji.name === '🗑' && !user.bot && user.id === author.id || reaction.message.member.hasPermission('MANAGE_MESSAGES') === true && !user.bot, { time:1000 * 60 * 10, max: 1});
+        const collector = sentMsg.createReactionCollector((reaction, user) => reaction.emoji.name === '🗑' && !user.bot && user.id === author.id || reaction.message.member.hasPermission('MANAGE_MESSAGES') === true && !user.bot && reaction.emoji.name === '🗑', { time:1000 * 60 * 10, max: 1});
         collector.on('end', async collected => {
             if(collected.size){
                 try{
