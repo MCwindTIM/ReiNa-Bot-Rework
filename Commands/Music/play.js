@@ -95,6 +95,7 @@ module.exports = class MusicPlayCommand extends Command {
                     }
                     const videoIndex = parseInt(response.first().content);
                     var video = await this.main.util.getVideoByID(videos[videoIndex -1].id);
+                    return this.main.util.handleVideo(video, message, message.author, voiceChannel, false, `0s`);
                 } catch(err){
                     console.log(err)
                     let noResult = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 我沒法取得任何搜尋結果!`, null, 0xcc0000);
