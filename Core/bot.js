@@ -71,9 +71,9 @@ module.exports = class ReiNaRework {
 				console.log(`${this.bot.user.tag}上線!`);
 				console.log(`上線耗時: ${Date.now() - finishLoad}ms`);
 				this.loginTime = new Date().toString();
-				this.setActivity(this);
+				this.util.setActivity(this);
 				setInterval(() => {
-					this.setActivity(this);
+					this.util.setActivity(this);
 				}, 60000);
 
 				//MCwind Customize Interval function Delete If don't want
@@ -246,9 +246,4 @@ module.exports = class ReiNaRework {
 		});
 	}
 
-	setActivity(){
-		if(this.queue.size === 0){
-			this.bot.user.setActivity(`${this.config.prefix}help | ReiNa Is Here! Nya~~~~`, {type: 3});
-		}
-	}
 }

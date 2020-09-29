@@ -164,7 +164,7 @@ module.exports = class Util {
 			}).catch();
             serverQueue.voiceChannel.leave();
             this.main.queue.delete(guild.id);
-            this.main.bot.user.setActivity(`${this.main.config.prefix}help | ReiNa Is Here! Nya~~~~`, {type:3});
+            this.main.util.setActivity(this.main);
             try{
                 this.main.musictimer.delete(guild.id);
             }catch(e){}
@@ -196,7 +196,7 @@ module.exports = class Util {
                 }).catch();
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
-            this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, {type:2});
+            this.main.util.setActivity(this.main, { string: `正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
             this.main.musictimer.set(guild.id, Date.now());
             
         }else{
@@ -277,7 +277,7 @@ module.exports = class Util {
                     }).catch();
                 let looping = '';
                 (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
-                this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, {type:2});
+                this.main.util.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
                 this.main.musictimer.set(guild.id, Date.now());
             });
         }
@@ -346,6 +346,17 @@ module.exports = class Util {
         }
         return true;
     }
+
+    //set bot activity (status)
+    setActivity(ReiNa, status){
+        if(status){
+            ReiNa.bot.user.setActivity(status.string, {type: status.type});
+        }
+        status = status || { string: `${ReiNa.config.prefix}help | ReiNa Is Here! Nya~~~~`, type: 3};
+		if(ReiNa.queue.size === 0){
+			ReiNa.bot.user.setActivity(status.string, {type: status.type});
+		}
+	}
 
     //fetch (return obj)
     fetchJSON(url){
