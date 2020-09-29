@@ -95,7 +95,25 @@ module.exports = class ReiNaRework {
 				lopginTime = Date.now();
 			});
 			this.bot.on('message', message => {
-				if(!message.guild) return;
+				if(!message.guild && message.author != this.bot.user) {
+					try{
+						if(message.attachments.size > 0){
+							let i;
+							for (i=0;i<message.attachments.size;i++){
+									if(message.content){
+										this.bot.users.cache.get(this.config.ownerID).send(`**${message.author.tag}**:\n${message.attachments.array()[i].url}\n${message.content}`);
+									}else{
+										this.bot.users.cache.get(this.config.ownerID).send(`**${message.author.tag}**:\n${message.attachments.array()[i].url}`);
+									}
+							}
+						}else{
+							this.bot.users.cache.get(this.config.ownerID).send(`${message.author.tag}:\n${message}`);
+						}
+					}catch(e){
+						console.log(e);
+					}
+					return;
+				};
 				if(message.author.bot){
 					this.event.emit('DC_MSG', message);
 
