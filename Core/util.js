@@ -356,7 +356,19 @@ module.exports = class Util {
 		if(ReiNa.queue.size === 0){
 			ReiNa.bot.user.setActivity(status.string, {type: status.type});
 		}
-	}
+    }
+    
+
+    //check attachIsImage?
+    attachIsImage(msgAttach){
+        let url = msgAttach.url;
+        if(url.indexOf("png", url.length - "png".length) !== -1){return true}
+        if(url.indexOf("jpg", url.length - "jpg".length) !== -1){return true}
+        if(url.indexOf("gif", url.length - "gif".length) !== -1){return true}
+        if(url.indexOf("jpeg", url.length - "jpeg".length) !== -1){return true}
+        return false;
+    }
+    
 
     //fetch (return obj)
     fetchJSON(url){
