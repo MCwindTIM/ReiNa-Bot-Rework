@@ -349,10 +349,7 @@ module.exports = class Util {
 
     //set bot activity (status)
     setActivity(ReiNa, status){
-        if(status){
-            ReiNa.bot.user.setActivity(status.string, {type: status.type});
-        }
-        status = status || { string: `${ReiNa.config.prefix}help | ReiNa Is Here! Nya~~~~`, type: 3};
+        status ? ReiNa.bot.user.setActivity(status.string, {type: status.type}): status = { string: `${ReiNa.config.prefix}help | ReiNa Is Here! Nya~~~~`, type: 3};
 		if(ReiNa.queue.size === 0){
 			ReiNa.bot.user.setActivity(status.string, {type: status.type});
 		}
