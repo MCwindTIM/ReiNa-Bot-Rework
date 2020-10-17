@@ -320,7 +320,7 @@ module.exports = class Util {
     }
 
     progressbar(total, current, size){
-        size = size || 35;
+        size = size || 30;
         return `[${pb(total, current, size)[0]}]`;
     }
 
