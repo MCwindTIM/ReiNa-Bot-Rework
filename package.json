@@ -16,7 +16,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "fs-path": "0.0.24",
     "nhentai-js": "^4.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "opusscript": "0.0.7",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
