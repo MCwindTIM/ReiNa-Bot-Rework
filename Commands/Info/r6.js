@@ -26,7 +26,7 @@ module.exports = class R6Command extends Command {
             (error, response, body) => {
             if(response.statusCode == 200){
                 var obj = JSON.parse(body);
-                if(obj.foundmatch === false){
+                if(obj.players == ""){
                     let playerNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} Senpai, 沒有找到該位玩家欸!`, null, `#0099ff`);
                         try {
                             this.main.util.SDM(message.channel, playerNotFound, message.author);
@@ -44,100 +44,100 @@ module.exports = class R6Command extends Command {
                         let commonUTime = UTime.toLocaleString();
     
                         var rankpic = "";
-                        if(obj.ranked.AS_rankname === "Unranked"){
+                        if(obj.ranked.rankname === "Unranked"){
                             rank = "未排名";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/0.png";
                         }
-                        if(obj.ranked.AS_rankname === "Copper 5"){
+                        if(obj.ranked.rankname === "Copper 5"){
                             rank = "Copper V 紫銅V";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/1.png";
                         }
-                        if(obj.ranked.AS_rankname === "Copper 4"){
+                        if(obj.ranked.rankname === "Copper 4"){
                             rank = "Copper IV 紫銅IV";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/2.png";
                             
                         }
-                        if(obj.ranked.AS_rankname === "Copper 3"){
+                        if(obj.ranked.rankname === "Copper 3"){
                             rank = "Copper III 紫銅III";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/3.png";
                         }
-                        if(obj.ranked.AS_rankname === "Copper 2"){
+                        if(obj.ranked.rankname === "Copper 2"){
                             rank = "Copper II 紫銅II";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/4.png";
                         }
-                        if(obj.ranked.AS_rankname === "Copper 1"){
+                        if(obj.ranked.rankname === "Copper 1"){
                             rank = "Copper I 紫銅I";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/5.png";
                         }
-                        if(obj.ranked.AS_rankname === "Bronze 5"){
+                        if(obj.ranked.rankname === "Bronze 5"){
                             rank = "Bronze V 黃銅V";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/6.png";
                         }
-                        if(obj.ranked.AS_rankname === "Bronze 4"){
+                        if(obj.ranked.rankname === "Bronze 4"){
                             rank = "Bronze IV 黃銅IV";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/7.png";
                         }
-                        if(obj.ranked.AS_rankname === "Bronze 3"){
+                        if(obj.ranked.rankname === "Bronze 3"){
                             rank = "Bronze III 黃銅III";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/8.png";
                         }
-                        if(obj.ranked.AS_rankname === "Bronze 2"){
+                        if(obj.ranked.rankname === "Bronze 2"){
                             rank = "Bronze II 黃銅II";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/9.png";
                         }
-                        if(obj.ranked.AS_rankname === "Bronze 1"){
+                        if(obj.ranked.rankname === "Bronze 1"){
                             rank = "Bronze I 黃銅I";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/10.png";
                         }
-                        if(obj.ranked.AS_rankname === "Silver 5"){
+                        if(obj.ranked.rankname === "Silver 5"){
                             rank = "Silver V 白銀V";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/11.png";
                         }
-                        if(obj.ranked.AS_rankname === "Silver 4"){
+                        if(obj.ranked.rankname === "Silver 4"){
                             rank = "Silver IV 白銀IV";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/12.png";
                         }
-                        if(obj.ranked.AS_rankname === "Silver 3"){
+                        if(obj.ranked.rankname === "Silver 3"){
                             rank = "Silver III 白銀III";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/13.png";
                         }
-                        if(obj.ranked.AS_rankname === "Silver 2"){
+                        if(obj.ranked.rankname === "Silver 2"){
                             rank = "Silver II 白銀II";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/14.png";
                         }
-                        if(obj.ranked.AS_rankname === "Silver 1"){
+                        if(obj.ranked.rankname === "Silver 1"){
                             rank = "Silver I 白銀I";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/15.png";
                         }
-                        if(obj.ranked.AS_rankname === "Gold 3"){
+                        if(obj.ranked.rankname === "Gold 3"){
                             rank = "Gold III 黃金III";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/16.png";
                         }
-                        if(obj.ranked.AS_rankname === "Gold 2"){
+                        if(obj.ranked.rankname === "Gold 2"){
                             rank = "Gold II 黃金II";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/17.png";
                         }
-                        if(obj.ranked.AS_rankname === "Gold 1"){
+                        if(obj.ranked.rankname === "Gold 1"){
                             rank = "Gold I 黃金I";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/18.png";
                         }
-                        if(obj.ranked.AS_rankname === "Platinum 3"){
+                        if(obj.ranked.rankname === "Platinum 3"){
                             rank = "Platinum III 白金III";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/19.png";
                         }
-                        if(obj.ranked.AS_rankname === "Platinum 2"){
+                        if(obj.ranked.rankname === "Platinum 2"){
                             rank = "Platinum II 白金II";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/20.png";
                         }
-                        if(obj.ranked.AS_rankname === "Platinum 1"){
+                        if(obj.ranked.rankname === "Platinum 1"){
                             rank = "Platinum I 白金I";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/21.png";
                         }
-                        if(obj.ranked.AS_rankname === "Diamond"){
+                        if(obj.ranked.rankname === "Diamond"){
                             rank = "Diamond!!! 鑽石階級"
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/22.png";
                         }
-                        if(obj.ranked.AS_rankname === "Champion"){
+                        if(obj.ranked.rankname === "Champion"){
                             rank = "Champion!!! 冠軍階級";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/23.png";
                         }
@@ -147,17 +147,19 @@ module.exports = class R6Command extends Command {
                             .addField('玩家UID: ', obj.player.p_name, true)
                             .addField('玩家等級: ', obj.stats.level, true)
                             .addField('平台: ', obj.player.p_platform, true)
-                            .addField('現時積分[ASIA]: ', obj.ranked.AS_mmr, true)
+                            .addField(`現時積分[${obj.ranked.topregion}]: `, obj.ranked.actualmmr, true)
                             .addField('玩家排位: ', rank, true)
-                            .addField('玩家排位KD: ', obj.ranked.AS_kd, true)
+                            .addField('玩家排位KD: ', obj.ranked.kd, true)
                             .addField('爆頭率(總計): ', obj.stats.generalpvp_hsrate, true)
-                            .addField('排位勝場: ', obj.ranked.AS_wins, true)
-                            .addField('排位敗場: ', obj.ranked.AS_losses, true)
-                            .addField('排位賽殺人數: ', obj.ranked.AS_kills, true)
-                            .addField('排位賽死亡數: ', obj.ranked.AS_deaths, true)
-                            .addField('排位賽勝負比: ', obj.ranked.AS_wl, true)
+                            .addField('排位勝場: ', obj.ranked.allwins, true)
+                            .addField('排位敗場: ', obj.ranked.alllosses, true)
+                            .addField('排位賽殺人數: ', obj.ranked.allkills, true)
+                            .addField('排位賽死亡數: ', obj.ranked.alldeaths, true)
+                            .addField('排位賽勝負比: ', obj.ranked.allwl, true)
                             .addField('助攻數(總計): ', obj.stats.generalpvp_killassists, true)
                             .addField('爆頭數(總計): ', obj.stats.generalpvp_headshot, true)
+                            .addField('使用次數最多幹員(攻擊方): ', obj.op_main.overall.attacker, true)
+                            .addField('使用次數最多幹員(防守方) ', obj.op_main.overall.defender, true)
                             .addField('PVP時數(小時): ', obj.stats.generalpvp_hoursplayed, true)
                             .addField('數據更新於: ', `${commonUTime} GMT +8 香港標準時間`, true)
                             .setImage(`https://ubisoft-avatars.akamaized.net/${obj.player.p_id}/default_146_146.png`)
