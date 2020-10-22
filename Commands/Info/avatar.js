@@ -17,8 +17,8 @@ module.exports = class avatarCommand extends Command {
         let user = message.mentions.users.first();
         if(!user) user = message.author;
 
-        let avatarMSG = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 用戶頭像`, `${message.author} Senpai, 這是<@${user.id}>的使用者頭像!`, user.avatarURL(), 0xcc0000);
-        avatarMSG.setImage(user.avatarURL());
+        let avatarMSG = await this.main.util.createEmbed(message.author, `ReiNa Bot Rework 用戶頭像`, `${message.author} Senpai, 這是<@${user.id}>的使用者頭像!`, user.avatarURL({format: "png", size: 4096}), 0xcc0000);
+        await avatarMSG.setImage(user.avatarURL({format: "png", size: 4096}));
         try{
             await this.main.util.SDM(message.channel, avatarMSG, message.author);
         }catch(e){}
