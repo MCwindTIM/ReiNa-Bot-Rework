@@ -48,7 +48,7 @@ async function clear(message, args){
 	}
 	  
 	  const fetched = await message.channel.messages.fetch({limit: args[0]});
-	  console.log('正在刪除 ' + fetched.size + ' 條信息...');
+	  console.log('正在刪除 ' + message.channel.id + '的' + fetched.size + ' 條信息...');
 	  
 	try{
       message.channel.bulkDelete(fetched);
