@@ -124,7 +124,7 @@ module.exports = class ReiNaRework {
 						if(!message.embeds[0]) return;
 						if(message.embeds[0].author.name.startsWith('Now playing -')){
 						lastfm.run(this, message);
-						console.log(`${lastfm.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+						console.log(`${this.util.getTime()} ${lastfm.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
 						}
 					}
 					return;
@@ -138,11 +138,11 @@ module.exports = class ReiNaRework {
 				const wnacg = require('../Customize/MessageChecking/wnacg.js');
 				if(message.content.match(/(?<=[\[{])(https?:\/\/nhentai\.net\/g\/)?(\d+)\/?.*?(?=[}\]])/gi) && message.content.startsWith('[') && message.content.endsWith(']')){
 					nHentai.run(this, message);
-					console.log(`${nHentai.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+					console.log(`${this.util.getTime} ${nHentai.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
 				}else{
 					if(message.content.match(/w(\d+)\/?.*?(?=[}\]])?(\d+)\/?/gi) && message.content.startsWith('[') && message.content.endsWith(']')){
 						wnacg.run(this, message);
-						console.log(`${wnacg.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+						console.log(`${this.util.getTime()} ${wnacg.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
 					}else{
 						if(message.channel.id === "655516899832233986"){
 							message.delete().catch(console.log)
@@ -156,14 +156,14 @@ module.exports = class ReiNaRework {
 				const CheckUserHuman = require('../Customize/MessageChecking/CheckUserHuman.js');
 				if(message.channel.id === '702962295998906398' && message.content === `${this.config.prefix}驗證`){
 					CheckUserHuman.run(this, message);
-					console.log(`${CheckUserHuman.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+					console.log(`${this.util.getTime()} ${CheckUserHuman.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
 				}
 				if(message.channel.id === '702962295998906398' && message.content != `${this.config.prefix}驗證`){message.delete().catch()};
 
 				const Sauce = require('../Customize/MessageChecking/PicSauce.js');
 				if(message.content.includes("pixiv.net") || message.attachments.size > 0 && message.content.includes("來源")) {
 					Sauce.PicFind(this, message);
-					console.log(`${Sauce.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+					console.log(`${this.util.getTime()} ${Sauce.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
 				}
 
 				const ChatLog = require('../Customize/MessageChecking/ChatLog.js');
@@ -207,7 +207,7 @@ module.exports = class ReiNaRework {
 					}
 					command.run(message, args.slice(1), prefix);
 					command.timerUsed++;
-					console.log(`${command.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+					console.log(`${this.util.getTime()} ${command.name} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
 				}
 
 				
