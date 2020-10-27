@@ -4,9 +4,6 @@ const Discord = require('discord.js');
 //音樂模塊
 const ytdl = require('ytdl-core');
 const YouTube = require('simple-youtube-api');
-//ffmpeg 導入
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-const ffmpeg = require('fluent-ffmpeg');
 
 //progressbar import
 const pb = require('string-progressbar');
@@ -14,7 +11,6 @@ const pb = require('string-progressbar');
 //request module
 const request = require("request");
 
-ffmpeg.setFfmpegPath(ffmpegPath);
 
 module.exports = class Util {
     constructor(main){
@@ -206,10 +202,9 @@ module.exports = class Util {
                     let size = fs.statSync(`./MusicCache/${song.id}.mp3`)["size"];
                     if(size == 0){
                         song.startFrom = `0s`;
-                        let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
-                        let proc = new ffmpeg({source: stream});
+                        let stream = ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
                         try{
-                            proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
+                            stream.pipe(fs.createWriteStream(`./MusicCache/${song.id}.mp3`));
                             console.log(`${song.title} → ${song.id} 上次緩存失敗 重新緩存!`);
                         }catch(e){
                             console.log(`${song.title} → ${song.id} 緩存發生問題!`);
@@ -245,12 +240,11 @@ module.exports = class Util {
                 }
                 else{
                     fsPath.writeFileSync(`./MusicCache/${song.id}.mp3`, "");
-                    let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
-                    let proc = new ffmpeg({source: stream});
+                    let stream = ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
                     song.startFrom = `0s`;
                     try{
-                    proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
-                    console.log(`${song.title} → ${song.id} 為首次播放 開始緩存!`);
+                        stream.pipe(fs.createWriteStream(`./MusicCache/${song.id}.mp3`));
+                        console.log(`${song.title} → ${song.id} 為首次播放 開始緩存!`);
                     }catch(e){
                         console.log(`${song.title} → ${song.id} 緩存發生問題!`);
                     }
