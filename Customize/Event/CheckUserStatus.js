@@ -4,7 +4,7 @@ module.exports.CheckUserStatus = async (ReiNa) => {
 }
 
 function offlineuserrole(ReiNa, user){
-if(!user.roles.cache.has('430389070246576128')){
+if(!user.roles.cache.has('430389070246576128' && !user.roles.cache.has('469539612059107329'))){
     moveVC(ReiNa, user);
 }
 }
