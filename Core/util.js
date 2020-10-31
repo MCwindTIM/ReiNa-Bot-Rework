@@ -10,6 +10,7 @@ const pb = require('string-progressbar');
 
 //request module
 const request = require("request");
+const { S_IFCHR } = require('constants');
 
 
 module.exports = class Util {
@@ -434,6 +435,9 @@ module.exports = class Util {
         let hours = date_ob.getHours();
         let minutes = date_ob.getMinutes();
         let seconds = date_ob.getSeconds();
+        hours = hours < 10 ? `0${hours}` : hours;
+        minutes = minutes < 10 ? `0${minutes}` : minutes;
+        seconds = seconds < 10 ? `0${seconds}` : seconds;
         return "[" + year + "-" + month + "-" + date + " | " + hours + ":" + minutes + ":" + seconds + "]";
     }
 
