@@ -48,15 +48,14 @@ async function clear(message, args){
 	}
 	  
 	  const fetched = await message.channel.messages.fetch({limit: args[0]});
-	  console.log('正在刪除 ' + message.channel.id + '的' + fetched.size + ' 條信息...');
 	  
-	try{
-      message.channel.bulkDelete(fetched);
-	}catch(e){
-		console.log(`14日外的信息無法刪除(bulk delete)!`);
-	}
-	finally{
-      let deleted = this.main.util.createEmbed(message.author, null, `${message.author} 刪除了*${args[0]}*條信息\n我只可以刪除14日內的信息`)
-      this.main.util.SDM(message.channel, deleted, message.author);
-	}
+      message.channel.bulkDelete(fetched).then(() => {
+	  console.log(`正在刪除 ${message.guild.name} | ${message.channel.name} (${message.channel.id}) 的 ${fetched.size} 條信息...`);
+        let deleted = this.main.util.createEmbed(message.author, null, `${message.author} 刪除了*${args[0]}*條信息`)
+        this.main.util.SDM(message.channel, deleted, message.author);
+      }).catch(e =>{
+	    console.log(`正在刪除 ${message.guild.name} | ${message.channel.name} (${message.channel.id}) 的 ${fetched.size} 條信息... (超過14天的信息無法刪除)`);
+        let deleted = this.main.util.createEmbed(message.author, null, `${message.author} 嘗試刪除了*${args[0]}*條信息\n超過14天的信息無法刪除!`)
+        this.main.util.SDM(message.channel, deleted, message.author);
+      });
 }
