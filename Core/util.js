@@ -152,6 +152,23 @@ module.exports = class Util {
         
         const serverQueue = this.main.queue.get(guild.id);
 
+        let member = this.main.bot.channels.cache.get(serverQueue.voiceChannel.id).members.size;
+
+        if(member <= 1){
+            let stopPlayingMSG = this.createEmbed(serverQueue.songs[0].author, null, `${serverQueue.songs[0].author} Senpai, 現在語音頻道只剩我一個了呢! 為了更好更流暢的服務, 我就先停止播放音樂了, 需要播放音樂的話隨時都可以再叫我喲 (＾Ｕ＾)ノ~ＹＯ\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
+            serverQueue.textChannel.send(stopPlayingMSG)
+            .then(msg => {
+                msg.delete({timeout: 5000}).catch(console.error);
+            }).catch();
+            serverQueue.voiceChannel.leave();
+            this.main.queue.delete(guild.id);
+            this.main.util.setActivity(this.main);
+            try{
+                this.main.musictimer.delete(guild.id);
+            }catch(e){}
+            return;
+        }
+
         if(!song){
             let noSong = this.createEmbed(null, null, `Senpai, 全部音樂已經播放完畢, 這裡就沒有我的事情了 需要我的時候再叫我吧!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
             serverQueue.textChannel.send(noSong)

@@ -222,6 +222,14 @@ module.exports = class ReiNaRework {
 				const guildMemberRemove = require('../Customize/Event/guildMemberRemove.js');
 				guildMemberRemove.sendByeMessage(member);
 			});
+			this.bot.on('voiceStateUpdate', (oldState, newState) => {
+				const serverQueue = this.queue.get(newState.guild.id);
+				if(!serverQueue) return;
+				if(oldState.channelID != newState.channelID){
+					this.queue.get(newState.guild.id).voiceChannel = newState.channel;
+				}
+			})
+			
 			this.bot.login(this.config.token).catch(console.log);
 		});
 
