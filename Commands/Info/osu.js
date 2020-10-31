@@ -27,9 +27,8 @@ module.exports = class osuCommand extends Command {
             }
             let data = await JSON.parse(body);
 			try{
-				let playerInfo = await this.main.util.createEmbed(message.author, `OSU 玩家查詢 (詳細資料請點我 (=ﾟωﾟ)ﾉ)`, `${message.author} Senpai, 你請求的OSU 玩家資料找到了~`, `https://osu.ppy.sh/users/${data[0].user_id}`, `'#0099ff'`);
+				let playerInfo = await this.main.util.createEmbed(message.author, `OSU 玩家查詢 (詳細資料請點我 (=ﾟωﾟ)ﾉ)`, `${message.author} Senpai, 你請求的OSU 玩家資料找到了~`, `https://osu.ppy.sh/users/${data[0].user_id}`, `'#0099ff'`, null, null, `https://a.ppy.sh/${data[0].user_id}`, `https://www.countryflags.io/${data[0].country}/shiny/64.png`);
 				playerInfo
-					.setThumbnail(`https://www.countryflags.io/${data[0].country}/shiny/64.png`)
 					.addField('玩家ID: ', data[0].user_id, true)
 					.addField('玩家UID: ', data[0].username, true)
 					.addField('玩家國際排名', data[0].pp_rank, true)
@@ -51,7 +50,6 @@ module.exports = class osuCommand extends Command {
 					.addField('50分次數', data[0].count50, true)
 					.addField('玩家註冊日期', data[0].join_date, true)
 					.addField('玩家遊玩時數', `${Math.round((data[0].total_seconds_played / 60 / 60))}小時`, true)
-					.setImage(`https://a.ppy.sh/${data[0].user_id}`)
 					try {
 						await this.main.util.SDM(message.channel, playerInfo, message.author);
 					}   catch (err) {

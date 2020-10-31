@@ -73,7 +73,7 @@ module.exports = class MusicPlayCommand extends Command {
                     let searchString = args.join(' ');
                     let videos = await this.main.util.searchVideos(searchString, 15);
                     let index = 0;
-                    let ChooseSong = this.main.util.createEmbed(message.author, null, `${message.author}` + "\n**歌曲選擇:**\n" + `${videos.map(video2 => `**${++index} -** ${video2.title}`).join('\n')}\n\n請Senpai在1到15號結果中選擇想播放的音樂哦!\n\n`, null, 0xcc0000);
+                    let ChooseSong = this.main.util.createEmbed(message.author, `音樂搜尋列表`, `${message.author}` + "\n**歌曲選擇:**\n" + `${videos.map(video2 => `**${++index}.** \`${video2.title}\``).join('\n')}\n\n請Senpai在1到15號結果中選擇想播放的音樂哦!\n\n`, `https://www.youtube.com/results?search_query=${args.join("+")}`, 0xcc0000);
                     message.channel.send(ChooseSong)
                     .then(msg => {
                         msg.delete({timeout: 5000}).catch(console.error);

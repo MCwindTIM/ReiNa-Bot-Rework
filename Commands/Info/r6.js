@@ -141,9 +141,8 @@ module.exports = class R6Command extends Command {
                             rank = "Champion!!! 冠軍階級";
                             rankpic = "https://duckduckdoc.tk/wp-content/uploads/drive/r6rankpic/23.png";
                         }
-                        let playerInfo = await this.main.util.createEmbed(message.author, `R6 玩家查詢 (詳細資料請點我 (=ﾟωﾟ)ﾉ)`, `${message.author} Senpai, 你請求的R6 Siege 玩家資料找到了~`, `https://r6tab.com/player/${obj.player.p_id}`, `'#0099ff'`);
+                        let playerInfo = await this.main.util.createEmbed(message.author, `R6 玩家查詢 (詳細資料請點我 (=ﾟωﾟ)ﾉ)`, `${message.author} Senpai, 你請求的R6 Siege 玩家資料找到了~`, `https://r6tab.com/player/${obj.player.p_id}`, `'#0099ff'`, null, null, `https://ubisoft-avatars.akamaized.net/${obj.player.p_id}/default_146_146.png`, rankpic);
                         playerInfo
-                            .setThumbnail(rankpic)
                             .addField('玩家UID: ', obj.player.p_name, true)
                             .addField('玩家等級: ', obj.stats.level, true)
                             .addField('平台: ', obj.player.p_platform, true)
@@ -162,7 +161,6 @@ module.exports = class R6Command extends Command {
                             .addField('最常用幹員(防守方) ', obj.op_main.overall.defender, true)
                             .addField('PVP時數(小時): ', obj.stats.generalpvp_hoursplayed, true)
                             .addField('數據更新於: ', `${commonUTime} GMT +8 香港標準時間`, true)
-                            .setImage(`https://ubisoft-avatars.akamaized.net/${obj.player.p_id}/default_146_146.png`)
                             try {
                                 await this.main.util.SDM(message.channel, playerInfo, message.author);
                             }   catch (e) {}

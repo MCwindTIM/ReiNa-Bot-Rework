@@ -60,14 +60,15 @@ module.exports = class Util {
     }
 
     //創建Embed範例信息模塊
-    createEmbed(author, title, content, url, color, Footer, FooterURL, imgURL){
+    createEmbed(author, title, content, url, color, Footer, FooterURL, imgURL, Thumbnail){
         author = author || this.main.bot.user;
         title = title || `ReiNa Bot Rework`;
         color = color || `#0099ff`;
         url = url || `https://github.com/MCwindTIM/ReiNa-Bot-Rework`;
         Footer = Footer || `ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#7832`;
 		FooterURL = FooterURL || this.main.bot.user.avatarURL();
-		imgURL = imgURL || null;
+        imgURL = imgURL || null;
+        Thumbnail = Thumbnail || null;
         let embed = new Discord.MessageEmbed()
         .setAuthor(author.tag, author.avatarURL())
         .setColor(color)
@@ -78,7 +79,12 @@ module.exports = class Util {
         .setFooter(Footer, FooterURL);
 		if(imgURL){
 			embed.setImage(imgURL);
-		}
+        }
+        if(Thumbnail){
+            embed.setThumbnail(Thumbnail);
+        }else{
+            embed.setThumbnail(this.main.bot.user.avatarURL({format: "jpg", size: 4096}));
+        }
         return embed;
     }
 

@@ -31,9 +31,8 @@ module.exports = class R6Command extends Command {
     
                         var rankpic = player.rank.rankImg;
 
-                        let playerInfo = await this.main.util.createEmbed(message.author, `APEX 玩家查詢(=ﾟωﾟ)ﾉ`, `${message.author} Senpai, 你請求的 apex 玩家資料找到了~`, null, `'#0099ff'`);
+                        let playerInfo = await this.main.util.createEmbed(message.author, `APEX 玩家查詢(=ﾟωﾟ)ﾉ`, `${message.author} Senpai, 你請求的 apex 玩家資料找到了~`, null, `'#0099ff'`, null, null, null, rankpic);
                         playerInfo
-                            .setThumbnail(rankpic)
                             .addField('玩家ID: ', player.name, true)
                             .addField('玩家UID: ', player.uid, true)
                             .addField('玩家等級: ', player.level, true)
