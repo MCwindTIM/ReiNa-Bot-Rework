@@ -61,7 +61,6 @@ module.exports = class ReiNaRework {
 			this.events = data.events;
 			this.queue = data.queue;
 			this.musictimer = data.musictimer;
-			this.color = data.color;
 			let finishLoad = Date.now();
 
 			//Set Customize Event's Variable
