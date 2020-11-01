@@ -2,7 +2,7 @@ const Command = require('../../Core/command');
 const os = require('os');
 const request = require('request');
 
-module.exports = class InfoCommand extends Command {
+module.exports = class infoCommand extends Command {
     constructor(main){
         super(main, {
             name: "info",

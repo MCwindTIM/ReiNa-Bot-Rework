@@ -1,6 +1,6 @@
 const Command = require('../../Core/command');
 
-module.exports = class TestCommand extends Command {
+module.exports = class myidCommand extends Command {
     constructor(main){
         super(main, {
             name: "myid",
