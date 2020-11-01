@@ -83,9 +83,12 @@ module.exports = class Util {
         }
         if(Thumbnail){
             embed.setThumbnail(Thumbnail);
-        }else{
+        }
+        /*
+        else{
             embed.setThumbnail(this.main.bot.user.avatarURL({format: "jpg", size: 4096}));
         }
+        */
         return embed;
     }
 
