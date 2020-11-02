@@ -419,7 +419,7 @@ module.exports = class Util {
     fetchJSON(url){
         request.get(url, {}, async (err, req, body) => {
             if(err || req.statusCode != 200){
-                return;
+                return undefined;
             }
             if(!err && req.statusCode === 200){
                 let obj = await JSON.parse(body);
