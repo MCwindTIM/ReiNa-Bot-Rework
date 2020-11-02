@@ -189,7 +189,7 @@ module.exports = class Util {
         
         const serverQueue = this.main.queue.get(guild.id);
 
-        let member = this.main.bot.channels.cache.get(serverQueue.voiceChannel.id).members.size;
+        let member = this.main.bot.channels.fetch(serverQueue.voiceChannel.id).members.size;
 
         if(!song){
             let noSong = this.createEmbed(null, null, `Senpai, 全部音樂已經播放完畢, 這裡就沒有我的事情了 需要我的時候再叫我吧!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
@@ -206,7 +206,7 @@ module.exports = class Util {
             return;
         }
         
-        if(member <= 1){
+        if(member <= 1 || !member){
             let stopPlayingMSG = this.createEmbed(serverQueue.songs[0].author, null, `${serverQueue.songs[0].author} Senpai, 現在語音頻道只剩我一個了呢! 為了更好更流暢的服務, 我就先停止播放音樂了, 需要播放音樂的話隨時都可以再叫我喲 (＾Ｕ＾)ノ~ＹＯ\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
             serverQueue.textChannel.send(stopPlayingMSG)
             .then(msg => {
