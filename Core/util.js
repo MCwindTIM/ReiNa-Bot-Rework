@@ -184,11 +184,11 @@ module.exports = class Util {
     }
 
     //播放音樂
-    play(guild, song){
+    async play(guild, song){
         
-        const serverQueue = this.main.queue.get(guild.id);
+        const serverQueue = await this.main.queue.get(guild.id);
 
-        let member = this.main.bot.channels.cache.get(serverQueue.voiceChannel.id).members.size
+        let member = await this.main.bot.channels.cache.get(serverQueue.voiceChannel.id).members.size
 
         if(!song){
             let noSong = this.createEmbed(null, null, `Senpai, 全部音樂已經播放完畢, 這裡就沒有我的事情了 需要我的時候再叫我吧!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
@@ -212,10 +212,10 @@ module.exports = class Util {
                 msg.delete({timeout: 5000}).catch(console.error);
             }).catch();
             serverQueue.voiceChannel.leave();
-            this.main.queue.delete(guild.id);
-            this.main.util.setActivity(this.main);
+            await this.main.queue.delete(guild.id);
+            await this.main.util.setActivity(this.main);
             try{
-                this.main.musictimer.delete(guild.id);
+                await this.main.musictimer.delete(guild.id);
             }catch(e){}
             return;
         }
