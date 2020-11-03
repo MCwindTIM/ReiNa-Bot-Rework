@@ -185,11 +185,10 @@ module.exports = class Util {
 
     //播放音樂
     play(guild, song){
-        //傳入this 到fs.readFile/setPresence function
         
         const serverQueue = this.main.queue.get(guild.id);
 
-        let member = this.main.bot.channels.fetch(serverQueue.voiceChannel.id).members.size;
+        let member = this.main.bot.channels.cache.get(serverQueue.voiceChannel.id).members.size
 
         if(!song){
             let noSong = this.createEmbed(null, null, `Senpai, 全部音樂已經播放完畢, 這裡就沒有我的事情了 需要我的時候再叫我吧!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
