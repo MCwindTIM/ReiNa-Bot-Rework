@@ -224,6 +224,7 @@ module.exports = class ReiNaRework {
 			});
 			this.bot.on('voiceStateUpdate', (oldState, newState) => {
 				const serverQueue = this.queue.get(newState.guild.id);
+				if(oldState.member.user != this.bot.user || newState.member.user != this.bot.user) return;
 				if(!serverQueue) return;
 				if(!newState.channelID){
 					let disconnect = this.util.createEmbed(null, null, `Senpai, 我被管理員中斷語音連接了! 如果下次需要我的時候再叫我吧！\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
