@@ -33,7 +33,7 @@ module.exports = class MusicSkipCommand extends Command {
             }catch(e){}
             return;
         }
-        let skiped = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你跳過\n**${serverQueue.songs[0].title}** --由<@${serverQueue.songs[0].author.id}>添加!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000);
+        let skiped = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你跳過\n**\`${serverQueue.songs[0].title}\`** --由<@${serverQueue.songs[0].author.id}>添加!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000);
         try{
             await this.main.util.SDM(message.channel, skiped, message.author);
         }catch(e){}

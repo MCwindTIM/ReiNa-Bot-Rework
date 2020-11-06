@@ -172,7 +172,7 @@ module.exports = class Util {
             serverQueue.songs.push(song);
             if(playlist) return undefined;
             else{
-                let embed = this.createEmbed(songAuthor, null, `✅ 將**${song.title}**加入到播放列表中!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
+                let embed = this.createEmbed(songAuthor, null, `✅ 將**\`${song.title}\`**加入到播放列表中!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
                 message.channel.send(embed)
                 .then(msg => {
                     msg.delete({timeout: 5000}).catch(console.error);
@@ -224,7 +224,7 @@ module.exports = class Util {
         //Check video is live or not
         if(song.live){
             //youtube live (always dont cache)
-            dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 }))
+            dispatcher = serverQueue.connection.play(ytdl(song.url))
             .on('finish', end => {
                 if(serverQueue.loop == false){serverQueue.songs.shift();}
                 else {
@@ -238,7 +238,7 @@ module.exports = class Util {
             })
             .on('error', e => console.trace(e));
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-            let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**${song.title}**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
+            let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
             serverQueue.textChannel.send(embed)
                 .then(msg => {
                 msg.delete({timeout: 5000}).catch(console.error);
@@ -247,7 +247,7 @@ module.exports = class Util {
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.main.util.setActivity(this.main, { string: `正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
             this.main.musictimer.set(guild.id, Date.now());
-            
+            console.log(`${song.title} → ${song.id} 為即時直播串流, 不進行緩存!`);
         }else{
             //youtube video cache
             fs.readFile.call(this, `./MusicCache/${song.id}.mp3`, { encoding: 'utf-8'}, (err, data) => {
@@ -317,7 +317,7 @@ module.exports = class Util {
                 }
                 
                 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-                let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**${song.title}**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
+                let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
                 serverQueue.textChannel.send(embed)
                     .then(msg => {
                     msg.delete({timeout: 5000}).catch(console.error);

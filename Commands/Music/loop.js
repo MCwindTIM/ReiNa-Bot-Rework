@@ -33,8 +33,15 @@ module.exports = class MusicLoopCommand extends Command {
             }catch(e){}
             return;
         }
+        if(serverQueue.songs[0].live){
+            let LiveNoLoop = this.main.util.createEmbed(message.author, null, `${message.author} 正在播放直播串流, 無法使用循環播放功能!`, null, 0xcc0000);
+            try{
+                await this.main.util.SDM(message.channel, LiveNoLoop, message.author);
+            }catch(e){}
+            return;
+        }
         if(serverQueue.loop == false){
-            let setLoopTrue = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你循環播放\n<@${serverQueue.songs[0].author.id}>添加的**${serverQueue.songs[0].title}**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
+            let setLoopTrue = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你循環播放\n<@${serverQueue.songs[0].author.id}>添加的**\`${serverQueue.songs[0].title}\`**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
             try{
                 this.main.util.SDM(message.channel, setLoopTrue, message.author);
             }catch(e){}
@@ -42,7 +49,7 @@ module.exports = class MusicLoopCommand extends Command {
             this.main.util.setActivity(this.main, { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].authortag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: 開啟]||`, type:2});
             return;
         }else{
-            let setLoopFalse = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你關閉循環播放\n<@${serverQueue.songs[0].author.id}>添加的**${serverQueue.songs[0].title}**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
+            let setLoopFalse = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你關閉循環播放\n<@${serverQueue.songs[0].author.id}>添加的**\`${serverQueue.songs[0].title}\`**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
             try{
                 this.main.util.SDM(message.channel, setLoopFalse, message.author);
             }catch(e){}
