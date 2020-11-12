@@ -83,8 +83,8 @@ module.exports = class ReiNaRework {
 				setInterval(() => GuildUser.UpdateUser(this), 60000);
 
 				//Check User Status (giving Role)
-				const CheckUserStatus = require('../Customize/Event/CheckUserStatus.js');
-				setInterval(() => CheckUserStatus.CheckUserStatus(this), 5000);
+				//const CheckUserStatus = require('../Customize/Event/CheckUserStatus.js');
+				//setInterval(() => CheckUserStatus.CheckUserStatus(this), 5000);
 
 				//WeatherWarning
 				const WeatherWarning = require('../Customize/Event/WeatherWarning.js');
@@ -224,8 +224,8 @@ module.exports = class ReiNaRework {
 			});
 			this.bot.on('voiceStateUpdate', (oldState, newState) => {
 				const serverQueue = this.queue.get(newState.guild.id);
-				if(oldState.member.user != this.bot.user || newState.member.user != this.bot.user) return;
 				if(!serverQueue) return;
+				if(oldState.member.user != this.bot.user || newState.member.user != this.bot.user) return;
 				if(!newState.channelID){
 					let disconnect = this.util.createEmbed(null, null, `Senpai, 我被管理員中斷語音連接了! 如果下次需要我的時候再叫我吧！\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
 					this.queue.get(oldState.guild.id).textChannel.send(disconnect)
