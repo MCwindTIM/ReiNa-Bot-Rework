@@ -135,7 +135,6 @@ module.exports = class Util {
             length: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
             guildtag: message.guild.name,
-            startFrom: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `0s` : startTime || `0s`,
             live: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? true : false
         };
         if(!serverQueue){
@@ -146,6 +145,7 @@ module.exports = class Util {
                 songs: [],
                 volume: 1,
                 loop: false,
+                loopAll: false,
                 playing: true
             };
             this.main.queue.set(message.guild.id, queueConstruct);
@@ -194,12 +194,12 @@ module.exports = class Util {
             serverQueue.textChannel.send(noSong)
             .then(msg => {
 				msg.delete({timeout: 5000}).catch(console.error);
-			}).catch();
-            serverQueue.voiceChannel.leave();
-            await this.main.queue.delete(guild.id);
-            this.main.util.setActivity(this.main);
+            }).catch();
             try{
+                this.main.queue.delete(guild.id);
+                this.main.util.setActivity(this.main);
                 this.main.musictimer.delete(guild.id);
+                serverQueue.voiceChannel.leave();
             }catch(e){}
             return;
         }
@@ -225,13 +225,7 @@ module.exports = class Util {
             //youtube live (always dont cache)
             dispatcher = serverQueue.connection.play(ytdl(song.url))
             .on('finish', end => {
-                if(serverQueue.loop == false){serverQueue.songs.shift();}
-                else {
-                    if(serverQueue.loop == true){
-                        serverQueue.songs.unshift(serverQueue.songs[0]);
-                        serverQueue.songs.shift();
-                    }
-                }
+                serverQueue.songs.shift();
                 this.play(guild, serverQueue.songs[0]);
                 this.main.musictimer.set(guild.id, Date.now());
             })
@@ -250,7 +244,16 @@ module.exports = class Util {
         }else{
             dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
             .on('finish', end => {
-                if(serverQueue.loop == false){serverQueue.songs.shift();}
+                if(serverQueue.loop == false){
+                    if(serverQueue.loopAll == false){
+                        serverQueue.songs.shift();
+                    }else{
+                        if(serverQueue.loopAll == true){
+                            serverQueue.songs.push(serverQueue.songs[0]);
+                            serverQueue.songs.shift();
+                        }
+                    }
+                }
                 else {
                     if(serverQueue.loop == true){
                         serverQueue.songs.unshift(serverQueue.songs[0]);
@@ -312,6 +315,7 @@ module.exports = class Util {
     }
 
     progressbar(total, current, size){
+        current = current || 0;
         size = size || 30;
         return `[${pb(total, current, size)[0]}]`;
     }
