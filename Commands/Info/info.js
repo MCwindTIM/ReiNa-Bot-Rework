@@ -45,6 +45,8 @@ module.exports = class infoCommand extends Command {
         .addField('系統運作時間', `**${osuptime}**`)
         .addField('程序開始運作時間', `**${_guptime}**`)
         .addField('Bot上線運行時間', `**${uptime}**`)
+        .addField('Discord JS 版本', `**v${require('discord.js').version}**`)
+        .addField('Node JS 版本', `**${process.version}**`)
         .addField('服務數量', `**${this.main.bot.guilds.cache.size}**個伺服器, **${this.main.bot.channels.cache.size}**個頻道, **${this.main.bot.users.cache.size}**個用戶!`);
         request.get('https://api.ipify.org/?format=json', {}, async (err, res, body) => {
             if(!err){
