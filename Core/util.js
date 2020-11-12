@@ -246,7 +246,7 @@ module.exports = class Util {
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.main.util.setActivity(this.main, { string: `正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
             this.main.musictimer.set(guild.id, Date.now());
-            console.log(`${song.title} → ${song.id} 為即時直播串流, 不進行緩存!`);
+            console.log(`${song.title} → ${song.id} 為即時直播串流!`);
         }else{
             dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
             .on('finish', end => {
@@ -259,6 +259,7 @@ module.exports = class Util {
                 }
                 this.play(guild, serverQueue.songs[0]);
                 this.main.musictimer.set(guild.id, Date.now());
+                console.log(`${song.title} → ${song.id} 開始播放!`);
             })
             .on('error', e => console.trace(e));
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
