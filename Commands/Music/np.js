@@ -19,7 +19,7 @@ module.exports = class MusicNowplayingCommand extends Command {
             }catch(e){}
             return;
         }
-        let playtime = Date.now() - this.main.util.getMusicTimer(message.guild.id) + (parseInt(serverQueue.songs[0].startFrom.replace('s', '')) * 1000);
+        let playtime = Date.now() - this.main.util.getMusicTimer(message.guild.id);
         let totalsec = parseInt(playtime/1000);
         let h = Math.floor(playtime / 3600000);
         if (h < 10) h = "0" + h;
@@ -41,7 +41,7 @@ module.exports = class MusicNowplayingCommand extends Command {
         }else{
             bar = this.main.util.progressbar(100, 100);
         }
-        let Nowplaying = this.main.util.createEmbed(message.author, null, `${message.author}\n\n🎶 現正播放: ${serverQueue.songs[0].author}添加的**\`${serverQueue.songs[0].title}\`** ${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n${bar}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n\n如果Senpai想要網址的話, 我放在下面哦! __影片ID:__ **${serverQueue.songs[0].id}**\n[[影片連結](${serverQueue.songs[0].url})]\n[[現正播放的時間連結](https://youtu.be/${serverQueue.songs[0].id}?t=${totalsec})]`, null, 0xcc0000);
+        let Nowplaying = this.main.util.createEmbed(message.author, null, `${message.author}\n\n🎶 現正播放: ${serverQueue.songs[0].author}添加的**\`${serverQueue.songs[0].title}\`** ${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n${bar}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n\n如果Senpai想要網址的話, 我放在下面哦! __影片ID:__ **${serverQueue.songs[0].id}**\n[[影片連結](${serverQueue.songs[0].url})]\n[[現正播放的時間連結](https://youtu.be/${serverQueue.songs[0].id}?t=${totalsec})]\n 單曲循環播放: ${serverQueue.loop ? "開啟":"關閉"}\n清單循環播放: ${serverQueue.loopAll ? "開啟":"關閉"}`, null, 0xcc0000);
         try{    
             this.main.util.SDM(message.channel, Nowplaying, message.author);
         }catch(e){}
