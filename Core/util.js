@@ -10,7 +10,6 @@ const pb = require('string-progressbar');
 
 //request module
 const request = require("request");
-const { S_IFCHR } = require('constants');
 
 
 module.exports = class Util {
@@ -93,13 +92,13 @@ module.exports = class Util {
     }
 
     //請求 Youtube 播放列表
-    getPlaylist(url){
-        return this.youtube.getPlaylist(url);
+    async getPlaylist(url){
+        return await this.youtube.getPlaylist(url);
     }
 
     //請求Youtube 影片
-    getVideo(url){
-        return this.youtube.getVideo(url);
+    async getVideo(url){
+        return await this.youtube.getVideo(url);
     }
 
     //搜尋Youtube 影片
@@ -136,7 +135,7 @@ module.exports = class Util {
             length: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
             guildtag: message.guild.name,
-            startFrom: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `0s` : startTime,
+            startFrom: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `0s` : startTime || `0s`,
             live: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? true : false
         };
         if(!serverQueue){
@@ -157,7 +156,7 @@ module.exports = class Util {
                 let connection = await voiceChannel.join();
                 connection.voice.setSelfDeaf(true);
                 queueConstruct.connection = connection;
-                this.play(message.guild, queueConstruct.songs[0]);
+                await this.play(message.guild, queueConstruct.songs[0]);
             }catch(err){
                 console.log(err);
                 this.main.queue.delete(message.guild.id);
@@ -188,7 +187,7 @@ module.exports = class Util {
         
         const serverQueue = await this.main.queue.get(guild.id);
 
-        let member = await this.main.bot.channels.cache.get(serverQueue.voiceChannel.id).members.size
+        let member = await this.main.bot.channels.cache.get(serverQueue.voiceChannel.id).members.size;
 
         if(!song){
             let noSong = this.createEmbed(null, null, `Senpai, 全部音樂已經播放完畢, 這裡就沒有我的事情了 需要我的時候再叫我吧!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
@@ -197,7 +196,7 @@ module.exports = class Util {
 				msg.delete({timeout: 5000}).catch(console.error);
 			}).catch();
             serverQueue.voiceChannel.leave();
-            this.main.queue.delete(guild.id);
+            await this.main.queue.delete(guild.id);
             this.main.util.setActivity(this.main);
             try{
                 this.main.musictimer.delete(guild.id);
@@ -211,7 +210,7 @@ module.exports = class Util {
             .then(msg => {
                 msg.delete({timeout: 5000}).catch(console.error);
             }).catch();
-            serverQueue.voiceChannel.leave();
+            await serverQueue.voiceChannel.leave();
             await this.main.queue.delete(guild.id);
             await this.main.util.setActivity(this.main);
             try{
@@ -249,84 +248,29 @@ module.exports = class Util {
             this.main.musictimer.set(guild.id, Date.now());
             console.log(`${song.title} → ${song.id} 為即時直播串流, 不進行緩存!`);
         }else{
-            //youtube video cache
-            fs.readFile.call(this, `./MusicCache/${song.id}.mp3`, { encoding: 'utf-8'}, (err, data) => {
-                if(!err){
-                    let size = fs.statSync(`./MusicCache/${song.id}.mp3`)["size"];
-                    if(size == 0){
-                        song.startFrom = `0s`;
-                        let stream = ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
-                        try{
-                            stream.pipe(fs.createWriteStream(`./MusicCache/${song.id}.mp3`));
-                            console.log(`${song.title} → ${song.id} 上次緩存失敗 重新緩存!`);
-                        }catch(e){
-                            console.log(`${song.title} → ${song.id} 緩存發生問題!`);
-                        }
-                        dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
-                        .on('finish', end => {
-                            if(serverQueue.loop == false){serverQueue.songs.shift();}
-                            else {
-                                if(serverQueue.loop == true){
-                                    serverQueue.songs.unshift(serverQueue.songs[0]);
-                                    serverQueue.songs.shift();
-                                }
-                            }
-                            this.play(guild, serverQueue.songs[0]);
-                            this.main.musictimer.set(guild.id, Date.now());
-                        })
-                        .on('error', e => console.trace(e));
-                    }else{
-                        dispatcher = serverQueue.connection.play(`./MusicCache/${song.id}.mp3`, { seek: song.startFrom })
-                        .on('finish', end => {
-                            if(serverQueue.loop == false){serverQueue.songs.shift();}
-                            else {
-                                if(serverQueue.loop == true){
-                                    serverQueue.songs.unshift(serverQueue.songs[0]);
-                                    serverQueue.songs.shift();
-                                }
-                            }
-                            this.play(guild, serverQueue.songs[0]);
-                            this.main.musictimer.set(guild.id, Date.now());
-                        })
-                        .on('error', e => console.trace(e));
-                        }
-                }
-                else{
-                    fsPath.writeFileSync(`./MusicCache/${song.id}.mp3`, "");
-                    let stream = ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 });
-                    song.startFrom = `0s`;
-                    try{
-                        stream.pipe(fs.createWriteStream(`./MusicCache/${song.id}.mp3`));
-                        console.log(`${song.title} → ${song.id} 為首次播放 開始緩存!`);
-                    }catch(e){
-                        console.log(`${song.title} → ${song.id} 緩存發生問題!`);
+            dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
+            .on('finish', end => {
+                if(serverQueue.loop == false){serverQueue.songs.shift();}
+                else {
+                    if(serverQueue.loop == true){
+                        serverQueue.songs.unshift(serverQueue.songs[0]);
+                        serverQueue.songs.shift();
                     }
-                    dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25}))
-                    .on('finish', end => {
-                        if(serverQueue.loop == false){serverQueue.songs.shift();}
-                        else {
-                            if(serverQueue.loop == true){
-                                serverQueue.songs.unshift(serverQueue.songs[0]);
-                                serverQueue.songs.shift();
-                            }
-                        }
-                        this.play(guild, serverQueue.songs[0]);
-                        this.main.musictimer.set(guild.id, Date.now());
-                    })
-                    .on('error', e => console.trace(e));
                 }
-                
-                dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-                let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
-                serverQueue.textChannel.send(embed)
-                    .then(msg => {
-                    msg.delete({timeout: 5000}).catch(console.error);
-                    }).catch();
-                let looping = '';
-                (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
-                this.main.util.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
+                this.play(guild, serverQueue.songs[0]);
                 this.main.musictimer.set(guild.id, Date.now());
-            });
+            })
+            .on('error', e => console.trace(e));
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+            let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
+            serverQueue.textChannel.send(embed)
+                .then(msg => {
+                msg.delete({timeout: 5000}).catch(console.error);
+                }).catch();
+            let looping = '';
+            (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
+            this.main.util.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
+            this.main.musictimer.set(guild.id, Date.now());
         }
     }
 
