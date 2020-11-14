@@ -247,6 +247,7 @@ module.exports = class Util {
             })
             .on('error', e => {
                 let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
+                error.addField('發生問題的影片資訊(Debug)', `\`\`\`javascript\n影片標題: ${song.title}\n影片ID: ${song.id}\n直播? ${song.live}\n\`\`\``);
                 error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
                 this.SDM(serverQueue.textChannel, error, song.author);
                 this.main.queue.delete(guild.id);
@@ -288,6 +289,7 @@ module.exports = class Util {
             })
             .on('error', e => {
                 let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
+                error.addField('發生問題的影片資訊(Debug)', `\`\`\`javascript\n影片標題: ${song.title}\n影片ID: ${song.id}\n直播? ${song.live}\n\`\`\``);
                 error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
                 this.SDM(serverQueue.textChannel, error, song.author);
                 this.main.queue.delete(guild.id);
