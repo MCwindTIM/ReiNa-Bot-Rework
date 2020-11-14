@@ -267,7 +267,7 @@ module.exports = class Util {
                     }
                 }
                 this.play(guild, serverQueue.songs[0]);
-                serverQueue.timer.set(guild.id, Date.now());
+                serverQueue.timer = Date.now();
                 console.log(`${song.title} → ${song.id} 開始播放!`);
             })
             .on('error', e => console.trace(e));
