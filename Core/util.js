@@ -246,7 +246,9 @@ module.exports = class Util {
                 serverQueue.timer = Date.now();
             })
             .on('error', e => {
-                console.trace(e);
+                let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
+                error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
+                this.SDM(serverQueue.textChannel, error, song.author);
                 this.main.queue.delete(guild.id);
                 serverQueue.voiceChannel.leave();
             });
@@ -284,7 +286,13 @@ module.exports = class Util {
                 serverQueue.timer = Date.now();
                 console.log(`${song.title} → ${song.id} 開始播放!`);
             })
-            .on('error', e => console.trace(e));
+            .on('error', e => {
+                let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
+                error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
+                this.SDM(serverQueue.textChannel, error, song.author);
+                this.main.queue.delete(guild.id);
+                serverQueue.voiceChannel.leave();
+            });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
             let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
             serverQueue.textChannel.send(embed)
