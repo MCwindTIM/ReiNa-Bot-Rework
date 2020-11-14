@@ -44,8 +44,8 @@ module.exports = class HololiveYTLive extends Command {
                     return;
                 }
                 var obj = JSON.parse(raw);
-                let livemsg = this.main.util.createEmbed(message.author, `Hololive Dev Api 查詢`, `${message.author}, 你要求的資訊找到了! 下方是 Hololive 直播的時間表!`, 'https://schedule.hololive.tv/');
-                obj.lives.forEach(live => {
+                let livemsg = this.main.util.createEmbed(message.author, `Hololive Dev Api 查詢`, `${message.author}, 你要求的資訊找到了! 下方是 Hololive 直播的時間表 (只會顯示最近10個直播預定)!`, 'https://schedule.hololive.tv/');
+                obj.lives.slice(0, 10).forEach(live => {
                     if(live.platform == "youtube"){
                         let time = new Date(live.start_at).toString().replace(/(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?|Mon(?:day)?|Tue(?:sday)?|Wed(?:nesday)?|Thu(?:rsday)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?|\(China Standard Time\)|\(Hong Kong Standard Time\))/g, m => pattern[m]);;
                         livemsg.addField(`:bell: ${live.title}`, `在 ${time} 開始直播! \n[直播連結](https://youtube.com/watch?v=${live.room}) [頻道連結](https://youtube.com/channel/${live.channel})`, false);
