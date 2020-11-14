@@ -149,7 +149,8 @@ module.exports = class Util {
                 loop: false,
                 loopAll: false,
                 playing: true,
-                timer: null
+                timer: null,
+                speakingStatus: null //when song.live, return true / false
             };
             this.main.queue.set(message.guild.id, queueConstruct);
 
@@ -228,11 +229,17 @@ module.exports = class Util {
                 this.play(guild, serverQueue.songs[0]);
                 serverQueue.timer = Date.now();
             })
-            .on('speaking', async (b) => {
+            .on('speaking', b => {
                 if(!b){
-                    serverQueue.connection.dispatcher.end("");
+                    serverQueue.speakingStatus = false;
+                    setTimeout(() => {
+                        if(!serverQueue.speakingStatus){
+                            console.log(`即時直播串流 ${song.title} → ${song.id} 已經播放完結!`);
+                            serverQueue.connection.dispatcher.end("");
+                        }
+                    }, 10000) //double check youtube live is end when speakingStatus is false, if the value still false after 10seconds, fire finish event
                 }else{
-
+                    serverQueue.speakingStatus = true;
                 }
             })
             .on('error', e => console.trace(e));
