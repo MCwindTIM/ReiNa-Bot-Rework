@@ -150,7 +150,7 @@ module.exports = class Util {
                 loopAll: false,
                 playing: true,
                 timer: null,
-                speakingStatus: null //when song.live, return true / false
+                LiveDataLastUpdate: null
             };
             this.main.queue.set(message.guild.id, queueConstruct);
 
@@ -220,29 +220,34 @@ module.exports = class Util {
         }
 
         let dispatcher;
+        let stream = ytdl(song.url);
         //Check video is live or not
         if(song.live){
             //youtube live (always dont cache)
-            dispatcher = serverQueue.connection.play(ytdl(song.url))
+
+            //Bot will leave voiceChannel or play the next song when no data received from youtube live within 30 seconds
+            let LiveEndChecker = setInterval(() => {
+                if(serverQueue.LiveDataLastUpdate === null) return;
+                if(Date.now() - serverQueue.LiveDataLastUpdate > 30000){
+                    clearInterval(LiveEndChecker);
+                    serverQueue.connection.dispatcher.end("");
+                }
+            }, 500);
+            stream.on('data', (chunk) =>{
+                //Update Live Data receive time
+                serverQueue.LiveDataLastUpdate = Date.now();
+            });
+            dispatcher = serverQueue.connection.play(stream)
             .on('finish', end => {
                 serverQueue.songs.shift();
                 this.play(guild, serverQueue.songs[0]);
                 serverQueue.timer = Date.now();
             })
-            .on('speaking', b => {
-                if(!b){
-                    serverQueue.speakingStatus = false;
-                    setTimeout(() => {
-                        if(!serverQueue.speakingStatus){
-                            console.log(`即時直播串流 ${song.title} → ${song.id} 已經播放完結!`);
-                            serverQueue.connection.dispatcher.end("");
-                        }
-                    }, 10000) //double check youtube live is end when speakingStatus is false, if the value still false after 10seconds, fire finish event
-                }else{
-                    serverQueue.speakingStatus = true;
-                }
-            })
-            .on('error', e => console.trace(e));
+            .on('error', e => {
+                console.trace(e);
+                this.main.queue.delete(guild.id);
+                serverQueue.voiceChannel.leave();
+            });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
             let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
             serverQueue.textChannel.send(embed)
