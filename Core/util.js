@@ -11,6 +11,8 @@ const pb = require('string-progressbar');
 //request module
 const request = require("request");
 
+//delay
+//const delay = ms => new Promise(res => setTimeout(res, ms));
 
 module.exports = class Util {
     constructor(main){
@@ -146,7 +148,8 @@ module.exports = class Util {
                 volume: 1,
                 loop: false,
                 loopAll: false,
-                playing: true
+                playing: true,
+                timer: null
             };
             this.main.queue.set(message.guild.id, queueConstruct);
 
@@ -198,7 +201,6 @@ module.exports = class Util {
             try{
                 this.main.queue.delete(guild.id);
                 this.main.util.setActivity(this.main);
-                this.main.musictimer.delete(guild.id);
                 serverQueue.voiceChannel.leave();
             }catch(e){}
             return;
@@ -213,9 +215,6 @@ module.exports = class Util {
             await serverQueue.voiceChannel.leave();
             await this.main.queue.delete(guild.id);
             await this.main.util.setActivity(this.main);
-            try{
-                await this.main.musictimer.delete(guild.id);
-            }catch(e){}
             return;
         }
 
@@ -227,7 +226,14 @@ module.exports = class Util {
             .on('finish', end => {
                 serverQueue.songs.shift();
                 this.play(guild, serverQueue.songs[0]);
-                this.main.musictimer.set(guild.id, Date.now());
+                serverQueue.timer = Date.now();
+            })
+            .on('speaking', async (b) => {
+                if(!b){
+                    serverQueue.connection.dispatcher.end("");
+                }else{
+
+                }
             })
             .on('error', e => console.trace(e));
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
@@ -239,7 +245,7 @@ module.exports = class Util {
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.main.util.setActivity(this.main, { string: `正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
-            this.main.musictimer.set(guild.id, Date.now());
+            serverQueue.timer = Date.now();
             console.log(`${song.title} → ${song.id} 為即時直播串流!`);
         }else{
             dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
@@ -261,7 +267,7 @@ module.exports = class Util {
                     }
                 }
                 this.play(guild, serverQueue.songs[0]);
-                this.main.musictimer.set(guild.id, Date.now());
+                serverQueue.timer.set(guild.id, Date.now());
                 console.log(`${song.title} → ${song.id} 開始播放!`);
             })
             .on('error', e => console.trace(e));
@@ -274,7 +280,7 @@ module.exports = class Util {
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.main.util.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
-            this.main.musictimer.set(guild.id, Date.now());
+            serverQueue.timer = Date.now();
         }
     }
 
@@ -331,9 +337,9 @@ module.exports = class Util {
      }
 
     //Get MusicTimer
-    getMusicTimer(gid){
-        return this.main.musictimer.get(gid);
-    }
+    //getMusicTimer(gid){
+    //    return this.main.musictimer.get(gid);
+    //}
 
     //Check Owner Perm
     checkOwner(user){
@@ -396,7 +402,6 @@ module.exports = class Util {
         let commands = new Map();
         let events = new Map();
         const queue = new Map();
-        const musictimer = new Map();
         let time = Date.now();
         let taken = 0;
         const commandDir = `./Commands/`;
@@ -427,7 +432,7 @@ module.exports = class Util {
                     }
                 });
             });
-            resolve({commands, events, queue, musictimer});
+            resolve({commands, events, queue});
         });
     }
 }

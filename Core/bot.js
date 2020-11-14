@@ -60,7 +60,6 @@ module.exports = class ReiNaRework {
 			this.commands = data.commands;
 			this.events = data.events;
 			this.queue = data.queue;
-			this.musictimer = data.musictimer;
 			let finishLoad = Date.now();
 
 			//Set Customize Event's Variable
@@ -235,7 +234,6 @@ module.exports = class ReiNaRework {
 					this.util.setActivity(this);
 					try{
 						this.queue.delete(oldState.guild.id);
-						this.musictimer.delete(oldState.guild.id);
 					}catch(e){}
 					return;
 				}
