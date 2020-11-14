@@ -202,7 +202,7 @@ module.exports = class Util {
             }).catch();
             try{
                 this.main.queue.delete(guild.id);
-                this.main.util.setActivity(this.main);
+                this.setActivity(this.main);
                 serverQueue.voiceChannel.leave();
             }catch(e){}
             return;
@@ -216,7 +216,7 @@ module.exports = class Util {
             }).catch();
             await serverQueue.voiceChannel.leave();
             await this.main.queue.delete(guild.id);
-            await this.main.util.setActivity(this.main);
+            await this.setActivity(this.main);
             return;
         }
 
@@ -252,6 +252,7 @@ module.exports = class Util {
                 this.SDM(serverQueue.textChannel, error, song.author);
                 this.main.queue.delete(guild.id);
                 serverQueue.voiceChannel.leave();
+                this.setActivity(this.main);
             });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
             let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
@@ -261,7 +262,7 @@ module.exports = class Util {
                 }).catch();
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
-            this.main.util.setActivity(this.main, { string: `正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
+            this.setActivity(this.main, { string: `正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
             serverQueue.timer = Date.now();
             console.log(`${song.title} → ${song.id} 為即時直播串流!`);
         }else{
@@ -294,6 +295,7 @@ module.exports = class Util {
                 this.SDM(serverQueue.textChannel, error, song.author);
                 this.main.queue.delete(guild.id);
                 serverQueue.voiceChannel.leave();
+                this.setActivity(this.main);
             });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
             let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
@@ -303,7 +305,7 @@ module.exports = class Util {
                 }).catch();
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
-            this.main.util.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
+            this.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
             serverQueue.timer = Date.now();
         }
     }
