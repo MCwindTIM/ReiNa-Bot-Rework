@@ -150,7 +150,8 @@ module.exports = class Util {
                 loopAll: false,
                 playing: true,
                 timer: null,
-                LiveDataLastUpdate: null
+                LiveDataLastUpdate: null,
+                LiveEndChecker: null
             };
             this.main.queue.set(message.guild.id, queueConstruct);
 
@@ -226,10 +227,11 @@ module.exports = class Util {
             //youtube live (always dont cache)
 
             //Bot will leave voiceChannel or play the next song when no data received from youtube live within 30 seconds
-            let LiveEndChecker = setInterval(() => {
+             serverQueue.LiveEndChecker = setInterval(() => {
                 if(serverQueue.LiveDataLastUpdate === null) return;
                 if(Date.now() - serverQueue.LiveDataLastUpdate > 30000){
-                    clearInterval(LiveEndChecker);
+                    clearInterval(serverQueue.LiveEndChecker);
+                    serverQueue.LiveEndChecker = null;
                     serverQueue.connection.dispatcher.end("");
                 }
             }, 500);
