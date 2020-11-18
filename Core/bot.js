@@ -78,9 +78,9 @@ module.exports = class ReiNaRework {
 				//MCwind Customize Interval function Delete If don't want
 
 				//Set Stat channel name (user)
-				const GuildUser = require('../Customize/Event/UpdateUser.js');
-				setInterval(() => GuildUser.UpdateUser(this), 60000);
-
+				//const GuildUser = require('../Customize/Event/UpdateUser.js');
+				//setInterval(() => GuildUser.UpdateUser(this), 60000);
+				
 				//Check User Status (giving Role)
 				//const CheckUserStatus = require('../Customize/Event/CheckUserStatus.js');
 				//setInterval(() => CheckUserStatus.CheckUserStatus(this), 5000);
@@ -114,21 +114,21 @@ module.exports = class ReiNaRework {
 					return;
 				};
 				if(message.author.bot){
-					this.event.emit('DC_MSG', message);
-
-					//Customize - Check lastfm bot embeds
-					const lastfm = require('../Customize/MessageChecking/lastfm.js');
-					//check lastfm bot message embed
-					if(message.author.id === '493845886166630443' || message.author.id === '356268235697553409' && message.guild.id === "398062441516236800"){
-						if(!message.embeds[0]) return;
-						if(message.embeds[0].author.name.startsWith('Now playing -')){
-						lastfm.run(this, message);
-						console.log(`${this.util.color.FgYellow}${this.util.getTime()}${this.util.color.Reset} ${this.util.color.FgCyan}${lastfm.name}${this.util.color.Reset} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
-						}
-					}
-					return;
-				}else{
-					this.event.emit('DC_MSG', message);
+				//	this.event.emit('DC_MSG', message);
+				//	//Customize - Check lastfm bot embeds
+				//	const lastfm = require('../Customize/MessageChecking/lastfm.js');
+				//	//check lastfm bot message embed
+				//	if(message.author.id === '493845886166630443' || message.author.id === '356268235697553409' && message.guild.id === "398062441516236800"){
+				//		if(!message.embeds[0]) return;
+				//		if(message.embeds[0].author.name.startsWith('Now playing -')){
+				//		lastfm.run(this, message);
+				//		console.log(`${this.util.color.FgYellow}${this.util.getTime()}${this.util.color.Reset} ${this.util.color.FgCyan}${lastfm.name}${this.util.color.Reset} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+				//		}
+				//	}
+				//	return;
+				//}else{
+				//	this.event.emit('DC_MSG', message);
+				return;
 				}
 				
 
@@ -255,34 +255,36 @@ module.exports = class ReiNaRework {
 		
 		this.server_io = io.listen(this.server);
 		this.server_io.sockets.on('connection', socket => {
-			this.event.on('DC_MSG', message => {
-				let attachmentURL = [];
-				if(message.attachments.size > 0){
-					
-					for (let i=0; i<message.attachments.size; i++){
-						attachmentURL.push(`${message.attachments.array()[i].url}`);
-					}
-				}
-				socket.emit('DC_MSG', {
-					'Author': `${this.util.htmlEscape(message.author.tag)}`,
-					'Date': `[${this.util.htmlEscape(message.createdAt.toString().slice(16, 21))}]`,
-					'Content': `${this.util.htmlEscape(message.content)}`,
-					'Guild': `${this.util.htmlEscape(message.guild.name)}`,
-					'Channel': `${this.util.htmlEscape(message.channel.name)}`,
-					'Attachment': attachmentURL,
-					'fileString': '附加檔案'
-				});
-			});
+			//this.event.on('DC_MSG', message => {
+			//	let attachmentURL = [];
+			//	if(message.attachments.size > 0){
+			//		
+			//		for (let i=0; i<message.attachments.size; i++){
+			//			attachmentURL.push(`${message.attachments.array()[i].url}`);
+			//		}
+			//	}
+			//	socket.emit('DC_MSG', {
+			//		'Author': `${this.util.htmlEscape(message.author.tag)}`,
+			//		'Date': `[${this.util.htmlEscape(message.createdAt.toString().slice(16, 21))}]`,
+			//		'Content': `${this.util.htmlEscape(message.content)}`,
+			//		'Guild': `${this.util.htmlEscape(message.guild.name)}`,
+			//		'Channel': `${this.util.htmlEscape(message.channel.name)}`,
+			//		'Attachment': attachmentURL,
+			//		'fileString': '附加檔案'
+			//	});
+			//});
 		});
 
 		//MCwind Customize Event
 		this.event.on('WWarning', async warningMSG => {
+			let channel = this.bot.channels.cache.get('741890517050196058');
+			if(!channel) return;
 			this.WeatherWarningMSG = warningMSG;
 			let Warning = this.util.createEmbed(null, `ReiNa Bot Rework 天氣警告`, `自動警告 ${new Date()}`);
 			for(let i = 0; i < warningMSG.length; i ++){
 			Warning.addField(`信息${i + 1}`, warningMSG[i]);
 			}
-			 await this.util.SDM(this.bot.channels.cache.get('741890517050196058'), Warning, this.bot.user);
+			 await this.util.SDM(channel, Warning, this.bot.user);
 		});
 	}
 
