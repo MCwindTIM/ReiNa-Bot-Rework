@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <script src="/socket.io/socket.io.js"></script>
+  <title>ReiNa Bot Rework Music Queue</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+
+  
+      <link rel="stylesheet" href="../../css/style.css">
+
+  
+</head>
+
+<body>
+  <section>
+  <!--for demo wrap-->
+  <h1 id="MainTitle">Loading...</h1>
+  <div class="tbl-header">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <tr>
+          <th>Author</th>
+          <th>Song Title</th>
+          <th>URL</th>
+          <th>Length</th>
+          <th>Thumbnail</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0" id="queue">
+      <tbody>
+
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
+    <script src="../../js/index.js"></script>
+
+    <script>
+      var socket = io.connect();
+	  var gid = window.location.href.replace(`http://${location.hostname}:${location.port}/music/`, "").replace("#", "");
+    socket.emit('reqMusic',{id: gid});
+	  socket.on('MusicData', data => {
+          data.songs.forEach(song => {
+            insert(song.author.username, song.title, song.url, song.length, song.thumbnail, song.live);
+          })
+          
+	  document.getElementById("MainTitle").innerText = `Guild ID = ${gid}`;
+    });
+
+  function insert(author, title, url, length, thumbnail, live) {
+    var table = document.getElementById("queue");
+    var row = table.insertRow(-1);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+    var cell5 = row.insertCell(4);
+    cell1.innerHTML = author;
+    cell2.innerHTML = title;
+    cell3.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
+    cell4.innerHTML = live ? `🔴直播中` : length;
+    cell5.innerHTML = `<a href="${url}" target="_blank"><img src="${thumbnail}" height="80"></a>`;
+}
+    </script>
+</body>
+</html>

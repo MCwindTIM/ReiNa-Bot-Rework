@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const Config = require('./config');
 const Util = require('./util');
+const util = require('util');
 const http = require('http');
 const EventEmitter = require('events').EventEmitter;
 const url = require('url');
@@ -18,36 +19,101 @@ module.exports = class ReiNaRework {
 		});
 		this.server = http.createServer((req, res) => {
 			let path = url.parse(req.url).pathname;
-			switch(path){
-				case '/':
-					fs.readFile(`${__dirname}/../WebSocket/Discord.html`, (err, data) => {
+			if(path === '/'){
+				fs.readFile(`${__dirname}/../WebSocket/Discord.html`, (err, data) => {
+					if(err){
+						res.writeHead(404);
+						res.write('404 Server Error');
+					}else{
+						res.writeHead(200, {'Content-Type':'text/html', 'charset': 'utf-8'});
+						res.write(data, 'utf8');
+					}
+					res.end();
+				});
+			}
+			if(path === '/style.css'){
+				fs.readFile(`${__dirname}/../WebSocket/style.css`, (err, data) => {
+					if(err){
+						res.writeHead(404);
+					}else{
+						res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
+						res.write(data, 'utf8');
+					}
+					res.end();
+				})
+			}
+			if(path === '/css/style.css'){
+				fs.readFile(`${__dirname}/../WebSocket/css/style.css`, (err, data) => {
+					if(err){
+						res.writeHead(404);
+					}else{
+						res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
+						res.write(data, 'utf8');
+					}
+					res.end();
+				})
+			}
+			if(path === '/js/index.js'){
+				fs.readFile(`${__dirname}/../WebSocket/js/index.js`, (err, data) => {
+					if(err){
+						res.writeHead(404);
+					}else{
+						res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
+						res.write(data, 'utf8');
+					}
+					res.end();
+				})
+			}
+			if(path.startsWith('/music/')){
+				let id = path.replace('/music/', '');
+				const serverQueue = this.queue.get(id);
+				if(!serverQueue){
+					res.writeHead(404);
+					res.write('404 Server Error');
+				}else{
+					fs.readFile(`${__dirname}/../WebSocket/Music.html`, (err, data) => {
 						if(err){
 							res.writeHead(404);
 							res.write('404 Server Error');
 						}else{
 							res.writeHead(200, {'Content-Type':'text/html', 'charset': 'utf-8'});
 							res.write(data, 'utf8');
+							res.write(`<script>var gid = ${id}</script>`, 'utf-8');
 						}
 						res.end();
 					});
-					break;
-				case '/style.css':
-					fs.readFile(`${__dirname}/../WebSocket/style.css`, (err, data) => {
-						if(err){
-							res.writeHead(404);
-						}else{
-							res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
-							res.write(data, 'utf8');
-						}
-						res.end();
-					})
-					break;
-				default:
-					res.writeHead(404);
-					res.write('404 Server Error');
-					res.end();
-					break;
+				}
 			}
+			//switch(path){
+			//	case '/':
+			//		fs.readFile(`${__dirname}/../WebSocket/Discord.html`, (err, data) => {
+			//			if(err){
+			//				res.writeHead(404);
+			//				res.write('404 Server Error');
+			//			}else{
+			//				res.writeHead(200, {'Content-Type':'text/html', 'charset': 'utf-8'});
+			//				res.write(data, 'utf8');
+			//			}
+			//			res.end();
+			//		});
+			//		break;
+			//	case '/style.css':
+			//		fs.readFile(`${__dirname}/../WebSocket/style.css`, (err, data) => {
+			//			if(err){
+			//				res.writeHead(404);
+			//			}else{
+			//				res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
+			//				res.write(data, 'utf8');
+			//			}
+			//			res.end();
+			//		})
+			//		break;
+			//	default:
+			//		res.writeHead(404);
+			//		res.write('404 Server Error');
+			//		res.end();
+			//		break;
+			//}
 		});;
 		this.server_io = require('socket.io');
 		this.event = new EventEmitter();
@@ -273,6 +339,11 @@ module.exports = class ReiNaRework {
 			//		'fileString': '附加檔案'
 			//	});
 			//});
+			socket.on('reqMusic', data => {
+				socket.emit('MusicData', {
+					'songs': this.queue.get(data.id).songs
+				})
+			})
 		});
 
 		//MCwind Customize Event

@@ -1,4 +1,5 @@
 const Command = require('../../Core/command');
+const request = require('request');
 
 module.exports = class MusicQueueCommand extends Command {
     constructor(main){
@@ -42,11 +43,21 @@ module.exports = class MusicQueueCommand extends Command {
                 bar = this.main.util.progressbar(100, 100);
             }
 
-            let queueMSGcontent = "\n" + `${message.author}` + "\n因為Discord有限制信息最多只能有1024個字符, 所以我最多只會顯示15 首音樂哦!\n" + `__**歌曲列表:**__` + "\n" + `${serverQueue.songs.map(song => `⌛ <@${song.author.id}>添加的**\`${song.title}\`** ${song.length}`).slice(0, 15).join('\n')}` + "\n\n總共有:**" + serverQueue.songs.length + "**首音樂\n\n" + `**現正播放:** **\`${serverQueue.songs[0].title}\`**\n${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n${bar}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n 單曲循環播放: ${serverQueue.loop ? "開啟":"關閉"}\n清單循環播放: ${serverQueue.loopAll ? "開啟":"關閉"}`;
-            let queueMSG = this.main.util.createEmbed(message.author, null, queueMSGcontent, null, 0xcc0000);
-            try{
-                await this.main.util.SDM(message.channel, queueMSG, message.author);
-            }catch(e){console.log(e)}
+            request.get('https://api.ipify.org/?format=json', {}, async (err, res, body) => {
+                if(!err){
+                    let queueMSGcontent = "\n" + `${message.author}` + `\n只顯示15 首音樂! [[點我查看完整歌單](http://${JSON.parse(body).ip}:3000/music/${message.guild.id})]\n` + `__**歌曲列表:**__` + "\n" + `${serverQueue.songs.map(song => `⌛ <@${song.author.id}>添加的**\`${song.title}\`** ${song.length}`).slice(0, 15).join('\n')}` + "\n\n總共有:**" + serverQueue.songs.length + "**首音樂\n\n" + `**現正播放:** **\`${serverQueue.songs[0].title}\`**\n${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n${bar}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n 單曲循環播放: ${serverQueue.loop ? "開啟":"關閉"}\n清單循環播放: ${serverQueue.loopAll ? "開啟":"關閉"}`;
+                    let queueMSG = this.main.util.createEmbed(message.author, null, queueMSGcontent, null, 0xcc0000);
+                    try {
+                        await this.main.util.SDM(message.channel, queueMSG, message.author);
+                    }catch(e){}
+                }else{
+                    let queueMSGcontent = "\n" + `${message.author}` + "\n只顯示15 首音樂!\n" + `__**歌曲列表:**__` + "\n" + `${serverQueue.songs.map(song => `⌛ <@${song.author.id}>添加的**\`${song.title}\`** ${song.length}`).slice(0, 15).join('\n')}` + "\n\n總共有:**" + serverQueue.songs.length + "**首音樂\n\n" + `**現正播放:** **\`${serverQueue.songs[0].title}\`**\n${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n${bar}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n 單曲循環播放: ${serverQueue.loop ? "開啟":"關閉"}\n清單循環播放: ${serverQueue.loopAll ? "開啟":"關閉"}`;
+                    let queueMSG = this.main.util.createEmbed(message.author, null, queueMSGcontent, null, 0xcc0000);
+                    try {
+                        await this.main.util.SDM(message.channel, queueMSG, message.author);
+                    }catch(e){}
+                }
+            })
         }
     }
 }

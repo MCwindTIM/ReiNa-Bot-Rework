@@ -134,6 +134,7 @@ module.exports = class Util {
             id: video.id,
             title: Discord.escapeMarkdown(video.title),
             url: `https://www.youtube.com/watch?v=${video.id}`,
+            thumbnail: `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`,
             length: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
             guildtag: message.guild.name,
@@ -396,7 +397,7 @@ module.exports = class Util {
     
 
     //fetch (return obj)
-    fetchJSON(url){
+    async fetchJSON(url){
         request.get(url, {}, async (err, req, body) => {
             if(err || req.statusCode != 200){
                 return undefined;
