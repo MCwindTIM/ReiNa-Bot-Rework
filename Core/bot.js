@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const Config = require('./config');
 const Util = require('./util');
-const util = require('util');
 const http = require('http');
 const EventEmitter = require('events').EventEmitter;
 const url = require('url');
