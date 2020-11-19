@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const Config = require('./config');
 const Util = require('./util');
+const util = require('util');
 const http = require('http');
 const EventEmitter = require('events').EventEmitter;
 const url = require('url');
@@ -23,20 +24,35 @@ module.exports = class ReiNaRework {
 				const serverQueue = this.queue.get(id);
 				if(!serverQueue){
 					res.writeHead(404);
-					res.write('404 Server Error');
+					res.write('404 Server Error (Invaid Guild ID)');
+					res.end();
 				}else{
 					fs.readFile(`${__dirname}/../WebSocket/Music.html`, (err, data) => {
 						if(err){
 							res.writeHead(404);
 							res.write('404 Server Error');
+							res.end();
 						}else{
 							res.writeHead(200, {'Content-Type':'text/html', 'charset': 'utf-8'});
 							res.write(data, 'utf8');
-							res.write(`<script>var gid = ${id}</script>`, 'utf-8');
+							res.end();
 						}
-						res.end();
 					});
 				}
+				return
+			}
+			if(path === '/'){
+				fs.readFile(`${__dirname}/../WebSocket/Discord.html`, (err, data) => {
+					if(err){
+						res.writeHead(404);
+						res.write('404 Server Error');
+						res.end();
+					}else{
+						res.writeHead(200, {'Content-Type':'text/html', 'charset': 'utf-8'});
+						res.write(data, 'utf8');
+						res.end();
+					}
+				});
 				return;
 			}
 			fs.readFile(`${__dirname}/../WebSocket/${path}`, (err, data) => {
@@ -49,6 +65,7 @@ module.exports = class ReiNaRework {
 				}
 				res.end();
 			});
+			
 			//switch(path){
 			//	case '/':
 			//		fs.readFile(`${__dirname}/../WebSocket/Discord.html`, (err, data) => {
@@ -305,8 +322,25 @@ module.exports = class ReiNaRework {
 			//	});
 			//});
 			socket.on('reqMusic', data => {
-				socket.emit('MusicData', {
-					'songs': this.queue.get(data.id).songs
+				let serverQueue = this.queue.get(data.id);
+				if(serverQueue){
+					socket.emit('MusicData', {
+						'songs': this.queue.get(data.id).songs
+					})
+				}else{
+					socket.emit('MusicData', {
+						'songs': undefined
+					})
+				}
+			})
+			socket.on('reqGuild', () => {
+				this.queue.forEach(q =>{
+					socket.emit('GuildData', {
+						'guildID': q.guild.id,
+						'GuildName': q.guild.name,
+						'vcName': q.voiceChannel.name,
+						'songsLength': q.songs.length
+					})
 				})
 			})
 		});

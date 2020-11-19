@@ -16,16 +16,16 @@
 <body>
   <section>
   <!--for demo wrap-->
-  <h1 id="MainTitle">Loading...</h1>
+  <h1 id="MainTitle">載入中...</h1>
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
         <tr>
-          <th>Author</th>
-          <th>Song Title</th>
-          <th>URL</th>
-          <th>Length</th>
-          <th>Thumbnail</th>
+          <th>歌曲添加者</th>
+          <th>歌曲標題</th>
+          <th>Youtube連結</th>
+          <th>歌曲長度</th>
+          <th>歌曲縮圖</th>
         </tr>
       </thead>
     </table>
@@ -49,11 +49,16 @@
 	  var gid = window.location.href.replace(`http://${location.hostname}:${location.port}/music/`, "").replace("#", "");
     socket.emit('reqMusic',{id: gid});
 	  socket.on('MusicData', data => {
+      if(data.songs != undefined){
           data.songs.forEach(song => {
             insert(song.author.tag, song.title, song.url, song.length, song.thumbnail, song.live);
           })
-          
-	  document.getElementById("MainTitle").innerText = `Guild ID = ${gid}`;
+	        document.getElementById("MainTitle").innerText = `Discord伺服器 ID = ${gid}`;
+        }else{
+	        document.getElementById("MainTitle").innerText = `錯誤! 無法取得歌單資訊!`;
+          return;
+        }
+        
     });
 
   function insert(author, title, url, length, thumbnail, live) {
@@ -67,7 +72,7 @@
     cell1.innerHTML = author;
     cell2.innerHTML = title;
     cell3.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
-    cell4.innerHTML = live ? `🔴直播中` : length;
+    cell4.innerHTML = live ? `?????` : length;
     cell5.innerHTML = `<a href="${url}" target="_blank"><img src="${thumbnail}" height="80"></a>`;
 }
     </script>

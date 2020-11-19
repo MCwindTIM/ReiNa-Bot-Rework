@@ -142,6 +142,7 @@ module.exports = class Util {
         };
         if(!serverQueue){
             const queueConstruct = {
+                guild: message.guild,
                 textChannel: message.channel,
                 voiceChannel: voiceChannel,
                 connection: null,
