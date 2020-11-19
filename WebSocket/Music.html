@@ -50,7 +50,7 @@
     socket.emit('reqMusic',{id: gid});
 	  socket.on('MusicData', data => {
           data.songs.forEach(song => {
-            insert(song.author.username, song.title, song.url, song.length, song.thumbnail, song.live);
+            insert(song.author.tag, song.title, song.url, song.length, song.thumbnail, song.live);
           })
           
 	  document.getElementById("MainTitle").innerText = `Guild ID = ${gid}`;

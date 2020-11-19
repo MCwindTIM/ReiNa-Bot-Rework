@@ -19,51 +19,6 @@ module.exports = class ReiNaRework {
 		});
 		this.server = http.createServer((req, res) => {
 			let path = url.parse(req.url).pathname;
-			if(path === '/'){
-				fs.readFile(`${__dirname}/../WebSocket/Discord.html`, (err, data) => {
-					if(err){
-						res.writeHead(404);
-						res.write('404 Server Error');
-					}else{
-						res.writeHead(200, {'Content-Type':'text/html', 'charset': 'utf-8'});
-						res.write(data, 'utf8');
-					}
-					res.end();
-				});
-			}
-			if(path === '/style.css'){
-				fs.readFile(`${__dirname}/../WebSocket/style.css`, (err, data) => {
-					if(err){
-						res.writeHead(404);
-					}else{
-						res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
-						res.write(data, 'utf8');
-					}
-					res.end();
-				})
-			}
-			if(path === '/css/style.css'){
-				fs.readFile(`${__dirname}/../WebSocket/css/style.css`, (err, data) => {
-					if(err){
-						res.writeHead(404);
-					}else{
-						res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
-						res.write(data, 'utf8');
-					}
-					res.end();
-				})
-			}
-			if(path === '/js/index.js'){
-				fs.readFile(`${__dirname}/../WebSocket/js/index.js`, (err, data) => {
-					if(err){
-						res.writeHead(404);
-					}else{
-						res.writeHead(200, {'Content-Type': 'text/css', 'charset': 'utf-8'});
-						res.write(data, 'utf8');
-					}
-					res.end();
-				})
-			}
 			if(path.startsWith('/music/')){
 				let id = path.replace('/music/', '');
 				const serverQueue = this.queue.get(id);
@@ -83,7 +38,18 @@ module.exports = class ReiNaRework {
 						res.end();
 					});
 				}
+				return;
 			}
+			fs.readFile(`${__dirname}/../WebSocket/${path}`, (err, data) => {
+				if(err){
+					res.writeHead(404);
+					res.write('404 Server Error');
+				}else{
+					res.writeHead(200, {'charset': 'utf-8'});
+					res.write(data, 'utf8');
+				}
+				res.end();
+			});
 			//switch(path){
 			//	case '/':
 			//		fs.readFile(`${__dirname}/../WebSocket/Discord.html`, (err, data) => {
@@ -114,7 +80,7 @@ module.exports = class ReiNaRework {
 			//		res.end();
 			//		break;
 			//}
-		});;
+		});
 		this.server_io = require('socket.io');
 		this.event = new EventEmitter();
 		this.event.setMaxListeners(0);
