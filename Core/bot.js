@@ -321,6 +321,7 @@ module.exports = class ReiNaRework {
 			//	});
 			//});
 			socket.on('reqMusic', data => {
+				if(!data | !data.id) return;
 				let serverQueue = this.queue.get(data.id);
 				if(serverQueue){
 					socket.emit('MusicData', {
@@ -333,14 +334,39 @@ module.exports = class ReiNaRework {
 				}
 			})
 			socket.on('reqGuild', () => {
+				if(this.queue.size === 0){
+					socket.emit('GuildData', {
+						'state': null
+					})
+					return;
+				}
 				this.queue.forEach(q =>{
 					socket.emit('GuildData', {
 						'guildID': q.guild.id,
 						'GuildName': q.guild.name,
 						'vcName': q.voiceChannel.name,
-						'songsLength': q.songs.length
+						'songsLength': q.songs.length,
+						'loop': q.loop,
+						'loopall': q.loopAll
 					})
 				})
+			})
+			socket.on('reqPlaytime', data => {
+				if(!data || !data.id) return;
+				let serverQueue = this.queue.get(data.id);
+				if(serverQueue){
+					socket.emit('PlaytimeData', {
+						'playtime': this.queue.get(data.id).timer,
+						'length': this.queue.get(data.id).songs[0].length
+					})
+				}else{
+					socket.emit('PlaytimeData', {
+						'songs': undefined
+					})
+				}
+			})
+			this.event.on('UpdateMusicQueue', () => {
+				socket.emit('UpdateMusicNow');
 			})
 		});
 

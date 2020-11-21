@@ -50,7 +50,6 @@ module.exports = class MusicLoopAllCommand extends Command {
             serverQueue.loopAll = true;
             serverQueue.looplist = serverQueue.songs;
             this.main.util.setActivity(this.main, { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].authortag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${status}]||`, type:2});
-            return;
         }else{
             let setLoopFalse = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你關閉循環播放\n**\`整個播放列表\`**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
             try{
@@ -58,7 +57,8 @@ module.exports = class MusicLoopAllCommand extends Command {
             }catch(e){}
             serverQueue.loopAll = false;
             this.main.util.setActivity(this.main , { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].authortag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${status}]||`, type:2});
-            return;
         }
+        
+        this.main.event.emit('UpdateMusicQueue');
     }
 }

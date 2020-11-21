@@ -164,6 +164,7 @@ module.exports = class Util {
                 connection.voice.setSelfDeaf(true);
                 queueConstruct.connection = connection;
                 await this.play(message.guild, queueConstruct.songs[0]);
+                this.main.event.emit('UpdateMusicQueue');
             }catch(err){
                 console.log(err);
                 this.main.queue.delete(message.guild.id);
@@ -176,6 +177,7 @@ module.exports = class Util {
             }
         }else{
             serverQueue.songs.push(song);
+            this.main.event.emit('UpdateMusicQueue');
             if(playlist) return undefined;
             else{
                 let embed = this.createEmbed(songAuthor, null, `✅ 將**\`${song.title}\`**加入到播放列表中!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
@@ -246,6 +248,7 @@ module.exports = class Util {
                 serverQueue.songs.shift();
                 this.play(guild, serverQueue.songs[0]);
                 serverQueue.timer = Date.now();
+                this.main.event.emit('UpdateMusicQueue');
             })
             .on('error', e => {
                 let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
@@ -288,7 +291,7 @@ module.exports = class Util {
                 }
                 this.play(guild, serverQueue.songs[0]);
                 serverQueue.timer = Date.now();
-                console.log(`${song.title} → ${song.id} 開始播放!`);
+                this.main.event.emit('UpdateMusicQueue');
             })
             .on('error', e => {
                 let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
@@ -309,6 +312,7 @@ module.exports = class Util {
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
             serverQueue.timer = Date.now();
+            console.log(`${song.title} → ${song.id} 開始播放!`);
         }
     }
 

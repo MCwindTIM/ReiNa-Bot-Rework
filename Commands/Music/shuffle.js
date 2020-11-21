@@ -41,6 +41,7 @@ module.exports = class MusicShuffleCommand extends Command {
         let np = serverQueue.songs[0];
         serverQueue.songs.shift();
         serverQueue.songs = this.main.util.shuffle(serverQueue.songs);
-		serverQueue.songs.unshift(np);
+        serverQueue.songs.unshift(np);
+        this.main.event.emit('UpdateMusicQueue');
     }
 }
