@@ -53,16 +53,16 @@ module.exports = class MusicPlayCommand extends Command {
             } catch (err){
                 try{
                     let searchString = args.join(' ');
-                    let videos = await this.main.util.searchVideos(searchString, 15);
+                    let videos = await this.main.util.searchVideos(searchString, 5);
                     let index = 0;
-                    let ChooseSong = this.main.util.createEmbed(message.author, `音樂搜尋列表`, `${message.author}` + "\n**歌曲選擇:**\n" + `${videos.map(video2 => `**${++index}.** \`${video2.title}\``).join('\n')}\n\n請Senpai在1到15號結果中選擇想播放的音樂哦!\n\n`, `https://www.youtube.com/results?search_query=${args.join("+")}`, 0xcc0000);
+                    let ChooseSong = this.main.util.createEmbed(message.author, `音樂搜尋列表`, `${message.author}` + "\n**歌曲選擇:**\n" + `${videos.map(video2 => `**${++index}.** \`${video2.title}\``).join('\n')}\n\n請Senpai在1到5號結果中選擇想播放的音樂哦!\n\n`, `https://www.youtube.com/results?search_query=${args.join("+")}`, 0xcc0000);
                     message.channel.send(ChooseSong)
                     .then(msg => {
                         msg.delete({timeout: 5000}).catch(console.error);
                     }).catch();
                     try{
                         var response;
-						await message.channel.awaitMessages(message2 => message2.content > 0 && message2.content < 16, {
+						await message.channel.awaitMessages(message2 => message2.content > 0 && message2.content < 6, {
                             max: 1,
                             time: 10000,
                             errors: ['time']
@@ -76,9 +76,9 @@ module.exports = class MusicPlayCommand extends Command {
                         return;
                     }
                     const videoIndex = parseInt(response.first().content);
-                    var video = await this.main.util.getVideoByID(videos[videoIndex -1].id);
+                    var video = await this.main.util.getVideo(videos[videoIndex -1].id);
                 } catch(err){
-                    let noResult = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 我沒法取得任何搜尋結果!`, null, 0xcc0000);
+                    let noResult = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 我沒法取得任何搜尋結果! (可能因為Youtube Api 限額超過上限)`, null, 0xcc0000);
                     this.main.util.SDM(message.channel, noResult, message.author);
                     return;
                 }

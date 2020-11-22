@@ -100,7 +100,7 @@ module.exports = class Util {
 
     //請求Youtube 影片
     async getVideo(url){
-        return await this.youtube.getVideo(url);
+        return await ytdl.getInfo(url);
     }
 
     //搜尋Youtube 影片
@@ -114,31 +114,34 @@ module.exports = class Util {
     }
 
     //使用Youtube 影片ID 請求影片
-    getVideoByID(id){
-        return this.youtube.getVideoByID(id);
-    }
+    //getVideoByID(id){
+    //    return this.youtube.getVideoByID(id);
+    //}
 
 
     //處理Youtube影片
     async handleVideo(video, message, songAuthor, voiceChannel, playlist = false, startTime){
         const serverQueue = this.main.queue.get(message.guild.id);
         startTime = `${startTime}` || `0s`;
-        let vdh = video.duration.hours;
-        let vdm = video.duration.minutes;
-        let vds = video.duration.seconds;
+        let videoLength = video.videoDetails.lengthSeconds;
+        let vdh = Math.floor(videoLength / 3600);
+        videoLength = videoLength % 3600;
+        let vdm = Math.floor(videoLength / 60);
+        videoLength = videoLength % 60;
+        let vds = Math.floor(videoLength);
         if(vdh < 10) vdh = `0${vdh}`;
         if(vdm < 10) vdm = `0${vdm}`;
         if(vds < 10) vds = `0${vds}`;
 
         var song = {
-            id: video.id,
-            title: Discord.escapeMarkdown(video.title),
-            url: `https://www.youtube.com/watch?v=${video.id}`,
-            thumbnail: `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`,
-            length: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
+            id: video.videoDetails.videoId,
+            title: Discord.escapeMarkdown(video.videoDetails.title),
+            url: `https://www.youtube.com/watch?v=${video.videoDetails.videoId}`,
+            thumbnail: `https://img.youtube.com/vi/${video.videoDetails.videoId}/hqdefault.jpg`,
+            length: video.videoDetails.lengthSeconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
             guildtag: message.guild.name,
-            live: video.duration.hours === 0 && video.duration.minutes === 0 && video.duration.seconds === 0 ? true : false
+            live: video.videoDetails.isLiveContent
         };
         if(!serverQueue){
             const queueConstruct = {
@@ -220,7 +223,7 @@ module.exports = class Util {
             }).catch();
             await serverQueue.voiceChannel.leave();
             await this.main.queue.delete(guild.id);
-            await this.setActivity(this.main);
+            this.setActivity(this.main);
             return;
         }
 
@@ -326,7 +329,7 @@ module.exports = class Util {
         channel.startTyping();
         const sentMsg = await channel.send(message);
         await sentMsg.react('🗑');
-        const collector = sentMsg.createReactionCollector((reaction, user) => reaction.emoji.name === '🗑' && !user.bot && user.id === author.id || reaction.message.member.hasPermission('MANAGE_MESSAGES') === true && !user.bot && reaction.emoji.name === '🗑', { time:1000 * 60 * 10, max: 1});
+        const collector = sentMsg.createReactionCollector((reaction, user) => reaction.emoji.name === '🗑' && !user.bot && user.id === author.id || reaction.message.member.hasPermission('MANAGE_MESSAGES') === true && !user.bot && reaction.emoji.name === '🗑', { time: 1800000, max: 1}); //30mins
         collector.on('end', async collected => {
             if(collected.size){
                 try{
@@ -339,7 +342,7 @@ module.exports = class Util {
             }
             if(sentMsg.guild.me.hasPermission('MANAGE_MESSAGES')) { 
                 try{
-                    await sentMsg.reactions.removeAll() ;
+                    await sentMsg.reactions.removeAll();
                 } catch(e){}
             }
             else{ 
