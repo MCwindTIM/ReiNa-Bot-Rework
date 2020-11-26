@@ -20,22 +20,15 @@ module.exports = class MusicQueueCommand extends Command {
             }catch(e){}
             return;
         }else{
-            let playtime;
-            if(serverQueue.timer != null){
-                playtime = Date.now() - serverQueue.timer;
-            }else{
-                playtime = 0;
-            }
-            let h = Math.floor(playtime / 3600000);
+            let playtime = serverQueue.playtime;
+            let h = Math.floor(playtime / 3600);
             if (h < 10) h = "0" + h;
-            playtime = playtime % 3600000;
-            let m = Math.floor(playtime / 60000);
+            playtime = playtime % 3600;
+            let m = Math.floor(playtime / 60);
             if (m < 10) m = "0" + m;
-            playtime = playtime % 60000;
-            let s = Math.floor(playtime / 1000);
+            playtime = playtime % 60;
+            let s = playtime;
             if (s < 10) s = "0" + s;
-            playtime = playtime % 1000;
-            if (playtime < 10) playtime = "0" + playtime;
             
             let bar;
             if(!serverQueue.songs[0].live){

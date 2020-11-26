@@ -356,7 +356,7 @@ module.exports = class ReiNaRework {
 				let serverQueue = this.queue.get(data.id);
 				if(serverQueue){
 					socket.emit('PlaytimeData', {
-						'playtime': this.queue.get(data.id).timer,
+						'playtime': this.queue.get(data.id).playtime,
 						'length': this.queue.get(data.id).songs[0].length
 					})
 				}else{

@@ -154,6 +154,7 @@ module.exports = class Util {
                 loop: false,
                 loopAll: false,
                 playing: true,
+                playtime: 0,
                 timer: null,
                 LiveDataLastUpdate: null,
                 LiveEndChecker: null
@@ -250,7 +251,6 @@ module.exports = class Util {
             .on('finish', end => {
                 serverQueue.songs.shift();
                 this.play(guild, serverQueue.songs[0]);
-                serverQueue.timer = Date.now();
                 this.main.event.emit('UpdateMusicQueue');
             })
             .on('error', e => {
@@ -271,7 +271,10 @@ module.exports = class Util {
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.setActivity(this.main, { string: `正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
-            serverQueue.timer = Date.now();
+            
+            clearInterval(serverQueue.timer);
+            serverQueue.playtime = 0;
+            serverQueue.timer = setInterval(() => { serverQueue.playtime++}, 1000);
             console.log(`${song.title} → ${song.id} 為即時直播串流!`);
         }else{
             dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
@@ -293,7 +296,6 @@ module.exports = class Util {
                     }
                 }
                 this.play(guild, serverQueue.songs[0]);
-                serverQueue.timer = Date.now();
                 this.main.event.emit('UpdateMusicQueue');
             })
             .on('error', e => {
@@ -314,7 +316,9 @@ module.exports = class Util {
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
-            serverQueue.timer = Date.now();
+            clearInterval(serverQueue.timer);
+            serverQueue.playtime = 0;
+            serverQueue.timer = setInterval(() => { serverQueue.playtime++}, 1000);
             console.log(`${song.title} → ${song.id} 開始播放!`);
         }
     }
