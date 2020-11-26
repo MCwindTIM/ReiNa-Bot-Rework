@@ -74,7 +74,12 @@
         //${h}:${m}:${s}
         let link = document.getElementsByTagName('td')[2].innerText;
         let target = document.getElementsByTagName('td')[3];
-        target.innerHTML = `<a href="${link}&t=${totalsec}" target="_blank">${h}:${m}:${s}</a>/${data.length.replace(':red_circle:', '🔴')}`;
+        if(data.length === "00:00:00"){
+          data.length = "🔴直播中";
+          target.innerHTML = `<a href="${link}" target="_blank">${h}:${m}:${s}</a>/${data.length}`;
+        }else{
+          target.innerHTML = `<a href="${link}&t=${totalsec}" target="_blank">${h}:${m}:${s}</a>/${data.length}`;
+        }
     })
 	  socket.on('UpdateMusicNow', () => {
       document.getElementById("queue").innerHTML = "";
