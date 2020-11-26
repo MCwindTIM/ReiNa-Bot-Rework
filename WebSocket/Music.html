@@ -62,7 +62,6 @@
     });
     socket.on('PlaytimeData', data => {
       let playtime = data.playtime;
-      console.log(playtime);
         let totalsec = playtime;
         let h = Math.floor(playtime / 3600);
         if (h < 10) h = "0" + h;
