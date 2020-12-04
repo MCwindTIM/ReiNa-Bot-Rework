@@ -74,7 +74,7 @@
         //${h}:${m}:${s}
         let link = document.getElementsByTagName('td')[2].innerText;
         let target = document.getElementsByTagName('td')[3];
-        if(data.length === "00:00:00"){
+        if(data.length === ":red_circle: Youtube 直播中"){
           data.length = "🔴直播中";
           target.innerHTML = `<a href="${link}" target="_blank">${h}:${m}:${s}</a>/${data.length}`;
         }else{

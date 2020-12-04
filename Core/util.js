@@ -137,8 +137,8 @@ module.exports = class Util {
             id: video.videoDetails.videoId,
             title: Discord.escapeMarkdown(video.videoDetails.title),
             url: `https://www.youtube.com/watch?v=${video.videoDetails.videoId}`,
-            thumbnail: `https://img.youtube.com/vi/${video.videoDetails.videoId}/hqdefault.jpg`,
-            length: video.videoDetails.lengthSeconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
+            thumbnail: `https://i3.ytimg.com/vi/${video.videoDetails.videoId}/hqdefault.jpg`,
+            length: video.videoDetails.isLiveContent ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
             guildtag: message.guild.name,
             live: video.videoDetails.isLiveContent
