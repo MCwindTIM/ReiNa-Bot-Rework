@@ -46,14 +46,14 @@ module.exports = class MusicLoopCommand extends Command {
                 this.main.util.SDM(message.channel, setLoopTrue, message.author);
             }catch(e){}
             serverQueue.loop = true;
-            this.main.util.setActivity(this.main, { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].authortag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: 開啟]||`, type:2});
+            this.main.util.setActivity(this.main, { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].author.tag} 添加, ||[單曲循環播放: 開啟]||`, type:2});
         }else{
             let setLoopFalse = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你關閉循環播放\n<@${serverQueue.songs[0].author.id}>添加的**\`${serverQueue.songs[0].title}\`**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
             try{
                 this.main.util.SDM(message.channel, setLoopFalse, message.author);
             }catch(e){}
             serverQueue.loop = false;
-            this.main.util.setActivity(this.main , { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].authortag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: 關閉]||`, type:2});
+            this.main.util.setActivity(this.main , { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].author.tag} 添加, ||[單曲循環播放: 關閉]||`, type:2});
         }
         this.main.event.emit('UpdateMusicQueue');
     }
