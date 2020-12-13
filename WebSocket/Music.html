@@ -53,7 +53,7 @@
 	  socket.on('MusicData', data => {
       if(data.songs != undefined){
           data.songs.forEach(song => {
-            insert(song.author.tag, song.title, song.url, song.length, song.thumbnail, song.live, song.addTime);
+            insert(song.author.tag, song.title, song.url, song.length, song.thumbnail, song.live, song.addTime, song.lengthSeconds);
           })
 	        document.getElementById("MainTitle").innerHTML = `Discord伺服器 ID: ${gid} <a href="http://${location.hostname}:${location.port}/">點我回到主頁面</a>`;
         }else{
@@ -89,7 +89,7 @@
       socket.emit('reqMusic',{id: gid});
     })
 
-  function insert(author, title, url, length, thumbnail, live, addTime) {
+  function insert(author, title, url, length, thumbnail, live, addTime, lengthSeconds) {
     var table = document.getElementById("queue");
     var row = table.insertRow(-1);
     var cell1 = row.insertCell(0);
@@ -101,7 +101,7 @@
     cell1.innerHTML = author;
     cell2.innerHTML = title;
     cell3.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
-    cell4.innerHTML = live ? `🔴直播中` : length;
+    cell4.innerHTML = live && lengthSeconds === 0 ? `🔴直播中` : length;
     cell5.innerHTML = addTime;
     cell6.innerHTML = `<a href="${url}" target="_blank"><img src="${thumbnail}" height="80"></a>`;
 }
