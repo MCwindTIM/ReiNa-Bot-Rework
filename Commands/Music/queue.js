@@ -21,6 +21,7 @@ module.exports = class MusicQueueCommand extends Command {
             return;
         }else{
             let playtime = serverQueue.playtime;
+            let totalsec = playtime;
             let h = Math.floor(playtime / 3600);
             if (h < 10) h = "0" + h;
             playtime = playtime % 3600;
@@ -31,14 +32,10 @@ module.exports = class MusicQueueCommand extends Command {
             if (s < 10) s = "0" + s;
             
             let bar;
-            if(!serverQueue.songs[0].live){
-                let TotalArray = serverQueue.songs[0].length.split(":");
-                let barTotal = parseInt(TotalArray[0])*60*60 + parseInt(TotalArray[1])*60 + parseInt(TotalArray[2]);
-                let CurrentArray = `${h}:${m}:${s}`.split(":");
-                let barCurrent = parseInt(CurrentArray[0])*60*60 + parseInt(CurrentArray[1])*60 + parseInt(CurrentArray[2]);
-                bar = this.main.util.progressbar(barTotal, barCurrent);
-            }else{
+            if(serverQueue.songs[0].live && serverQueue.songs[0].lengthSeconds === 0){
                 bar = this.main.util.progressbar(100, 100);
+            }else{
+                bar = this.main.util.progressbar(serverQueue.songs[0].lengthSeconds, totalsec);
             }
 
             request.get('https://api.ipify.org/?format=json', {}, async (err, res, body) => {

@@ -33,7 +33,7 @@ module.exports = class MusicLoopCommand extends Command {
             }catch(e){}
             return;
         }
-        if(serverQueue.songs[0].live){
+        if(serverQueue.songs[0].live && serverQueue.songs[0].lengthSeconds === 0){
             let LiveNoLoop = this.main.util.createEmbed(message.author, null, `${message.author} 正在播放直播串流, 無法使用循環播放功能!`, null, 0xcc0000);
             try{
                 await this.main.util.SDM(message.channel, LiveNoLoop, message.author);
