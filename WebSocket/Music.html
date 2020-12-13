@@ -25,6 +25,7 @@
           <th>歌曲標題</th>
           <th>Youtube連結</th>
           <th>已播放/歌曲長度</th>
+          <th>歌曲加入時間</th>
           <th>歌曲縮圖</th>
         </tr>
       </thead>
@@ -52,7 +53,7 @@
 	  socket.on('MusicData', data => {
       if(data.songs != undefined){
           data.songs.forEach(song => {
-            insert(song.author.tag, song.title, song.url, song.length, song.thumbnail, song.live);
+            insert(song.author.tag, song.title, song.url, song.length, song.thumbnail, song.live, song.addTime);
           })
 	        document.getElementById("MainTitle").innerHTML = `Discord伺服器 ID: ${gid} <a href="http://${location.hostname}:${location.port}/">點我回到主頁面</a>`;
         }else{
@@ -88,7 +89,7 @@
       socket.emit('reqMusic',{id: gid});
     })
 
-  function insert(author, title, url, length, thumbnail, live) {
+  function insert(author, title, url, length, thumbnail, live, addTime) {
     var table = document.getElementById("queue");
     var row = table.insertRow(-1);
     var cell1 = row.insertCell(0);
@@ -96,11 +97,13 @@
     var cell3 = row.insertCell(2);
     var cell4 = row.insertCell(3);
     var cell5 = row.insertCell(4);
+    var cell6 = row.insertCell(5);
     cell1.innerHTML = author;
     cell2.innerHTML = title;
     cell3.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
     cell4.innerHTML = live ? `🔴直播中` : length;
-    cell5.innerHTML = `<a href="${url}" target="_blank"><img src="${thumbnail}" height="80"></a>`;
+    cell5.innerHTML = addTime;
+    cell6.innerHTML = `<a href="${url}" target="_blank"><img src="${thumbnail}" height="80"></a>`;
 }
     </script>
 </body>

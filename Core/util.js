@@ -141,7 +141,8 @@ module.exports = class Util {
             length: video.videoDetails.isLiveContent ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
             author: songAuthor,
             guildtag: message.guild.name,
-            live: video.videoDetails.isLiveContent
+            live: video.videoDetails.isLiveContent,
+            addTime: this.getTime()
         };
         if(!serverQueue){
             const queueConstruct = {
