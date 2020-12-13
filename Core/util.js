@@ -247,6 +247,12 @@ module.exports = class Util {
                 //Update Live Data receive time
                 serverQueue.LiveDataLastUpdate = Date.now();
             });
+            stream.on('error', e =>{
+                    let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
+                    error.addField('發生問題的影片資訊(Debug)', `\`\`\`javascript\n影片標題: ${song.title}\n影片ID: ${song.id}\n直播? ${song.live}\n\`\`\``);
+                    error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
+                    this.SDM(serverQueue.textChannel, error, song.author);
+            })
             dispatcher = serverQueue.connection.play(stream)
             .on('finish', end => {
                 serverQueue.songs.shift();
@@ -254,12 +260,9 @@ module.exports = class Util {
                 this.main.event.emit('UpdateMusicQueue');
             })
             .on('error', e => {
-                let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
-                error.addField('發生問題的影片資訊(Debug)', `\`\`\`javascript\n影片標題: ${song.title}\n影片ID: ${song.id}\n直播? ${song.live}\n\`\`\``);
-                error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
-                this.SDM(serverQueue.textChannel, error, song.author);
-                this.main.queue.delete(guild.id);
-                serverQueue.voiceChannel.leave();
+                serverQueue.songs.shift();
+                this.play(guild, serverQueue.songs[0]);
+                this.main.event.emit('UpdateMusicQueue');
                 this.setActivity(this.main);
             });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
@@ -277,6 +280,12 @@ module.exports = class Util {
             serverQueue.timer = setInterval(() => { serverQueue.playtime++}, 1000);
             console.log(`${song.title} → ${song.id} 為即時直播串流!`);
         }else{
+            stream.on('error', e =>{
+                let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
+                error.addField('發生問題的影片資訊(Debug)', `\`\`\`javascript\n影片標題: ${song.title}\n影片ID: ${song.id}\n直播? ${song.live}\n\`\`\``);
+                error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
+                this.SDM(serverQueue.textChannel, error, song.author);
+            })
             dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
             .on('finish', end => {
                 if(serverQueue.loop == false){
@@ -299,12 +308,9 @@ module.exports = class Util {
                 this.main.event.emit('UpdateMusicQueue');
             })
             .on('error', e => {
-                let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
-                error.addField('發生問題的影片資訊(Debug)', `\`\`\`javascript\n影片標題: ${song.title}\n影片ID: ${song.id}\n直播? ${song.live}\n\`\`\``);
-                error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
-                this.SDM(serverQueue.textChannel, error, song.author);
-                this.main.queue.delete(guild.id);
-                serverQueue.voiceChannel.leave();
+                serverQueue.songs.shift();
+                this.play(guild, serverQueue.songs[0]);
+                this.main.event.emit('UpdateMusicQueue');
                 this.setActivity(this.main);
             });
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
