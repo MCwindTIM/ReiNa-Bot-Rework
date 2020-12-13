@@ -138,7 +138,8 @@ module.exports = class Util {
             title: Discord.escapeMarkdown(video.videoDetails.title),
             url: `https://www.youtube.com/watch?v=${video.videoDetails.videoId}`,
             thumbnail: `https://i3.ytimg.com/vi/${video.videoDetails.videoId}/hqdefault.jpg`,
-            length: video.videoDetails.isLiveContent ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
+            length: video.videoDetails.isLiveContent && video.videoDetails.lengthSeconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
+            lengthSeconds: video.videoDetails.lengthSeconds,
             author: songAuthor,
             guildtag: message.guild.name,
             live: video.videoDetails.isLiveContent,
@@ -232,7 +233,7 @@ module.exports = class Util {
         let dispatcher;
         let stream = ytdl(song.url);
         //Check video is live or not
-        if(song.live){
+        if(song.live && song.lengthSeconds === 0){
             //youtube live (always dont cache)
 
             //Bot will leave voiceChannel or play the next song when no data received from youtube live within 30 seconds
