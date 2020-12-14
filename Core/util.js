@@ -389,8 +389,8 @@ module.exports = class Util {
     //}
 
     //Check Owner Perm
-    checkOwner(user){
-        if(user.id != this.main.config.ownerID){
+    checkOwner(uid){
+        if(uid != this.main.config.ownerID){
             return false;
         }
         return true;
@@ -402,6 +402,13 @@ module.exports = class Util {
 		if(ReiNa.queue.size === 0){
 			ReiNa.bot.user.setActivity(status.string, {type: status.type});
 		}
+    }
+
+
+    //check user perm (allow eval command)
+    checkUserPerm(uid){
+        let pass = this.main.config.adminID.includes(uid) || +uid === +this.main.config.ownerID ? true : false;
+        return pass;
     }
     
 

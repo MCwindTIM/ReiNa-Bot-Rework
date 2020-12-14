@@ -17,7 +17,7 @@ module.exports = class EvalCommand extends Command {
     }
     async run(message, args, prefix){
         //message.delete().catch(); not to delete the message until make sure no attachments;
-        if(this.main.util.checkOwner(message.author)){
+        if(this.main.util.checkUserPerm(message.author.id)){
             let toEval = args.join(" ");
             let file = message.attachments.get(message.attachments.keys().next().value) ? true : false;
             try{
