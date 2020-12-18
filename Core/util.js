@@ -381,8 +381,8 @@ module.exports = class Util {
         replace(/'/g, '&#027;').
         replace(/>/g, '&gt').
         replace(/\//g, '&#047');
-     }
-
+    }
+    
     //Get MusicTimer
     //getMusicTimer(gid){
     //    return this.main.musictimer.get(gid);
