@@ -42,7 +42,7 @@ module.exports = class EvalCommand extends Command {
                         }catch(e){}
                     }else{
                         let url = message.attachments.get(message.attachments.keys().next().value).url;
-                        if(url.endsWith(".txt")){
+                        if(url.endsWith(".txt") || url.endsWith(".js")){
                             request.get(url, {}, async (err, req, body) => {
                                 try{
                                     let evaluated = inspect(eval(eval(body, {depth: 0}), { depth: 0} ));
