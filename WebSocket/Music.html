@@ -15,7 +15,7 @@
 
 <body>
   <section>
-  <!--for demo wrap-->
+  <!--wrap-->
   <h1 id="MainTitle">載入中...</h1>
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
@@ -53,7 +53,7 @@
 	  socket.on('MusicData', data => {
       if(data.songs != undefined){
           data.songs.forEach(song => {
-            insert(song.author.tag, song.title, song.url, song.length, song.thumbnail, song.live, song.addTime, song.lengthSeconds);
+            insert(song.author, song.title, song.url, song.length, song.thumbnail, song.live, song.addTime, song.lengthSeconds);
           })
 	        document.getElementById("MainTitle").innerHTML = `Discord伺服器 ID: ${gid} <a href="http://${location.hostname}:${location.port}/">點我回到主頁面</a>`;
         }else{
@@ -98,7 +98,7 @@
     var cell4 = row.insertCell(3);
     var cell5 = row.insertCell(4);
     var cell6 = row.insertCell(5);
-    cell1.innerHTML = author;
+    cell1.innerHTML = `<a href="https://discordapp.com/users/${author.id}/" target ="_blank">${author.tag}<a>`;
     cell2.innerHTML = title;
     cell3.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
     cell4.innerHTML = live && lengthSeconds === 0 ? `🔴直播中` : length;
