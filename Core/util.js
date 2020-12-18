@@ -122,7 +122,7 @@ module.exports = class Util {
     //處理Youtube影片
     async handleVideo(video, message, songAuthor, voiceChannel, playlist = false, startTime){
         const serverQueue = this.main.queue.get(message.guild.id);
-        startTime = startTime >= +video.videoDetails.lengthSeconds < +startTime || startTime == null || starTime == NaN  ? 0 : startTime;
+        startTime = +video.videoDetails.lengthSeconds < +startTime || startTime == null || startTime == NaN  ? 0 : startTime;
         let videoLength = video.videoDetails.lengthSeconds;
         let vdh = Math.floor(videoLength / 3600);
         videoLength = videoLength % 3600;

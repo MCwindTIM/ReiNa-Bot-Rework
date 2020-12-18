@@ -72,10 +72,8 @@ module.exports = class MusicPlayCommand extends Command {
                 var video = await this.main.util.getVideo(url);
                 let timeRegex = /(?:.+?)?(?:\\v\\|watch\\|\\?v=|\\&v=|youtu\\.be\\|\\v=|^youtu\\.be\\|\/youtu.be\/)(?:[a-zA-Z0-9_-]{11})+(?:[a-zA-Z0-9;:@#?&%=+\/\$_.-][\d]*)(?:t=|start=)(\d+)/g;
                 let startTime = timeRegex.exec(url);
-                if(startTime){
-                    if(!args[1]){
+                if(startTime != null && !args[1]){
                         args[1] = +startTime[1];
-                    }
                 }
             } catch (err){
                 try{
