@@ -50,6 +50,13 @@ module.exports = class MusicPlayCommand extends Command {
         }else{
             try{
                 var video = await this.main.util.getVideo(url);
+                let timeRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*)(?:(\?t|&start)=(\d+))?.*/g;
+                let startTime = timeRegex.exec(url);
+                if(+startTime[startTime.length - 1]){
+                    if(!args[1]){
+                        args[1] = +startTime[startTime.length -1];
+                    }
+                }
             } catch (err){
                 try{
                     let searchString = args.join(' ');
@@ -84,9 +91,9 @@ module.exports = class MusicPlayCommand extends Command {
                 }
             }
             if(!serverQueue){
-                await this.main.util.handleVideo(video, message, message.author, voiceChannel);
+                await this.main.util.handleVideo(video, message, message.author, voiceChannel, args[1]? parseInt(args[1]) : 0);
             }else{
-                await this.main.util.handleVideo(video, message, message.author, voiceChannel);
+                await this.main.util.handleVideo(video, message, message.author, voiceChannel, args[1]? parseInt(args[1]) : 0);
                 let before = serverQueue.songs[0];
                 let Newestsong = serverQueue.songs[serverQueue.songs.length - 1];
                 await serverQueue.songs.pop();

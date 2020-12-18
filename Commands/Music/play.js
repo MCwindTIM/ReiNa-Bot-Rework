@@ -70,6 +70,13 @@ module.exports = class MusicPlayCommand extends Command {
         }else{
             try{
                 var video = await this.main.util.getVideo(url);
+                let timeRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*)(?:(\?t|&start)=(\d+))?.*/g;
+                let startTime = timeRegex.exec(url);
+                if(+startTime[startTime.length - 1]){
+                    if(!args[1]){
+                        args[1] = +startTime[startTime.length -1];
+                    }
+                }
             } catch (err){
                 try{
                     let searchString = args.join(' ');
@@ -97,7 +104,7 @@ module.exports = class MusicPlayCommand extends Command {
                     }
                     const videoIndex = parseInt(response.first().content);
                     var video = await this.main.util.getVideo(videos[videoIndex -1].id);
-                    return this.main.util.handleVideo(video, message, message.author, voiceChannel, false, `0s`);
+                    return this.main.util.handleVideo(video, message, message.author, voiceChannel, false);
                 } catch(err){
                     console.log(err)
                     let noResult = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 我沒法取得任何搜尋結果! (可能因為Youtube Api 限額超過上限)`, null, 0xcc0000);
@@ -105,7 +112,7 @@ module.exports = class MusicPlayCommand extends Command {
                     return;
                 }
             }
-            return this.main.util.handleVideo(video, message, message.author, voiceChannel, false, args[1]? `${parseInt(args[1])}s` : `0s`);
+            return this.main.util.handleVideo(video, message, message.author, voiceChannel, false, args[1]? parseInt(args[1]) : 0);
         }
     }
 }

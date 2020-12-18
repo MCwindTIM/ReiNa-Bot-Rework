@@ -122,7 +122,7 @@ module.exports = class Util {
     //處理Youtube影片
     async handleVideo(video, message, songAuthor, voiceChannel, playlist = false, startTime){
         const serverQueue = this.main.queue.get(message.guild.id);
-        startTime = `${startTime}` || `0s`;
+        startTime >= +video.videoDetails.lengthSeconds || startTime == null ? 0 : startTime;
         let videoLength = video.videoDetails.lengthSeconds;
         let vdh = Math.floor(videoLength / 3600);
         videoLength = videoLength % 3600;
@@ -143,6 +143,7 @@ module.exports = class Util {
             author: songAuthor,
             guildtag: message.guild.name,
             live: video.videoDetails.isLiveContent,
+            startTime: startTime,
             addTime: this.getTime()
         };
         if(!serverQueue){
@@ -288,7 +289,7 @@ module.exports = class Util {
                 error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
                 this.SDM(serverQueue.textChannel, error, song.author);
             })
-            dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}))
+            dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}), {seek: song.startTime})
             .on('finish', end => {
                 if(serverQueue.loop == false){
                     if(serverQueue.loopAll == false){
@@ -325,7 +326,7 @@ module.exports = class Util {
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
             clearInterval(serverQueue.timer);
-            serverQueue.playtime = 0;
+            serverQueue.playtime = 0 + song.startTime;
             serverQueue.timer = setInterval(() => { serverQueue.playtime++}, 1000);
             console.log(`${song.title} → ${song.id} 開始播放!`);
         }
