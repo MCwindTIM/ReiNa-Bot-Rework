@@ -70,11 +70,11 @@ module.exports = class MusicPlayCommand extends Command {
         }else{
             try{
                 var video = await this.main.util.getVideo(url);
-                let timeRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*)(?:(\?t|&start)=(\d+))?.*/g;
+                let timeRegex = /(?:.+?)?(?:\\v\\|watch\\|\\?v=|\\&v=|youtu\\.be\\|\\v=|^youtu\\.be\\|\/youtu.be\/)(?:[a-zA-Z0-9_-]{11})+(?:[a-zA-Z0-9;:@#?&%=+\/\$_.-][\d]*)(?:t=|start=)(\d+)/g;
                 let startTime = timeRegex.exec(url);
-                if(+startTime[startTime.length - 1]){
+                if(startTime){
                     if(!args[1]){
-                        args[1] = +startTime[startTime.length -1];
+                        args[1] = +startTime[1];
                     }
                 }
             } catch (err){
