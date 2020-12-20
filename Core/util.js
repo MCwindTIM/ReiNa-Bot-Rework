@@ -11,6 +11,7 @@ const pb = require('string-progressbar');
 //request module
 const request = require("request");
 
+
 //delay
 //const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -232,7 +233,14 @@ module.exports = class Util {
         }
 
         let dispatcher;
-        let stream = ytdl(song.url);
+        let stream = ytdl(song.url, {
+            requestOptions: {
+                headers: {
+                    cookie: this.main.config.youtubeCookie,
+                    'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
+                },
+            },
+        });
         //Check video is live or not
         if(song.live && song.lengthSeconds === 0){
             //youtube live (always dont cache)
@@ -289,7 +297,13 @@ module.exports = class Util {
                 error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
                 this.SDM(serverQueue.textChannel, error, song.author);
             })
-            dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25}), {seek: song.startTime})
+            dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25, requestOptions: {
+                headers: {
+                    cookie: this.main.config.youtubeCookie,
+                    'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
+                },
+            },
+        }), {seek: song.startTime})
             .on('finish', end => {
                 if(serverQueue.loop == false){
                     if(serverQueue.loopAll == false){
