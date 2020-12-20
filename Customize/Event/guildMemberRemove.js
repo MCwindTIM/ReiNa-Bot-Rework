@@ -34,5 +34,5 @@ module.exports.sendByeMessage = async (member) => {
     ctx.putImageData(pixels, 150, 30);
     const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'bye.png');
 
-    channel.send(`${member} 逃離了**${member.guild.name}**.`, attachment);
+    channel.send(`${member.user.tag} 逃離了**${member.guild.name}**.`, attachment);
 }
