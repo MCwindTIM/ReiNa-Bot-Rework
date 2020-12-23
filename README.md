@@ -7,8 +7,8 @@ V12 重寫 MCwind's Discord Server --- ReiNa
 - Apex api **https://apexlegendsapi.com/**
 - Youtube api **https://developers.google.com/youtube/v3**
 - Pic api **https://saucenao.com/**
-- Config 內 Youtube Cookie & Youtube Identity Token 
-  用作播放會員限定/Youtube Premium 用
+- Config 內 Youtube Cookie & Youtube Identity Token<br>
+  用作播放會員限定/Youtube Premium 用<br>
   你的Youtube賬戶依然需要有特定頻道會員/Youtube premium
 - 此Discord Bot 為MCwind's Discord Server而設
 
