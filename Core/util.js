@@ -220,14 +220,20 @@ module.exports = class Util {
             return;
         }
         
+        //檢查語音頻道除了自己還有沒有其他使用者
         if(member <= 1 || !member){
+            //建立, 發送停止播放信息
             let stopPlayingMSG = this.createEmbed(serverQueue.songs[0].author, null, `${serverQueue.songs[0].author} Senpai, 現在語音頻道只剩我一個了呢! 為了更好更流暢的服務, 我就先停止播放音樂了, 需要播放音樂的話隨時都可以再叫我喲 (＾Ｕ＾)ノ~ＹＯ\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
             serverQueue.textChannel.send(stopPlayingMSG)
             .then(msg => {
+                //5秒後自動刪除信息
                 msg.delete({timeout: 5000}).catch(console.error);
             }).catch();
+            //離開語音頻道
             await serverQueue.voiceChannel.leave();
+            //刪除伺服器歌曲列表
             await this.main.queue.delete(guild.id);
+            //設置Discord狀態到預設狀態
             this.setActivity(this.main);
             return;
         }
@@ -235,12 +241,16 @@ module.exports = class Util {
         let dispatcher;
         let stream = ytdl(song.url, {
             requestOptions: {
+                //request Headers
                 headers: {
                     cookie: this.main.config.youtubeCookie,
                     'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
                 },
+                //end of req Headers
             },
-        });
+            //end of reqOptions
+        } //end of ytdl options
+        );
         //Check video is live or not
         if(song.live && song.lengthSeconds === 0){
             //youtube live (always dont cache)
@@ -297,6 +307,7 @@ module.exports = class Util {
                 error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
                 this.SDM(serverQueue.textChannel, error, song.author);
             })
+            //設置dispatcher (與直播影片不一樣的設定)
             dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25, requestOptions: {
                 headers: {
                     cookie: this.main.config.youtubeCookie,
@@ -305,6 +316,7 @@ module.exports = class Util {
             },
         }), {seek: song.startTime})
             .on('finish', end => {
+                //歌曲完結時檢查 歌曲循環/歌單循環是否開啟
                 if(serverQueue.loop == false){
                     if(serverQueue.loopAll == false){
                         serverQueue.songs.shift();
