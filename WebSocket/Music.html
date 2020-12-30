@@ -59,6 +59,7 @@
         }else{
 	        document.getElementById("MainTitle").innerHTML = `Discord伺服器ID: ${gid} 的播放清單已經播放完畢!<a href="http://${location.hostname}:${location.port}/">點我回到主頁面</a>`;
         }
+        socket.emit('reqPlaytime',{id: gid});
 		  ptTimer = setInterval(function(){ socket.emit('reqPlaytime',{id: gid}); }, 1000);
     });
     socket.on('PlaytimeData', data => {
