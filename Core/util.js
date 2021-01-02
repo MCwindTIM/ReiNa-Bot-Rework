@@ -354,7 +354,7 @@ module.exports = class Util {
             clearInterval(serverQueue.timer);
             serverQueue.playtime = 0 + song.startTime;
             serverQueue.timer = setInterval(() => { serverQueue.playtime++}, 1000);
-            console.log(`${song.title} → ${song.id} 開始播放!`);
+            console.log(`${this.color.FgYellow}${this.getTime()}${this.color.Reset} ${song.title} → ${song.id} 開始播放!`);
         }
     }
 
