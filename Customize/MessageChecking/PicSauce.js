@@ -7,13 +7,13 @@ const portal = {
 }
 module.exports.PicFind = async (ReiNa, message) => {
     const saucetoken = ReiNa.config.PicAPI;
+    const selfHostapi = ReiNa.config.selfHostPixivAPIip;
         try {
             try {
                 if (message.author.ReiNa) {
                     return
                 }
                 if (message.content.match(/https?:\/\/(www\.)?[pixiv]{1,256}\.[a-zA-Z0-9()]{1,6}\b\/artworks\/[0-9()]{1,15}/g) || message.content.match(/https?:\/\/(www\.)?[pixiv]{1,256}\.[a-zA-Z0-9()]{1,6}\b\/[a-zA-Z][a-zA-Z]\/artworks\/[0-9()]{1,15}/g)) {
-                    message.delete().catch();
                     let url;
                     let regexreplace;
                     if (message.content.match(/https?:\/\/(www\.)?[pixiv]{1,256}\.[a-zA-Z0-9()]{1,6}\b\/artworks\/[0-9()]{1,15}/g)) {
@@ -26,13 +26,14 @@ module.exports.PicFind = async (ReiNa, message) => {
                     }
                     let image_id = url.replace(regexreplace, '');
                     if (isNaN(image_id)) return;
-                    let illust = await fetchInfo(image_id);
-                    return ReiNa.util.SDM(message.channel, {
+                    let illust = await fetchInfo(image_id, selfHostapi);
+                    ReiNa.util.SDM(message.channel, {
                         embed: await genEmbed(illust, true, ReiNa, message)
                     }, message.author);
+                    message.delete().catch();
                 }
             } catch (e) {
-                console.log(e)
+                console.log(e);
             }
             try {
                 if (message.attachments.size > 0 && message.content.includes('來源')) {
@@ -57,7 +58,7 @@ module.exports.PicFind = async (ReiNa, message) => {
                                     try {
                                         switch (true) {
                                             case content.indexOf("Pixiv") > -1:
-                                                embed = await genEmbed(await fetchInfo(i.match(/illust_id=(\d+)/)[1]), true, ReiNa, message);
+                                                embed = await genEmbed(await fetchInfo(i.match(/illust_id=(\d+)/)[1], selfHostapi), true, ReiNa, message);
                                                 break;
                                             case content.indexOf("yande.re") > -1:
                                                 embed = sgenEmbed("yan", await fetchImg("yan", i.match(/yande\.re\/post\/show\/(\d+)/)[1]), ReiNa, message);
@@ -123,8 +124,9 @@ module.exports.PicFind = async (ReiNa, message) => {
 
 module.exports.name = "圖片搜尋";
 
-async function fetchInfo(image_id) {
-    var res = await req2json("https://api.imjad.cn/pixiv/v2/?id=" + image_id);
+async function fetchInfo(image_id, serverIP) {
+    serverIP = serverIP ? serverIP : "http://mcwindapi.tk:8080";
+    var res = await req2json(`${serverIP}/pixiv/illust?id=${image_id}`);
 	if (!res || !res.illust) throw new Error("ID: " + image_id + ", 找不到來源!");
     return res && res.illust;
 }
