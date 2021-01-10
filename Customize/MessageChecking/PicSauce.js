@@ -125,7 +125,7 @@ module.exports.PicFind = async (ReiNa, message) => {
 module.exports.name = "圖片搜尋";
 
 async function fetchInfo(image_id, serverIP) {
-    serverIP = serverIP ? serverIP : "http://mcwindapi.tk:8080";
+    serverIP = serverIP ? serverIP : "http://mcwindapi.tk:8080/";
     var res = await req2json(`${serverIP}/pixiv/illust?id=${image_id}`);
 	if (!res || !res.illust) throw new Error("ID: " + image_id + ", 找不到來源!");
     return res && res.illust;
