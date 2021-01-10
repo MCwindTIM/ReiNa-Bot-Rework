@@ -27,6 +27,7 @@
           <th>已播放/歌曲長度</th>
           <th>歌曲加入時間</th>
           <th>歌曲縮圖</th>
+		  <th style='width: 5%'>隊列</th>
         </tr>
       </thead>
     </table>
@@ -99,12 +100,16 @@
     var cell4 = row.insertCell(3);
     var cell5 = row.insertCell(4);
     var cell6 = row.insertCell(5);
+    var cell7 = row.insertCell(6);
     cell1.innerHTML = `<a href="https://discordapp.com/users/${author.id}/" target ="_blank"><div class="User_container"><img src=${author.avatarURL} width="64"><div class="User_text">${author.tag}</div></div></a>`;
     cell2.innerHTML = title;
     cell3.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
     cell4.innerHTML = live && lengthSeconds === 0 ? `🔴直播中` : length;
     cell5.innerHTML = addTime;
     cell6.innerHTML = `<a href="${url}" target="_blank"><img src="${thumbnail}" height="80"></a>`;
+	cell7.innerHTML = `#${table.rows.length}`;
+	cell7.style = 'width: 5%';
+	
 }
     </script>
 </body>
