@@ -1,6 +1,6 @@
 const Command = require('../../Core/command');
 
-module.exports = class Image_IceCreamCommand extends Command {
+module.exports = class ImageCommand extends Command {
     constructor(main){
         super(main, {
             name: "icecream",
