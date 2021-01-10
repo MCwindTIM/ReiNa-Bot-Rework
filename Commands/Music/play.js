@@ -42,6 +42,10 @@ module.exports = class MusicPlayCommand extends Command {
         let url = message.content.split(' ')[1] ? message.content.split(' ')[1].replace(/<(.+)>/g, '$1') : '';
         if(url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/) || url.match(/^https:\/\/(?:www\.)?youtube\.com\/watch\?((v=[^&\s]*&list=[^&\s]*)|(list=[^&\s]*&v=[^&\s]*))(&[^&\s]*)*$/)){
             const playlist = await this.main.util.getPlaylist(url).catch(err =>{
+				if(err.code === 403){
+					let playlistNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author}, 取得播放列表時發生錯誤! Youtube 限額到達上限`, null, 0xcc0000);
+					this.main.util.SDM(message.channel, playlistNotFound, message.author);
+				}
                 let playlistNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author}, 取得播放列表時發生錯誤! (可能是私人播放清單導致)`, null, 0xcc0000);
                 this.main.util.SDM(message.channel, playlistNotFound, message.author);
                 return;
