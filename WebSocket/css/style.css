@@ -50,6 +50,15 @@ a:visited {
   text-decoration: none;
 }
 
+.User_container {
+	display: flex;
+	align-items: center;
+	justify-content: center
+}
+
+.User_text {
+	padding-left: 3%;
+}
 /* demo styles */
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
