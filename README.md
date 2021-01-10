@@ -1,5 +1,5 @@
 # ReiNa-Bot-Rework
-V12 重寫 MCwind's Discord Server --- ReiNa
+Using Discord.js v12 package for MCwind's Discord Server --- ReiNa
 
 - **npm install**
 - R6 api **https://tabstats.com/contact**
