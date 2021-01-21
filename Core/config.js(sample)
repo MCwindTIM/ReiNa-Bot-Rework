@@ -15,6 +15,9 @@ module.exports = class Config {
     //R6 Data API key (Make sure Nodoby can see this)
     this.R6API = "";
 
+    //Division Data API key (Make sure Nodoby can see this)
+    this.DivisionAPI = "";
+
     //Pic finder API key (Make sure Nodoby can see this)
     this.PicAPI = "";
 
