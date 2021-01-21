@@ -7,6 +7,7 @@ Using Discord.js v12 package for MCwind's Discord Server --- ReiNa
 - Apex api **https://apexlegendsapi.com/**
 - Youtube api **https://developers.google.com/youtube/v3**
 - Pic api **https://saucenao.com/**
+- TRN api key (Division 2) **https://tracker.gg/developers/docs/titles/division-2**
 - Config 內 Youtube Cookie & Youtube Identity Token<br>
   用作播放會員限定/Youtube Premium 用<br>
   你的Youtube賬戶依然需要有特定頻道會員/Youtube premium
