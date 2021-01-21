@@ -170,7 +170,7 @@ module.exports = class R6Command extends Command {
         }
         else{
             let wronginfo = await this.main.util.createEmbed(message.author, 'ReiNa Bot Rework 錯誤', `請輸入正確資料`, null, 0xcc0000);
-            wronginfo.addField('使用方法: ', "rn!r6 [平台] [玩家UID]\n平台輸入 `uplay` `psn` `xbl` 分別為Uplay, PlayStationNetwork, Xbox");
+            wronginfo.addField('使用方法: ', this.main.config.prefix + "r6 [平台] [玩家UID]\n平台輸入 `uplay` `psn` `xbl` 分別為Uplay, PlayStationNetwork, Xbox");
             try {
                 this.main.util.SDM(message.channel, wronginfo, message.author);
             }   catch (e) {}
