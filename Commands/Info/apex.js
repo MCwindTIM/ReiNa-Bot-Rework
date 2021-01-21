@@ -1,7 +1,7 @@
 const Command = require('../../Core/command');
 const request = require('request');
 
-module.exports = class R6Command extends Command {
+module.exports = class ApexCommand extends Command {
     constructor(main){
         super(main, {
             name: "apex",
@@ -76,7 +76,7 @@ module.exports = class R6Command extends Command {
         }
         else{
             let wronginfo = await this.main.util.createEmbed(message.author, 'ReiNa Bot Rework 錯誤', `請輸入正確資料`, null, 0xcc0000);
-            wronginfo.addField('使用方法: ', "rn!apex [平台] [玩家UID]\n平台輸入 `PC` `PS4` `X1` 分別為Uplay, PlayStationNetwork, Xbox");
+            wronginfo.addField('使用方法: ', this.main.config.prefix + "apex [平台] [玩家UID]\n平台輸入 `PC` `PS4` `X1` 分別為Uplay, PlayStationNetwork, Xbox");
             try {
                 this.main.util.SDM(message.channel, wronginfo, message.author);
             }   catch (e) {}
