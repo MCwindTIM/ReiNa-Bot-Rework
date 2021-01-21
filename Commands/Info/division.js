@@ -32,17 +32,7 @@ module.exports = class DivisionCommand extends Command {
             request(options, async (error, response, body) => {
                 if (response.statusCode == 200) {
                     var obj = await JSON.parse(body);
-                    if(obj.errors){
-                        if (obj.errors.code && obj.errors.code === "CollectorResultStatus::NotFound") {
-                            let playerNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} Senpai, 沒有找到該位玩家欸!\n\n請檢查輸入是否正確 平台: *${args[0]}* 玩家ID *${args[1]}*`, null, `#0099ff`);
-                            try {
-                                await this.main.util.SDM(message.channel, playerNotFound, message.author);
-                            } catch (err) {}
-                            return
-                        }else{
-                            return
-                        }
-                    }
+
                     let playerAvatar = obj.data.platformInfo.avatarUrl;
                     let playerStats = obj.data.segments[0].stats;
                     let playerInfo = await this.main.util.createEmbed(message.author, `Division 玩家查詢(=ﾟωﾟ)ﾉ`, `${message.author} Senpai, 你請求的 Division 玩家資料找到了~`, null, `'#0099ff'`, null, null, null, playerAvatar);
@@ -59,16 +49,26 @@ module.exports = class DivisionCommand extends Command {
                     try {
                         await this.main.util.SDM(message.channel, playerInfo, message.author);
                     } catch (e) {}
-                } 
-                else {
+                    return
+                }
+                if(response.statusCode == 400){
+                    var obj = await JSON.parse(body);
+                    if(obj.errors){
+                        let playerNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} Senpai, 沒有找到該位玩家欸!\n\n請檢查輸入是否正確 平台: *${args[0]}* 玩家ID *${args[1]}*`, null, `#0099ff`);
+                        try {
+                            await this.main.util.SDM(message.channel, playerNotFound, message.author);
+                        } catch (err) {}
+                    }
+                }
+                else{
                         let serverDown = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author}, 無法從伺服器取得資料!`, null, `#0099ff`);
                         try {
                             await this.main.util.SDM(message.channel, serverDown, message.author);
                         } catch (err) {}
                         return
                 }
-                })
-        } else {
+            })
+        } else{
             let wronginfo = await this.main.util.createEmbed(message.author, 'ReiNa Bot Rework 錯誤', `請輸入正確資料`, null, 0xcc0000);
             wronginfo.addField('使用方法: ', this.main.config.prefix + "division [平台] [玩家UID]\n平台輸入 `uplay` `psn` `xbl` 分別為Uplay, PlayStationNetwork, Xbox");
             try {
