@@ -45,7 +45,7 @@ module.exports = class MusicPlayCommand extends Command {
 				if(err.code === 403){
 					let playlistNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author}, 取得播放列表時發生錯誤! Youtube 限額到達上限`, null, 0xcc0000);
 					this.main.util.SDM(message.channel, playlistNotFound, message.author);
-				}
+                }
                 let playlistNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author}, 取得播放列表時發生錯誤! (可能是私人播放清單導致)`, null, 0xcc0000);
                 this.main.util.SDM(message.channel, playlistNotFound, message.author);
                 return;
@@ -57,11 +57,18 @@ module.exports = class MusicPlayCommand extends Command {
                 if(video.raw.status){
                     item = item + 1;
                     if(video.raw.status.privacyStatus === 'public' || video.raw.status.privacyStatus === 'unlisted'){
-                        const video2 = await this.main.util.getVideo(video.id);
-                        await this.main.util.handleVideo(video2, message, message.author, voiceChannel, true);
-                    }else{
-                        if(video.raw.status.privacyStatus === 'private'){item = item - 1}
+                        item++;
+                        await this.main.util.handleVideo(await this.main.util.getVideo(video.id), message, message.author, voiceChannel, true);
                     }
+                    //old code
+                    // item++
+                    // if(video.raw.status.privacyStatus === 'public' || video.raw.status.privacyStatus === 'unlisted'){
+                    //     const video2 = await this.main.util.getVideo(video.id);
+                    //     await this.main.util.handleVideo(video2, message, message.author, voiceChannel, true);
+                    // }else{
+                    //     if(video.raw.status.privacyStatus === 'private')
+                    //         item--;
+                    // }
                 }
             }
             let playlistprocesstime = new Date().getTime();
