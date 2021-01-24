@@ -249,8 +249,8 @@ module.exports = class Util {
                 //end of req Headers
             },
             //end of reqOptions
-        } //end of ytdl options
-        );
+            } //end of ytdl options
+        )
         //Check video is live or not
         if(song.live && song.lengthSeconds === 0){
             //youtube live (always dont cache)
@@ -308,13 +308,21 @@ module.exports = class Util {
                 this.SDM(serverQueue.textChannel, error, song.author);
             })
             //設置dispatcher (與直播影片不一樣的設定)
-            dispatcher = serverQueue.connection.play(ytdl(song.url, {filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1 << 25, requestOptions: {
-                headers: {
-                    cookie: this.main.config.youtubeCookie,
-                    'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
+            dispatcher = serverQueue.connection.play(ytdl(song.url, {
+                requestOptions: {
+                    //request Headers
+                    headers: {
+                        cookie: this.main.config.youtubeCookie,
+                        'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
+                    },
+                    //end of req Headers
                 },
-            },
-        }), {seek: song.startTime})
+                //end of reqOptions
+                filter: 'audioonly',
+                quality: 'highestaudio',
+                highWaterMark: 1 << 25,
+                //end of ytdl options
+            }), {seek: song.startTime})
             .on('finish', end => {
                 //歌曲完結時檢查 歌曲循環/歌單循環是否開啟
                 if(serverQueue.loop == false){
