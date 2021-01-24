@@ -55,7 +55,6 @@ module.exports = class MusicPlayCommand extends Command {
             let item = 0;
             for(const video of Object.values(videos)){
                 if(video.raw.status){
-                    item = item + 1;
                     if(video.raw.status.privacyStatus === 'public' || video.raw.status.privacyStatus === 'unlisted'){
                         item++;
                         await this.main.util.handleVideo(await this.main.util.getVideo(video.id), message, message.author, voiceChannel, true);
