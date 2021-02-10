@@ -373,7 +373,9 @@ module.exports = class Util {
             console.log(`${this.color.FgYellow}${this.getTime()}${this.color.Reset} ${song.title} → ${song.id} 開始播放!`);
         }
     }
-
+    
+    //use to fix setinterval timing slowly drifts away from staying accurate
+    //for counting current playing song's playtime in discord voice channel
     fixed(queue){
         queue.playtime++;
         queue.timer.counter++;
