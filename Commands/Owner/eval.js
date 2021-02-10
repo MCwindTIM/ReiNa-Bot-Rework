@@ -16,6 +16,7 @@ module.exports = class EvalCommand extends Command {
         });
     }
     async run(message, args, prefix){
+        let hrStart = process.hrtime();
         //message.delete().catch(); not to delete the message until make sure no attachments;
         if(this.main.util.checkUserPerm(message.author.id)){
             let toEval = args.join(" ");
@@ -31,7 +32,6 @@ module.exports = class EvalCommand extends Command {
                 } else {
                     if(!file){
                         let evaluated = inspect(eval(toEval, { depth: 0} ))
-                        let hrStart = process.hrtime();
                         let hrDiff;
                         hrDiff = process.hrtime(hrStart);
                         let Evaled = this.main.util.createEmbed(message.author, `ReiNa Bot Rework Eval`, `*處理時間: ${hrDiff[0] > 0 ? `${hrDiff[0]}s` : ''}${hrDiff[1] / 1000000}ms. 如果輸入/輸出字串長度大於1024, 只會顯示1024個字元*`);
@@ -46,7 +46,6 @@ module.exports = class EvalCommand extends Command {
                             request.get(url, {}, async (err, req, body) => {
                                 try{
                                     let evaluated = inspect(eval(eval(body, {depth: 0}), { depth: 0} ));
-                                    let hrStart = process.hrtime();
                                     let hrDiff;
                                     hrDiff = process.hrtime(hrStart);
                                     let Evaled = this.main.util.createEmbed(message.author, `ReiNa Bot Rework Eval`, `*處理時間: ${hrDiff[0] > 0 ? `${hrDiff[0]}s` : ''}${hrDiff[1] / 1000000}ms. 如果輸入/輸出字串長度大於1024, 只會顯示1024個字元*`);
