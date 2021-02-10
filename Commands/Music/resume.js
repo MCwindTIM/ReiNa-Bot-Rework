@@ -37,7 +37,6 @@ module.exports = class MusicPauseCommand extends Command {
             serverQueue.playing = true;
             serverQueue.connection.dispatcher.resume();
             serverQueue.timer.startTime = new Date().getTime();
-            serverQueue.timer.counter = 0;
             serverQueue.timer.timeOutObj = setTimeout(() => {this.main.util.fixed(serverQueue)}, 1000);
             let paused = this.main.util.createEmbed(message.author, null, `▶${message.author}` + ` Senpai, 已經為你繼續播放音樂!\n\n語音頻道: ${serverQueue.voiceChannel.name}`, null, 0xcc0000);
             try{
