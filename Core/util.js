@@ -143,7 +143,7 @@ module.exports = class Util {
             lengthSeconds: +video.videoDetails.lengthSeconds,
             author: songAuthor,
             guildtag: message.guild.name,
-            live: video.videoDetails.isLiveContent,
+            live: video.videoDetails.isLiveContent && +video.videoDetails.lengthSeconds === 0,
             startTime: startTime,
             addTime: this.getTime()
         };
@@ -159,7 +159,11 @@ module.exports = class Util {
                 loopAll: false,
                 playing: true,
                 playtime: 0,
-                timer: null,
+                timer: {
+                    timeOutObj: null,
+                    startTime: null,
+                    counter: null,
+                },
                 LiveDataLastUpdate: null,
                 LiveEndChecker: null
             };
@@ -296,9 +300,11 @@ module.exports = class Util {
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.setActivity(this.main, { string: `正在播放: ${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
             
-            clearInterval(serverQueue.timer);
+            clearTimeout(serverQueue.timer.timeOutObj);
             serverQueue.playtime = 0;
-            serverQueue.timer = setInterval(() => { serverQueue.playtime++}, 1000);
+            serverQueue.timer.startTime = new Date().getTime();
+            serverQueue.timer.counter = 0
+            serverQueue.timer.timeOutObj = setTimeout(() => {this.fixed(serverQueue)}, 1000);
             console.log(`${song.title} → ${song.id} 為即時直播串流!`);
         }else{
             stream.on('error', e =>{
@@ -359,11 +365,22 @@ module.exports = class Util {
             let looping = '';
             (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
             this.setActivity(this.main, {string: `正在播放: ${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
-            clearInterval(serverQueue.timer);
+            clearTimeout(serverQueue.timer.timeOutObj);
             serverQueue.playtime = 0 + song.startTime;
-            serverQueue.timer = setInterval(() => { serverQueue.playtime++}, 1000);
+            serverQueue.timer.startTime = new Date().getTime();
+            serverQueue.timer.counter = 0;
+            serverQueue.timer.timeOutObj = setTimeout(() => {this.fixed(serverQueue)}, 1000);
             console.log(`${this.color.FgYellow}${this.getTime()}${this.color.Reset} ${song.title} → ${song.id} 開始播放!`);
         }
+    }
+
+    fixed(queue){
+        queue.playtime++;
+        queue.timer.counter++;
+        var offset = new Date().getTime() - (queue.timer.startTime + queue.timer.counter * 1000);
+        var nextTime = 1000 - offset;
+        if(nextTime <0 ) nextTime = 0;
+        queue.timer.timeOutObj = setTimeout(() => {this.fixed(queue)}, nextTime);
     }
 
     //Get ServerQueue
