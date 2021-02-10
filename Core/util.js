@@ -381,7 +381,7 @@ module.exports = class Util {
         queue.timer.counter++;
         var offset = new Date().getTime() - (queue.timer.startTime + queue.timer.counter * 1000);
         var nextTime = 1000 - offset;
-        if(nextTime <0 ) nextTime = 0;
+        if(nextTime < 0 ) nextTime = 0;
         queue.timer.timeOutObj = setTimeout(() => {this.fixed(queue)}, nextTime);
     }
 
