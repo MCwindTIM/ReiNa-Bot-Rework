@@ -130,9 +130,9 @@ module.exports = class Util {
         let vdm = Math.floor(videoLength / 60);
         videoLength = videoLength % 60;
         let vds = Math.floor(videoLength);
-        if(vdh < 10) vdh = `0${vdh}`;
-        if(vdm < 10) vdm = `0${vdm}`;
-        if(vds < 10) vds = `0${vds}`;
+        vdh = vdh < 10 ? `0${vdh}` : vdh;
+        vdm = vdm < 10 ? `0${vdm}` : vdm;
+        vds = vds < 10 ? `0${vds}` : vds;
 
         var song = {
             id: video.videoDetails.videoId,
@@ -436,7 +436,7 @@ module.exports = class Util {
         replace(/>/g, '&gt').
         replace(/\//g, '&#047');
     }
-    
+
     //Get MusicTimer
     //getMusicTimer(gid){
     //    return this.main.musictimer.get(gid);

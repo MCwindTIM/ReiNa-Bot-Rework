@@ -268,6 +268,12 @@ module.exports = class ReiNaRework {
 				const guildMemberRemove = require('../Customize/Event/guildMemberRemove.js');
 				guildMemberRemove.sendByeMessage(member);
 			});
+			this.bot.on("guildCreate", (guild) => {
+				console.log(`${this.util.color.FgYellow}${this.util.getTime()}${this.util.color.Reset} ${this.util.color.FgCyan}加入伺服器 |${guild.name}(${guild.id})|()`);
+			});
+			this.bot.on("guildDelete", (guild) => {
+				console.log(`${this.util.color.FgYellow}${this.util.getTime()}${this.util.color.Reset} ${this.util.color.FgCyan}離開伺服器 |${guild.name}(${guild.id})|()`);
+			});
 			this.bot.on('voiceStateUpdate', (oldState, newState) => {
 				const serverQueue = this.queue.get(newState.guild.id);
 				if(!serverQueue) return;
@@ -382,5 +388,4 @@ module.exports = class ReiNaRework {
 			 await this.util.SDM(channel, Warning, this.bot.user);
 		});
 	}
-
 }
