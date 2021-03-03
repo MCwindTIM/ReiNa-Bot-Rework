@@ -9,7 +9,8 @@ module.exports = class MusicPlayCommand extends Command {
             args: [{
                 name: `url / 搜尋關鍵字`,
                 desc:`放入Youtube連結或者搜尋關鍵字以播放音樂`
-            }],
+            }], 
+            alias: ["p"],
             caseSensitive: true
         });
     }
