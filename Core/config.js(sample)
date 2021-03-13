@@ -21,7 +21,7 @@ module.exports = class Config {
     //Pic finder API key (Make sure Nodoby can see this)
     this.PicAPI = "";
 
-    //Just don't give this value if you do not know what this value for
+    //Just don't modify this value if you do not know what this is (https://github.com/mixmoe/HibiAPI)
     this.selfHostPixivAPIip = "";
 
     //http server port

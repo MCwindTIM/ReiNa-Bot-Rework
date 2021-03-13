@@ -126,13 +126,17 @@ module.exports.name = "圖片搜尋";
 
 async function fetchInfo(image_id, serverIP) {
     serverIP = serverIP ? serverIP : "http://mcwindapi.tk:8080/";
-    var res = await req2json(`${serverIP}/pixiv/illust?id=${image_id}`);
+    var res = await req2json(`${serverIP}/api/pixiv/illust?id=${image_id}`);
 	if (!res || !res.illust) throw new Error("ID: " + image_id + ", 找不到來源!");
     return res && res.illust;
 }
 
 async function genEmbed(illust, show_image = true, ReiNa, message) {
-    var embed = new Discord.MessageEmbed()
+    let tagString = "";
+    illust.tags.forEach(tag => {
+        tagString += tag.translated_name ? `${tag.name}||(${tag.translated_name})||\n` : `${tag.name}\n`;
+    })
+    let embed = new Discord.MessageEmbed()
         .setAuthor(
             (illust.title || "Pixiv圖片") + (illust.page_count > 1 ? " (" + illust.page_count + ")" : ""),
             pimg(illust.user.profile_image_urls.medium) || "https://png.pngtree.com/svg/20150723/pixiv_btn_897586.png"
@@ -148,9 +152,11 @@ async function genEmbed(illust, show_image = true, ReiNa, message) {
 		if(illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '').toString().length > 1024 ){
             embed.addField("說明: ", "因為字數超過1024, 無法顯示於Discord MessageEmbed Field 內!");
             embed.addField("信息發送者: ", `${message.author}`);
+            embed.addField("標籤: ", tagString);
 		}else{
             embed.addField("說明: ", illust.caption ? illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '') : "(無)");
             embed.addField("信息發送者: ", `${message.author}`);
+            embed.addField("標籤: ", tagString);
     }
     return embed;
 }
