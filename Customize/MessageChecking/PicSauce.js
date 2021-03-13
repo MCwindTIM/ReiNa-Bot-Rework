@@ -150,10 +150,12 @@ async function genEmbed(illust, show_image = true, ReiNa, message) {
 		)
 		.setFooter('ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#7832 作品發佈日期:', ReiNa.bot.user.avatarURL());
 		if(illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '').toString().length > 1024 ){
+            embed.addField("標題: ", illust.title);
             embed.addField("說明: ", "因為字數超過1024, 無法顯示於Discord MessageEmbed Field 內!");
             embed.addField("信息發送者: ", `${message.author}`);
             embed.addField("標籤: ", tagString);
 		}else{
+            embed.addField("標題: ", illust.title);
             embed.addField("說明: ", illust.caption ? illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '') : "(無)");
             embed.addField("信息發送者: ", `${message.author}`);
             embed.addField("標籤: ", tagString);
