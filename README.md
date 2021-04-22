@@ -13,6 +13,8 @@ Using Discord.js v12 package for MCwind's Discord Server --- ReiNa
   你的Youtube賬戶依然需要有特定頻道會員/Youtube premium
 - 此Discord Bot 為MCwind's Discord Server而設
 
+node.js v14.16.1
+
 Bot invite link: https://discord.com/oauth2/authorize?client_id=418095978273570846&scope=bot&permissions=8
 
 
