@@ -68,7 +68,7 @@ module.exports = class Util {
         title = title || `ReiNa Bot Rework`;
         color = color || `#0099ff`;
         url = url || `https://github.com/MCwindTIM/ReiNa-Bot-Rework`;
-        Footer = Footer || `ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#7832`;
+        Footer = Footer || `ReiNa By MCwind#5665`;
 		FooterURL = FooterURL || this.main.bot.user.avatarURL();
         imgURL = imgURL || null;
         Thumbnail = Thumbnail || null;
@@ -319,7 +319,7 @@ module.exports = class Util {
                     //request Headers
                     headers: {
                         cookie: this.main.config.youtubeCookie,
-                        'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
+                        "x-youtube-identity-token" : this.main.config.youtubeIdentityToken,
                     },
                     //end of req Headers
                 },
@@ -424,7 +424,7 @@ module.exports = class Util {
     progressbar(total, current, size){
         current = current || 0;
         size = size || 30;
-        return `[${pb(total, current, size)[0]}]`;
+        return `[${pb.splitBar(total, current, size)[0]}]`;
     }
 
     //function that prevent xss

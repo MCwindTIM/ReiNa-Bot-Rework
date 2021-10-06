@@ -6,6 +6,7 @@ const EventEmitter = require('events').EventEmitter;
 const url = require('url');
 const fs = require('fs');
 const io = require('socket.io');
+const querystring = require('querystring');
 
 
 module.exports = class ReiNaRework {
@@ -38,6 +39,19 @@ module.exports = class ReiNaRework {
 						}
 					});
 				}
+				return
+			}
+			if(path.startsWith('/track/')){
+				const queryObj = querystring.parse(req.url.replace(`${path}?`, ""));
+					if(queryObj&&queryObj.GID&&this.bot.guilds.cache.get(queryObj.GID)&&queryObj.TC&&this.bot.channels.cache.get(queryObj.TC)&&queryObj.VC&&this.bot.channels.cache.get(queryObj.VC)){
+						play(this, queryObj);
+					}else{
+						return;
+					}
+				async function play(ReiNa, queryObj) {
+					ReiNa.util.handleVideo(await ReiNa.util.getVideo(queryObj.id), {guild: ReiNa.bot.guilds.cache.get(queryObj.GID), channel: ReiNa.bot.channels.cache.get(queryObj.TC)}, ReiNa.bot.user, ReiNa.bot.channels.cache.get(queryObj.VC), false, 0);
+				}
+				res.end();
 				return
 			}
 			if(path === '/'){
@@ -129,8 +143,8 @@ module.exports = class ReiNaRework {
 				//setInterval(() => GuildUser.UpdateUser(this), 60000);
 				
 				//Check User Status (giving Role)
-				//const CheckUserStatus = require('../Customize/Event/CheckUserStatus.js');
-				//setInterval(() => CheckUserStatus.CheckUserStatus(this), 5000);
+				const CheckUserStatus = require('../Customize/Event/CheckUserStatus.js');
+				setInterval(() => CheckUserStatus.CheckUserStatus(this), 5000);
 
 				//WeatherWarning
 				const WeatherWarning = require('../Customize/Event/WeatherWarning.js');
