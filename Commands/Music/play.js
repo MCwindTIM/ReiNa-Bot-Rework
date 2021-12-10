@@ -108,8 +108,7 @@ module.exports = class MusicPlayCommand extends Command {
                         });
                     }catch(err){
                         let OutOfTime = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 沒有正確的參數或者超過輸入參數的時間!`, null, 0xcc0000);
-                        this.main.util.SDM(message.channel, OutOfTime, message.author);
-                        return;
+                        return this.main.util.SDM(message.channel, OutOfTime, message.author);
                     }
                     const videoIndex = parseInt(response.first().content);
                     var video = await this.main.util.getVideo(videos[videoIndex -1].id);
@@ -117,8 +116,7 @@ module.exports = class MusicPlayCommand extends Command {
                 } catch(err){
                     console.log(err)
                     let noResult = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 我沒法取得任何搜尋結果! (可能因為Youtube Api 限額超過上限)`, null, 0xcc0000);
-                    this.main.util.SDM(message.channel, noResult, message.author);
-                    return;
+                    return this.main.util.SDM(message.channel, noResult, message.author);
                 }
             }
             return this.main.util.handleVideo(video, message, message.author, voiceChannel, false, args[1]? parseInt(args[1]) : 0);

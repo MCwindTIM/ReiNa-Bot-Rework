@@ -176,16 +176,16 @@ module.exports = class ReiNaRework {
 				};
 				if(message.author.bot){
 				//	this.event.emit('DC_MSG', message);
-				//	//Customize - Check lastfm bot embeds
-				//	const lastfm = require('../Customize/MessageChecking/lastfm.js');
-				//	//check lastfm bot message embed
-				//	if(message.author.id === '493845886166630443' || message.author.id === '356268235697553409' && message.guild.id === "398062441516236800"){
-				//		if(!message.embeds[0]) return;
-				//		if(message.embeds[0].author.name.startsWith('Now playing -')){
-				//		lastfm.run(this, message);
-				//		console.log(`${this.util.color.FgYellow}${this.util.getTime()}${this.util.color.Reset} ${this.util.color.FgCyan}${lastfm.name}${this.util.color.Reset} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
-				//		}
-				//	}
+					// //Customize - Check lastfm bot embeds
+					// const lastfm = require('../Customize/MessageChecking/lastfm.js');
+					// //check lastfm bot message embed
+					// if(message.author.id === '493845886166630443' || message.author.id === '356268235697553409' && message.guild.id === "398062441516236800"){
+					// 	if(!message.embeds[0]) return;
+					// 	if(message.embeds[0].author.name.startsWith('Now playing -')){
+					// 	lastfm.run(this, message);
+					// 	console.log(`${this.util.color.FgYellow}${this.util.getTime()}${this.util.color.Reset} ${this.util.color.FgCyan}${lastfm.name}${this.util.color.Reset} 指令被 ${message.author.tag}(${message.author.id}) 觸發!`);
+					// 	}
+					// }
 				//	return;
 				//}else{
 				//	this.event.emit('DC_MSG', message);

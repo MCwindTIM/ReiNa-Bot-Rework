@@ -101,7 +101,21 @@ module.exports = class Util {
 
     //請求Youtube 影片
     async getVideo(url){
-        return await ytdl.getInfo(url);
+        return await ytdl.getInfo(url, {
+            requestOptions: {
+                //request Headers
+                headers: {
+                    Cookie: this.main.config.youtubeCookie,
+                    // Optional. If not given, ytdl-core will try to find it.
+                    // You can find this by going to a video's watch page, viewing the source,
+                    // and searching for "ID_TOKEN".
+                    'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
+                },
+                //end of req Headers
+            },
+            //end of reqOptions
+            } //end of ytdl options
+            );
     }
 
     //搜尋Youtube 影片
@@ -247,14 +261,17 @@ module.exports = class Util {
             requestOptions: {
                 //request Headers
                 headers: {
-                    cookie: this.main.config.youtubeCookie,
+                    Cookie: this.main.config.youtubeCookie,
+                    // Optional. If not given, ytdl-core will try to find it.
+                    // You can find this by going to a video's watch page, viewing the source,
+                    // and searching for "ID_TOKEN".
                     'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
                 },
                 //end of req Headers
             },
             //end of reqOptions
             } //end of ytdl options
-        )
+        );
         //Check video is live or not
         if(song.live && song.lengthSeconds === 0){
             //youtube live (always dont cache)
