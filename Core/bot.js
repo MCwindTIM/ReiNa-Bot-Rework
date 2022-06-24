@@ -170,7 +170,7 @@ module.exports = class ReiNaRework {
                 //MCwind Customize Interval function Delete If don't want
 
                 // Set Stat channel name (user)
-                const GuildUser = require('../Customize/Event/UpdateUser.js');
+                const GuildUser = require("../Customize/Event/UpdateUser.js");
                 setInterval(() => GuildUser.UpdateUser(this), 60000);
 
                 //Check User Status (giving Role)
@@ -181,6 +181,7 @@ module.exports = class ReiNaRework {
                 const WeatherWarning = require("../Customize/Event/WeatherWarning.js");
                 // setInterval(() => WeatherWarning.CheckWeatherWarning(this), 5000);
 
+                //cryptocurrency price
                 const UpdateChannel = require("../Customize/Event/UpdateChannel.js");
                 setInterval(() => UpdateChannel.UpdateChannel(this), 60000);
             });
