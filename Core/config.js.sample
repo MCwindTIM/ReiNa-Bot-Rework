@@ -1,0 +1,11 @@
+//First, paste your bot token into the `this.token` variable below.
+//Second, execute `Start.bat` to start the bot
+//If you don't have the `nodemon` installed, you can manually use `node .` to start the bot.
+
+module.exports = class Config {
+    constructor(option) {
+      this.ownerID = ""; //Your discord user id. (Optional)
+      this.clientId = ""; //③Your Bot's client id. (Optional)
+      this.token = ""; //⚠️Don't leak this to public, your bot token
+      this.adminID = []; //Admin permission, accept multiple discord user id as array (Optional)
+    }}
