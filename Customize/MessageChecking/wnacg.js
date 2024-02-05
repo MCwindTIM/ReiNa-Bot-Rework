@@ -29,7 +29,7 @@ function getData(url, message, doujinid, ReiNa){
 				}
 			})
 				dataArray.push($('h2').first().text());
-				dataArray.push($(`#bodywrap .asTB div`).attr('class', 'asTBcell uwthumb').find(`img`).attr('src'));
+				dataArray.push($(`#bodywrap .asTB div`).attr('class', 'asTBcell uwthumb').find(`img`).attr('data-original'));
 			$('label').each((idx, ele) =>{
 			dataArray.push($(ele).text().replace("分類：", "").replace("頁數：", ""));
 			})
