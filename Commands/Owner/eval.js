@@ -13,9 +13,9 @@ module.exports = {
                 .setRequired(true))
         .addBooleanOption(option =>
             option.setName('隱藏')
-                .setDescription('只有你能閲讀運算結果 (默認為不隱藏)')),
+                .setDescription('只有你能閲讀運算結果 (默認為隱藏)')),
 	async run(ReiNa, interaction) {
-        await interaction.deferReply({ ephemeral: (interaction.options.get('隱藏')?.value) });
+        await interaction.deferReply({ ephemeral: (interaction.options.get('隱藏') ? interaction.options.get('隱藏').value : true) });
         let hrStart = process.hrtime();
         if(!ReiNa.util.checkUserPerm(interaction.user.id)) return await interaction.editReply(`${ReiNa.util.emoji.error} | 你沒有權限使用此指令!`);
         
