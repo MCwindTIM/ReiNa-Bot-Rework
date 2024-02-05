@@ -1,7 +1,9 @@
 const Command = require('../../Core/command');
 const os = require('os');
+const request = require('request');
+const nodeDiskInfo = require('node-disk-info');
 
-module.exports = class InfoCommand extends Command {
+module.exports = class infoCommand extends Command {
     constructor(main){
         super(main, {
             name: "info",
@@ -10,6 +12,7 @@ module.exports = class InfoCommand extends Command {
             args: []
         });
     }
+
     async run(message, args, prefix){
         message.delete().catch();
         let cpuinfo = os.cpus();
@@ -21,6 +24,16 @@ module.exports = class InfoCommand extends Command {
         oss %= 3600;
         let osmins = Math.floor(oss / 60);
         oss %= 60;
+        const disks = nodeDiskInfo.getDiskInfoSync();
+        const diskInfo = async (disks) => {
+            let diskBlocks = 0;
+            let diskUsed = 0;
+            for (let disk of disks){
+                diskBlocks += disk.blocks
+                diskUsed += disk.used
+            }
+            return (`${Number.parseInt(diskUsed/1024/1024/1024)}/${Number.parseInt(diskBlocks/1024/1024/1024)} GB`);
+        }
         const pattern = {'Mon':'(一)','Tue':'(二)','Wed':'(三)','Thu':'(四)','Fri':'(五)','Sat':'(六)','Sun':'(日)','Jan':'一月','Feb':'二月','Mar':'三月', 'Apr':'四月', 'May':'五月', 'Jun':'六月', 'Jul':'七月', 'Aug':'八月', 'Sep':'九月', 'Oct':'十月', 'Nov':'十一月', 'Dec':'十二月', '(China Standard Time)': ''};
         let _guptime = this.main.loginTime.replace(/(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?|Mon(?:day)?|Tue(?:sday)?|Wed(?:nesday)?|Thu(?:rsday)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?|\(China Standard Time\))/g, m => pattern[m]);
         let totalSeconds = (this.main.bot.uptime / 1000);
@@ -40,13 +53,27 @@ module.exports = class InfoCommand extends Command {
         .addField('系統內容', `**${os.type()} | ${os.release()} | ${os.platform()}**`)
         .addField('系統CPU型號', `**${cpuinfo[0].model}**`)
         .addField('系統CPU現時速度', `**${cpuinfo[0].speed / 1000}GHz**`)
-        .addField('系統記憶體用量', `**${os.totalmem() - os.freemem()} / ${os.totalmem()} Byte | ${((os.totalmem() - os.freemem()) / 1024 / 1024 / 1024).toFixed(2)} / ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB**`)
+        .addField('系統記憶體用量', `**${((os.totalmem() - os.freemem()) / 1024 / 1024 / 1024).toFixed(2)} / ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB**`)
+        //.addField('系統記憶體用量', `**${os.totalmem() - os.freemem()} / ${os.totalmem()} Byte | ${((os.totalmem() - os.freemem()) / 1024 / 1024 / 1024).toFixed(2)} / ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB**`)
+        .addField('系統硬碟用量', `**${await diskInfo(disks)}**`)
         .addField('系統運作時間', `**${osuptime}**`)
         .addField('程序開始運作時間', `**${_guptime}**`)
         .addField('Bot上線運行時間', `**${uptime}**`)
+        .addField('Discord JS 版本', `**v${require('discord.js').version}**`)
+        .addField('Node JS 版本', `**${process.version}**`)
         .addField('服務數量', `**${this.main.bot.guilds.cache.size}**個伺服器, **${this.main.bot.channels.cache.size}**個頻道, **${this.main.bot.users.cache.size}**個用戶!`);
-        try {
-            await this.main.util.SDM(message.channel, infoMSG, message.author);
-        }catch(e){}
+        request.get('https://api.ipify.org/?format=json', {}, async (err, res, body) => {
+            if(!err){
+                infoMSG.addField('IPv4 IP Address', `${JSON.parse(body).ip}`);
+				try {
+					await this.main.util.SDM(message.channel, infoMSG, message.author);
+				}catch(e){}
+            }else{
+                try {
+					await this.main.util.SDM(message.channel, infoMSG, message.author);
+				}catch(e){}
+            }
+        })
     }
+
 }

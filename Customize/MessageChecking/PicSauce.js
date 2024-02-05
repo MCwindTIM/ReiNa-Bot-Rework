@@ -1,15 +1,19 @@
 const request = require('request-promise');
 const Discord = require('discord.js');
-
+const portal = {
+	kon: "http://konachan.net",
+	yan: "https://yande.re",
+	dan: "https://danbooru.donmai.us"
+}
 module.exports.PicFind = async (ReiNa, message) => {
     const saucetoken = ReiNa.config.PicAPI;
+    const selfHostapi = ReiNa.config.selfHostPixivAPIip;
         try {
             try {
-                if (message.channel.id === "407171840746848260" || message.author.ReiNa) {
+                if (message.author.ReiNa) {
                     return
                 }
                 if (message.content.match(/https?:\/\/(www\.)?[pixiv]{1,256}\.[a-zA-Z0-9()]{1,6}\b\/artworks\/[0-9()]{1,15}/g) || message.content.match(/https?:\/\/(www\.)?[pixiv]{1,256}\.[a-zA-Z0-9()]{1,6}\b\/[a-zA-Z][a-zA-Z]\/artworks\/[0-9()]{1,15}/g)) {
-                    message.delete().catch();
                     let url;
                     let regexreplace;
                     if (message.content.match(/https?:\/\/(www\.)?[pixiv]{1,256}\.[a-zA-Z0-9()]{1,6}\b\/artworks\/[0-9()]{1,15}/g)) {
@@ -22,20 +26,21 @@ module.exports.PicFind = async (ReiNa, message) => {
                     }
                     let image_id = url.replace(regexreplace, '');
                     if (isNaN(image_id)) return;
-                    let illust = await fetchInfo(image_id);
-                    return ReiNa.util.SDM(message.channel, {
-                        embed: await genEmbed(illust, true, ReiNa)
+                    let illust = await fetchInfo(image_id, selfHostapi);
+                    ReiNa.util.SDM(message.channel, {
+                        embed: await genEmbed(illust, true, ReiNa, message)
                     }, message.author);
+                    message.delete().catch();
                 }
             } catch (e) {
-                console.log(e)
+                console.log(e);
             }
             try {
                 if (message.attachments.size > 0 && message.content.includes('來源')) {
                     let loopi;
                     for (loopi = 0; loopi < message.attachments.size; loopi++) {
                         if (message.attachments.every(attachIsImage)) {
-                            let res;
+                            var res;
                             if(!saucetoken || saucetoken == ""){
                                 res = await request.get("http://saucenao.com/search.php?db=999" + "&url=" + message.attachments.array()[loopi].url);
                             }else{
@@ -53,16 +58,16 @@ module.exports.PicFind = async (ReiNa, message) => {
                                     try {
                                         switch (true) {
                                             case content.indexOf("Pixiv") > -1:
-                                                embed = await genEmbed(await fetchInfo(i.match(/illust_id=(\d+)/)[1]), true, ReiNa);
+                                                embed = await genEmbed(await fetchInfo(i.match(/illust_id=(\d+)/)[1], selfHostapi), true, ReiNa, message);
                                                 break;
                                             case content.indexOf("yande.re") > -1:
-                                                embed = sgenEmbed("yan", await fetchImg("yan", i.match(/yande\.re\/post\/show\/(\d+)/)[1]), ReiNa);
+                                                embed = sgenEmbed("yan", await fetchImg("yan", i.match(/yande\.re\/post\/show\/(\d+)/)[1]), ReiNa, message);
                                                 break;
                                             case content.indexOf("konachan") > -1:
-                                                embed = sgenEmbed("kon", await fetchImg("kon", i.match(/konachan\.com\/post\/show\/(\d+)/)[1]), ReiNa);
+                                                embed = sgenEmbed("kon", await fetchImg("kon", i.match(/konachan\.com\/post\/show\/(\d+)/)[1]), ReiNa, message);
                                                 break;
                                             case content.indexOf("danbooru") > -1:
-                                                embed = sgenEmbed("dan", await fetchImg("dan", i.match(/danbooru\.donmai\.us\/post\/show\/(\d+)/)[1]), ReiNa);
+                                                embed = sgenEmbed("dan", await fetchImg("dan", i.match(/danbooru\.donmai\.us\/post\/show\/(\d+)/)[1]), ReiNa, message);
                                                 break;
                                             default:
                                                 break;
@@ -119,14 +124,20 @@ module.exports.PicFind = async (ReiNa, message) => {
 
 module.exports.name = "圖片搜尋";
 
-async function fetchInfo(image_id) {
-    var res = await req2json("https://api.imjad.cn/pixiv/v2/?id=" + image_id);
+async function fetchInfo(image_id, serverIP) {
+    serverIP = serverIP ? serverIP : "http://mcwindapi.tk:8080/";
+    var res = await req2json(`${serverIP}/api/pixiv/illust?id=${image_id}`);
 	if (!res || !res.illust) throw new Error("ID: " + image_id + ", 找不到來源!");
     return res && res.illust;
 }
 
-async function genEmbed(illust, show_image = true, ReiNa) {
-    var embed = new Discord.MessageEmbed()
+async function genEmbed(illust, show_image = true, ReiNa, message) {
+    let tagString = "";
+    illust.tags.forEach(tag => {
+        tagString += tag.translated_name ? `${tag.name}||(${tag.translated_name})||\n` : `${tag.name}\n`;
+    })
+    console.log(illust.user.profile_image_urls.medium)
+    let embed = new Discord.MessageEmbed()
         .setAuthor(
             (illust.title || "Pixiv圖片") + (illust.page_count > 1 ? " (" + illust.page_count + ")" : ""),
             pimg(illust.user.profile_image_urls.medium) || "https://png.pngtree.com/svg/20150723/pixiv_btn_897586.png"
@@ -138,16 +149,18 @@ async function genEmbed(illust, show_image = true, ReiNa) {
             "Pixiv 來源: ",
             "[作品id: " + illust.id + "](https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + illust.id + ")\t[作者: " + illust.user.name + "]( https://www.pixiv.net/member.php?id=" + illust.user.id + ")"
 		)
-		.setFooter('ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487 作品發佈日期:', ReiNa.bot.user.avatarURL);
+		.setFooter('ReiNa By MCwind#5665 作品發佈日期:', ReiNa.bot.user.avatarURL());
 		if(illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '').toString().length > 1024 ){
-			embed.addField(
-				"說明: ", "因為字數超過1024, 無法顯示於Discord MessageEmbed Field 內!"
-			)
+            embed.addField("標題: ", illust.title);
+            embed.addField("說明: ", "因為字數超過1024, 無法顯示於Discord MessageEmbed Field 內!");
+            embed.addField("信息發送者: ", `${message.author}`);
+            embed.addField("標籤: ", tagString);
 		}else{
-			embed.addField(
-				"說明: ",
-				illust.caption ? illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '') : "(無)"
-		)}
+            embed.addField("標題: ", illust.title);
+            embed.addField("說明: ", illust.caption ? illust.caption.replace(/<br \/>/g, "\n").replace(/<(.|\n)*?>/g, '') : "(無)");
+            embed.addField("信息發送者: ", `${message.author}`);
+            embed.addField("標籤: ", tagString);
+    }
     return embed;
 }
 
@@ -189,7 +202,7 @@ async function fetchImg(prov = "kon", id) {
     return res[0];
 }
 
-function sgenEmbed(prov = "kon", image, ReiNa) {
+function sgenEmbed(prov = "kon", image, ReiNa, message) {
     if (!Object.keys(image).length) throw new Error("Invalid image " + image);
 
     let embed = new Discord.MessageEmbed()
@@ -198,8 +211,9 @@ function sgenEmbed(prov = "kon", image, ReiNa) {
         .setDescription("[ID: " + image["id"] + "](" + portal[prov] + "/post/show/" + image["id"] + ")")
 
         .setTimestamp()
-		.addField("來源: ", (image["source"] == "" ? "(未知)" : image["source"]).toString().replace("i.pximg.net", "i.pixiv.cat"))
-		.setFooter('ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487', ReiNa.user.avatarURL);
+        .addField("來源: ", (image["source"] == "" ? "(未知)" : image["source"]).toString().replace("i.pximg.net", "i.pixiv.cat"))
+        .addField("信息發送者: ", `${message.author}`)
+		.setFooter('ReiNa By MCwind#5665', ReiNa.bot.user.avatarURL());
 
 
     if (["kon", "yan"].indexOf(prov) > -1) {

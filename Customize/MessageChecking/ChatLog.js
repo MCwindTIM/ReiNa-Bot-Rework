@@ -15,10 +15,10 @@ module.exports.log = (file, message) => {
         fs.readFile(file, {encoding: 'utf-8'}, function(err,data){
             if (!err){
             fsPath.writeFile(file, data + `-----發送信息-----------\n用戶名稱: ${message.author.tag}\n用戶ID: ${message.author.id}\n信息內容: ${message.content}\n記錄時間: ${tStamp}\n--------------------\n|\n`, function(err){
-            if(err){throw err;}else{}});
+            if(err){throw err;}});
             }else{
             fsPath.writeFile(file, `-----發送信息-----------\n用戶名稱: ${message.author.tag}\n用戶ID: ${message.author.id}\n信息內容: ${message.content}\n記錄時間: ${tStamp}\n--------------------\n|\n`, function(err){
-            if(err){throw err;}else{}});
+            if(err){throw err;}});
             }
         });
 

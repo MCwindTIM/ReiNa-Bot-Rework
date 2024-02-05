@@ -18,7 +18,7 @@ module.exports = class rediveCommand extends Command {
     async run(message, args, prefix){
         message.delete().catch();
         if(args[0] === `單抽`){
-            snek(`https://duckduckdoc.tk/nobuDB-master/ReDive.json`).then(async (r) => {
+            snek(`http://localhost/nobuDB-master/ReDive.json`).then(async (r) => {
                 var r = await r.json();
                 //創建圖片 96x96
                 const canvas = Canvas.createCanvas(96, 96);
@@ -29,7 +29,7 @@ module.exports = class rediveCommand extends Command {
                 });
             })
         }else{
-            snek(`https://duckduckdoc.tk/nobuDB-master/ReDive.json`).then(async (r) => {
+            snek(`http://localhost/nobuDB-master/ReDive.json`).then(async (r) => {
                 var r = await r.json();
 				const canvas = Canvas.createCanvas(480, 192);
                 const ctx = canvas.getContext('2d');
@@ -63,7 +63,7 @@ function roll1 (ctx, data, pos, rate) {
       rate = rate || Rest;
       let card = new Canvas.Image();
       let item = getCard(data, rate);
-      snek(`https://duckduckdoc.tk/nobuDB-master/images/${item}.png`).then(async (r) => {
+      snek(`http://localhost/nobuDB-master/images/${item}.png`).then(async (r) => {
         card.onerror = reject;
         card.onload = () => {
           ctx.drawImage(card, ...pos);

@@ -15,40 +15,46 @@ module.exports = class MusicLoopCommand extends Command {
         if(!serverQueue){
             let NotPlayingSong = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 此伺服器沒有在播放音樂, 所以沒有東西能循環播放哦!`, null, 0xcc0000);
             try{
-                await this.main.util.SDM(message.channel, { NotPlayingSong }, message.author);
+                await this.main.util.SDM(message.channel, NotPlayingSong, message.author);
             }catch(e){}
             return;
         }
         if(!message.member.voice.channel){
             let NotInVC = this.main.util.createEmbed(message.author, null, `${message.author} 你不在語音頻道呀!`, null, 0xcc0000);
             try{
-                await this.main.util.SDM(message.channel, { NotInVC }, message.author);
+                await this.main.util.SDM(message.channel, NotInVC, message.author);
             }catch(e){}
             return;
         }
         if(message.member.voice.channel != serverQueue.voiceChannel){
             let NotInSameVC = this.main.util.createEmbed(message.author, null, `${message.author} 你不在音樂播放的語音頻道中, 無法切換單曲循環!`, null, 0xcc0000);
             try{
-                await this.main.util.SDM(message.channel, { NotInSameVC }, message.author);
+                await this.main.util.SDM(message.channel, NotInSameVC, message.author);
+            }catch(e){}
+            return;
+        }
+        if(serverQueue.songs[0].live && serverQueue.songs[0].lengthSeconds === 0){
+            let LiveNoLoop = this.main.util.createEmbed(message.author, null, `${message.author} 正在播放直播串流, 無法使用循環播放功能!`, null, 0xcc0000);
+            try{
+                await this.main.util.SDM(message.channel, LiveNoLoop, message.author);
             }catch(e){}
             return;
         }
         if(serverQueue.loop == false){
-            let setLoopTrue = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你循環播放\n<@${serverQueue.songs[0].author.id}>添加的**${serverQueue.songs[0].title}**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
+            let setLoopTrue = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你循環播放\n<@${serverQueue.songs[0].author.id}>添加的**\`${serverQueue.songs[0].title}\`**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
             try{
                 this.main.util.SDM(message.channel, setLoopTrue, message.author);
             }catch(e){}
             serverQueue.loop = true;
-            this.main.bot.user.setActivity(`正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].authortag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: 開啟]||`, {type:2});
-            return;
+            this.main.util.setActivity(this.main, { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].author.tag} 添加, ||[單曲循環播放: 開啟]||`, type:2});
         }else{
-            let setLoopFalse = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你關閉循環播放\n<@${serverQueue.songs[0].authorid}>添加的**${serverQueue.songs[0].title}**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
+            let setLoopFalse = this.main.util.createEmbed(message.author, null, `${message.author} Senpai, 已經為你關閉循環播放\n<@${serverQueue.songs[0].author.id}>添加的**\`${serverQueue.songs[0].title}\`**!\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}`, null, 0xcc0000)
             try{
                 this.main.util.SDM(message.channel, setLoopFalse, message.author);
             }catch(e){}
             serverQueue.loop = false;
-            this.main.bot.user.setActivity(`正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].authortag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: 關閉]||` , {type:2});
-            return;
+            this.main.util.setActivity(this.main , { string: `正在播放: ${serverQueue.songs[0].title} 由 ${serverQueue.songs[0].author.tag} 添加, ||[單曲循環播放: 關閉]||`, type:2});
         }
+        this.main.event.emit('UpdateMusicQueue');
     }
 }

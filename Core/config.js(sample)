@@ -1,10 +1,52 @@
 module.exports = class Config {
   constructor(option) {
+    //Discord Bot Prefix
     this.prefix = "rnt!";
+
+    //Bot Owner Discord User ID
     this.ownerID = "209598158152531968";
+
+    //Discord Bot Token (Make sure Nobody can see this)
     this.token = "";
+
+    //Youtube Data API key (Make sure Nodoby can see this)
     this.YoutubeAPI = "";
+
+    //R6 Data API key (Make sure Nodoby can see this)
     this.R6API = "";
+
+    //Pic finder API key (Make sure Nodoby can see this)
     this.PicAPI = "";
+
+    //Just don't give this value if you do not know what this value for
+    this.selfHostPixivAPIip = "";
+
+    //http server port
+    this.Port = 3000;
+
+    //OSU Data API key (Make sure Nodoby can see this)
+    this.osuAPI = '';
+
+    //Apex Data API key (Make sure Nodoby can see this)
+    this.apexAPI = '';
+
+    //Permission for eval command
+    this.adminID = [];
+    
+    //Youtube youtubeIdentityToken for some private/membership only video on your youtube account can access by Discord Bot (Make sure Nodoby can see this)
+    // You can find this by going to a video's watch page, viewing the source, and searching for "ID_TOKEN".
+    // The value of ID_TOKEN's last character may need to convert
+    // "\u003d" = "="
+    this.youtubeIdentityToken = '';
+
+    //Youtube Cookie for some private/membership only video on your youtube account can access by Discord Bot (Make sure Nodoby can see this)
+    // To get your YouTube cookie
+    // - navigate to YouTube in a web browser
+    // - open up dev tools (opt+cmd+j on mac)
+    // - go to the network tab
+    // - click on a request on the left
+    // - scroll down to "Request Headers"
+    // - find the "cookie" header and copy its entire contents
+    this.youtubeCookie = '';
   }
 }

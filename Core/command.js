@@ -8,7 +8,7 @@ module.exports = class Command {
         this.devOnly = data.devOnly || false;
         this.desc = data.help || '未有幫助信息';
         if(data.nsfw) this.desc += `\n\n此指令僅限啟用NFSW的頻道`;
-        this.help = `${this.name} ${this.args.map(item => {return `<${item.name}>`;}).join(data.argsSep || ' ')}`;
+        this.help = `${this.main.config.prefix}${this.name} ${this.args.map(item => {return `<${item.name}>`;}).join(data.argsSep || ' ')}`;
         if(this.args.length) this.help += `\n\n${this.args.map(item => {return `**__${item.name}__**: ${item.desc}`}).join('\n\n')}`;
         this.help = {
             title: `指令 ${this.name} 的信息`,

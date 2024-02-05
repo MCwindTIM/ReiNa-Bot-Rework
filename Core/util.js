@@ -1,21 +1,55 @@
 const fs = require('fs');
 const fsPath = require('fs-path');
 const Discord = require('discord.js');
-
 //音樂模塊
 const ytdl = require('ytdl-core');
 const YouTube = require('simple-youtube-api');
-//ffmpeg 導入
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-const ffmpeg = require('fluent-ffmpeg');
-ffmpeg.setFfmpegPath(ffmpegPath);
+const voice = require("@discordjs/voice");
+
+//progressbar import
+const pb = require('string-progressbar');
+
+//request module
+const request = require("request");
+const { channel } = require('diagnostics_channel');
+
+
+//delay
+//const delay = ms => new Promise(res => setTimeout(res, ms));
 
 module.exports = class Util {
     constructor(main){
         this.main = main;
         this.youtube = new YouTube(this.main.config.YoutubeAPI);
     }
+    
+    color = {
+        Reset: "\x1b[0m",
+        Bright: "\x1b[1m",
+        Dim: "\x1b[2m",
+        Underscore: "\x1b[4m",
+        Blink: "\x1b[5m",
+        Reverse: "\x1b[7m",
+        Hidden: "\x1b[8m",
 
+        FgBlack: "\x1b[30m",
+        FgRed: "\x1b[31m",
+        FgGreen: "\x1b[32m",
+        FgYellow: "\x1b[33m",
+        FgBlue: "\x1b[34m",
+        FgMagenta: "\x1b[35m",
+        FgCyan: "\x1b[36m",
+        FgWhite: "\x1b[37m",
+
+        BgBlack: "\x1b[40m",
+        BgRed: "\x1b[41m",
+        BgGreen: "\x1b[42m",
+        BgYellow: "\x1b[43m",
+        BgBlue: "\x1b[44m",
+        BgMagenta: "\x1b[45m",
+        BgCyan: "\x1b[46m",
+        BgWhite: "\x1b[47m"
+    }
     //shuffle
     shuffle(a) {
 	    for (let i = a.length - 1; i > 0; i--) {
@@ -31,12 +65,15 @@ module.exports = class Util {
     }
 
     //創建Embed範例信息模塊
-    createEmbed(author, title, content, url, color, Footer){
+    createEmbed(author, title, content, url, color, Footer, FooterURL, imgURL, Thumbnail){
         author = author || this.main.bot.user;
         title = title || `ReiNa Bot Rework`;
         color = color || `#0099ff`;
-        url = url || `https://mcwind.tk`;
-        Footer = Footer || `ReiNa By 𝓖𝓻𝓪𝓷𝓭𝓞𝓹𝓮𝓻𝓪𝓽𝓸𝓻#9487`;
+        url = url || `https://github.com/MCwindTIM/ReiNa-Bot-Rework`;
+        Footer = Footer || `ReiNa By Anesthesia#5665`;
+		FooterURL = FooterURL || this.main.bot.user.avatarURL();
+        imgURL = imgURL || null;
+        Thumbnail = Thumbnail || null;
         let embed = new Discord.MessageEmbed()
         .setAuthor(author.tag, author.avatarURL())
         .setColor(color)
@@ -44,18 +81,43 @@ module.exports = class Util {
         .setURL(url)
         .setDescription(content)
         .setTimestamp()
-        .setFooter(Footer, this.main.bot.user.avatarURL());
+        .setFooter(Footer, FooterURL);
+		if(imgURL){
+			embed.setImage(imgURL);
+        }
+        if(Thumbnail){
+            embed.setThumbnail(Thumbnail);
+        }
+        /*
+        else{
+            embed.setThumbnail(this.main.bot.user.avatarURL({format: "jpg", size: 4096}));
+        }
+        */
         return embed;
     }
 
     //請求 Youtube 播放列表
-    getPlaylist(url){
-        return this.youtube.getPlaylist(url);
+    async getPlaylist(url){
+        return await this.youtube.getPlaylist(url);
     }
 
     //請求Youtube 影片
-    getVideo(url){
-        return this.youtube.getVideo(url);
+    async getVideo(url){
+        return await ytdl.getInfo(url, {
+            requestOptions: {
+                //request Headers
+                headers: {
+                    Cookie: this.main.config.youtubeCookie,
+                    // Optional. If not given, ytdl-core will try to find it.
+                    // You can find this by going to a video's watch page, viewing the source,
+                    // and searching for "ID_TOKEN".
+                    'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
+                },
+                //end of req Headers
+            },
+            //end of reqOptions
+            } //end of ytdl options
+            );
     }
 
     //搜尋Youtube 影片
@@ -69,53 +131,78 @@ module.exports = class Util {
     }
 
     //使用Youtube 影片ID 請求影片
-    getVideoByID(id){
-        return this.youtube.getVideoByID(id);
-    }
+    //getVideoByID(id){
+    //    return this.youtube.getVideoByID(id);
+    //}
 
 
     //處理Youtube影片
-    async handleVideo(video, message, songAuthor, voiceChannel, playlist = false){
+    async handleVideo(video, message, songAuthor, voiceChannel, playlist = false, startTime){
         const serverQueue = this.main.queue.get(message.guild.id);
+        startTime = +video.videoDetails.lengthSeconds < +startTime || startTime == null || startTime == NaN  ? 0 : startTime;
+        let videoLength = video.videoDetails.lengthSeconds;
+        let vdh = Math.floor(videoLength / 3600);
+        videoLength = videoLength % 3600;
+        let vdm = Math.floor(videoLength / 60);
+        videoLength = videoLength % 60;
+        let vds = Math.floor(videoLength);
+        vdh = vdh < 10 ? `0${vdh}` : vdh;
+        vdm = vdm < 10 ? `0${vdm}` : vdm;
+        vds = vds < 10 ? `0${vds}` : vds;
 
-        let vdh = video.duration.hours;
-        let vdm = video.duration.minutes;
-        let vds = video.duration.seconds;
-        if(vdh < 10) vdh = `0${vdh}`;
-        if(vdm < 10) vdm = `0${vdm}`;
-        if(vds < 10) vds = `0${vds}`;
-
-        const song = {
-            id: video.id,
-            title: Discord.escapeMarkdown(video.title),
-            url: `https://www.youtube.com/watch?v=${video.id}`,
-            length: `${vdh}:${vdm}:${vds}`,
+        var song = {
+            id: video.videoDetails.videoId,
+            title: Discord.Util.escapeMarkdown(video.videoDetails.title),
+            url: `https://www.youtube.com/watch?v=${video.videoDetails.videoId}`,
+            thumbnail: `https://i3.ytimg.com/vi/${video.videoDetails.videoId}/hqdefault.jpg`,
+            length: video.videoDetails.isLiveContent && +video.videoDetails.lengthSeconds === 0 ? `:red_circle: Youtube 直播中` : `${vdh}:${vdm}:${vds}`,
+            lengthSeconds: +video.videoDetails.lengthSeconds,
             author: songAuthor,
-            guildtag: message.guild.name
+            guildtag: message.guild.name,
+            live: video.videoDetails.isLiveContent && +video.videoDetails.lengthSeconds === 0,
+            startTime: startTime,
+            addTime: this.getTime()
         };
         if(!serverQueue){
             const queueConstruct = {
+                guild: message.guild,
                 textChannel: message.channel,
                 voiceChannel: voiceChannel,
                 connection: null,
                 songs: [],
                 volume: 1,
                 loop: false,
-                playing: true
+                loopAll: false,
+                playing: true,
+                playtime: 0,
+                timer: {
+                    timeOutObj: null,
+                    startTime: null,
+                    counter: null,
+                },
+                LiveDataLastUpdate: null,
+                LiveEndChecker: null
             };
-            this.main.queue.set(message.guild.id, queueConstruct);
+            this.main.queue.set(message.guild.id, queueConstruct)
 
             queueConstruct.songs.push(song);
+            console.log(this.main.queue)
 
             try{
-                let connection = await voiceChannel.join();
+                let connection = voice.joinVoiceChannel({
+                    channelId: voiceChannel,
+                    guildId: message.guild.id,
+                    adapterCreator: message.guild.voiceAdapterCreator,
+                    selfDeaf: true
+                })
                 queueConstruct.connection = connection;
-                this.play(message.guild, queueConstruct.songs[0]);
+                await this.play(message.guild, queueConstruct.songs[0]);
+                this.main.event.emit('UpdateMusicQueue');
             }catch(err){
                 console.log(err);
                 this.main.queue.delete(message.guild.id);
                 let embed = this.createEmbed(songAuthor, `ReiNa Bot Rework 錯誤`, `在進入語音頻道時發生錯誤! 嗚嗚嗚~\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
-                message.channel.send(embed)
+                message.channel.send({embeds: [embed]})
                 .then(msg => {
                     msg.delete({timeout: 5000}).catch(console.error);
                 }).catch();
@@ -123,10 +210,11 @@ module.exports = class Util {
             }
         }else{
             serverQueue.songs.push(song);
+            this.main.event.emit('UpdateMusicQueue');
             if(playlist) return undefined;
             else{
-                let embed = this.createEmbed(songAuthor, null, `✅ 將**${song.title}**加入到播放列表中!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
-                message.channel.send(embed)
+                let embed = this.createEmbed(songAuthor, null, `✅ 將**\`${song.title}\`**加入到播放列表中!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
+                message.channel.send({embeds: [embed]})
                 .then(msg => {
                     msg.delete({timeout: 5000}).catch(console.error);
                 }).catch();
@@ -137,95 +225,188 @@ module.exports = class Util {
     }
 
     //播放音樂
-    play(guild, song){
-        //傳入this 到fs.readFile/setPresence function
+    async play(guild, song){
         
-        const serverQueue = this.main.queue.get(guild.id);
+        const serverQueue = await this.main.queue.get(guild.id);
+
+        let member = await this.main.bot.channels.cache.get(serverQueue.voiceChannel.id).members.size;
 
         if(!song){
             let noSong = this.createEmbed(null, null, `Senpai, 全部音樂已經播放完畢, 這裡就沒有我的事情了 需要我的時候再叫我吧!\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
-            serverQueue.textChannel.send(noSong)
+            serverQueue.textChannel.send({embeds: [noSong]})
             .then(msg => {
 				msg.delete({timeout: 5000}).catch(console.error);
-			}).catch();
-            serverQueue.voiceChannel.leave();
-            this.main.queue.delete(guild.id);
-            this.main.bot.user.setActivity(`${this.main.config.prefix}help | ReiNa Is Here! Nya~~~~`, {type:3});
+            }).catch();
             try{
-                this.main.musictimer.delete(guild.id);
+                this.main.queue.delete(guild.id);
+                this.setActivity(this.main);
+                voice.getVoiceConnection(guild.id).disconnect();
             }catch(e){}
+            return;
+        }
+        
+        //檢查語音頻道除了自己還有沒有其他使用者
+        if(member <= 1 || !member){
+            //建立, 發送停止播放信息
+            let stopPlayingMSG = this.createEmbed(serverQueue.songs[0].author, null, `${serverQueue.songs[0].author} Senpai, 現在語音頻道只剩我一個了呢! 為了更好更流暢的服務, 我就先停止播放音樂了, 需要播放音樂的話隨時都可以再叫我喲 (＾Ｕ＾)ノ~ＹＯ\n\n\n**此信息將會在5秒後自動刪除**\n`, null, 0xcc0000);
+            serverQueue.textChannel.send({embeds: [stopPlayingMSG]})
+            .then(msg => {
+                //5秒後自動刪除信息
+                msg.delete({timeout: 5000}).catch(console.error);
+            }).catch();
+            //離開語音頻道
+            await voice.getVoiceConnection(guild.id).disconnect();
+            //刪除伺服器歌曲列表
+            await this.main.queue.delete(guild.id);
+            //設置Discord狀態到預設狀態
+            this.setActivity(this.main);
             return;
         }
 
         let dispatcher;
-        fs.readFile.call(this, `./MusicCache/${song.id}.mp3`, { encoding: 'utf-8'}, (err, data) => {
-			if(!err){
-				let size = fs.statSync(`./MusicCache/${song.id}.mp3`)["size"];
-				if(size == 0){
-					let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
-					let proc = new ffmpeg({source: stream});
-					proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
-					dispatcher = serverQueue.connection.play(ytdl(song.url))
-					.on('finish', end => {
-						if(serverQueue.loop == false){serverQueue.songs.shift();}
-						else {
-							if(serverQueue.loop == true){
-								serverQueue.songs.unshift(serverQueue.songs[0]);
-								serverQueue.songs.shift();
-							}
-						}
-						this.play(guild, serverQueue.songs[0]);
-						this.main.musictimer.set(guild.id, Date.now());
-					})
-					.on('error', e => console.trace(e));
-				}else{
-					dispatcher = serverQueue.connection.play(`./MusicCache/${song.id}.mp3`)
-					.on('finish', end => {
-						if(serverQueue.loop == false){serverQueue.songs.shift();}
-						else {
-							if(serverQueue.loop == true){
-								serverQueue.songs.unshift(serverQueue.songs[0]);
-								serverQueue.songs.shift();
-							}
-						}
-						this.play(guild, serverQueue.songs[0]);
-						this.main.musictimer.set(guild.id, Date.now());
-					})
-					.on('error', e => console.trace(e));
-					}
-			}
-			else{
-				fsPath.writeFileSync(`./MusicCache/${song.id}.mp3`, "");
-				let stream = ytdl(`https://www.youtube.com/watch?v=${song.id}`);
-				let proc = new ffmpeg({source: stream});
-				proc.saveToFile(`./MusicCache/${song.id}.mp3`, (stdout, stderr) => {})
-				dispatcher = serverQueue.connection.play(ytdl(song.url))
-				.on('finish', end => {
-					if(serverQueue.loop == false){serverQueue.songs.shift();}
-					else {
-						if(serverQueue.loop == true){
-							serverQueue.songs.unshift(serverQueue.songs[0]);
-							serverQueue.songs.shift();
-						}
-					}
-					this.play(guild, serverQueue.songs[0]);
-					this.main.musictimer.set(guild.id, Date.now());
-				})
-				.on('error', e => console.trace(e));
-			}
-			
-			dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-			let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**${song.title}**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
-			serverQueue.textChannel.send(embed)
-				.then(msg => {
-				msg.delete({timeout: 5000}).catch(console.error);
-				}).catch();
-			let looping = '';
-			if(serverQueue.loop == true){looping = "開啟"}
-			if(serverQueue.loop == false){looping = "關閉"}
-			this.main.bot.user.setActivity(`正在播放: ${song.title} 由 ${song.author.tag} 在 ${serverQueue.songs[0].guildtag}添加, ||[單曲循環播放: ${looping}]||`, {type:2});
-			this.main.musictimer.set(guild.id, Date.now());
-		});
+        let stream = ytdl(song.url, {
+            requestOptions: {
+                //request Headers
+                headers: {
+                    Cookie: this.main.config.youtubeCookie,
+                    // Optional. If not given, ytdl-core will try to find it.
+                    // You can find this by going to a video's watch page, viewing the source,
+                    // and searching for "ID_TOKEN".
+                    'x-youtube-identity-token' : this.main.config.youtubeIdentityToken,
+                },
+                //end of req Headers
+            },
+            //end of reqOptions
+            } //end of ytdl options
+        );
+        //Check video is live or not
+        if(song.live && song.lengthSeconds === 0){
+            //youtube live (always dont cache)
+
+            //Bot will leave voiceChannel or play the next song when no data received from youtube live within 30 seconds
+             serverQueue.LiveEndChecker = setInterval(() => {
+                if(serverQueue.LiveDataLastUpdate === null) return;
+                if(Date.now() - serverQueue.LiveDataLastUpdate > 30000){
+                    clearInterval(serverQueue.LiveEndChecker);
+                    serverQueue.LiveEndChecker = null;
+                    serverQueue.connection.dispatcher.end("");
+                }
+            }, 500);
+            stream.on('data', (chunk) =>{
+                //Update Live Data receive time
+                serverQueue.LiveDataLastUpdate = Date.now();
+            });
+            stream.on('error', e =>{
+                    let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
+                    error.addField('發生問題的影片資訊(Debug)', `\`\`\`javascript\n影片標題: ${song.title}\n影片ID: ${song.id}\n直播? ${song.live}\n\`\`\``);
+                    error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
+                    this.SDM(serverQueue.textChannel, error, song.author);
+            })
+            dispatcher = serverQueue.connection.play(stream)
+            .on('finish', end => {
+                serverQueue.songs.shift();
+                this.play(guild, serverQueue.songs[0]);
+                this.main.event.emit('UpdateMusicQueue');
+            })
+            .on('error', e => {
+                serverQueue.songs.shift();
+                this.play(guild, serverQueue.songs[0]);
+                this.main.event.emit('UpdateMusicQueue');
+                this.setActivity(this.main);
+            });
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+            let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
+            serverQueue.textChannel.send({embeds: [embed]})
+                .then(msg => {
+                msg.delete({timeout: 5000}).catch(console.error);
+                }).catch();
+            let looping = '';
+            (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
+            this.setActivity(this.main, { string: `${song.title} 由 ${song.author.tag}, ||[單曲循環播放: ${looping}]||`, type: 2});
+            
+            clearTimeout(serverQueue.timer.timeOutObj);
+            serverQueue.playtime = 0;
+            serverQueue.timer.startTime = new Date().getTime();
+            serverQueue.timer.counter = 0
+            serverQueue.timer.timeOutObj = setTimeout(() => {this.fixed(serverQueue)}, 1000);
+            console.log(`${song.title} → ${song.id} 為即時直播串流!`);
+        }else{
+            stream.on('error', e =>{
+                let error = this.createEmbed(song.author, `ReiNa Bot Rework 出錯啦`, `發生了一些問題, 如果這個問題很常見, 請到Github回報或聯絡Bot擁有人!`, null, 0xcc0000);
+                error.addField('發生問題的影片資訊(Debug)', `\`\`\`javascript\n影片標題: ${song.title}\n影片ID: ${song.id}\n直播? ${song.live}\n\`\`\``);
+                error.addField('錯誤信息', `\`\`\`javascript\n${e.message}\n\`\`\``);
+                this.SDM(serverQueue.textChannel, error, song.author);
+            })
+            //設置dispatcher (與直播影片不一樣的設定)
+            dispatcher = serverQueue.connection.play(ytdl(song.url, {
+                requestOptions: {
+                    //request Headers
+                    headers: {
+                        cookie: this.main.config.youtubeCookie,
+                        "x-youtube-identity-token" : this.main.config.youtubeIdentityToken,
+                    },
+                    //end of req Headers
+                },
+                //end of reqOptions
+                filter: 'audioonly',
+                quality: 'highestaudio',
+                highWaterMark: 1 << 25,
+                //end of ytdl options
+            }), {seek: song.startTime})
+            .on('finish', end => {
+                //歌曲完結時檢查 歌曲循環/歌單循環是否開啟
+                if(serverQueue.loop == false){
+                    if(serverQueue.loopAll == false){
+                        serverQueue.songs.shift();
+                    }else{
+                        if(serverQueue.loopAll == true){
+                            serverQueue.songs.push(serverQueue.songs[0]);
+                            serverQueue.songs.shift();
+                        }
+                    }
+                }
+                else {
+                    if(serverQueue.loop == true){
+                        serverQueue.songs.unshift(serverQueue.songs[0]);
+                        serverQueue.songs.shift();
+                    }
+                }
+                this.play(guild, serverQueue.songs[0]);
+                this.main.event.emit('UpdateMusicQueue');
+            })
+            .on('error', e => {
+                serverQueue.songs.shift();
+                this.play(guild, serverQueue.songs[0]);
+                this.main.event.emit('UpdateMusicQueue');
+                this.setActivity(this.main);
+            });
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+            let embed = this.createEmbed(song.author, null, `🎶 開始播放: <@${song.author.id}>添加的**\`${song.title}\`**\n\n語音頻道: **${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}**\n\n\n**此信息將會在5秒後自動刪除**\n`);
+            serverQueue.textChannel.send({embeds: [embed]})
+                .then(msg => {
+                msg.delete({timeout: 5000}).catch(console.error);
+                }).catch();
+            let looping = '';
+            (serverQueue.loop == true) ? looping = "開啟" : looping = "關閉";
+            this.setActivity(this.main, {string: `${song.title} 由 ${song.author.tag} 添加, ||[單曲循環播放: ${looping}]||`, type: 2});
+            clearTimeout(serverQueue.timer.timeOutObj);
+            serverQueue.playtime = 0 + song.startTime;
+            serverQueue.timer.startTime = new Date().getTime();
+            serverQueue.timer.counter = 0;
+            serverQueue.timer.timeOutObj = setTimeout(() => {this.fixed(serverQueue)}, 1000);
+            console.log(`${this.color.FgYellow}${this.getTime()}${this.color.Reset} ${song.title} → ${song.id} 開始播放!`);
+        }
+    }
+    
+    //use to fix setinterval timing slowly drifts away from staying accurate
+    //for counting current playing song's playtime in discord voice channel
+    fixed(queue){
+        queue.playtime++;
+        queue.timer.counter++;
+        var offset = new Date().getTime() - (queue.timer.startTime + queue.timer.counter * 1000);
+        var nextTime = 1000 - offset;
+        if(nextTime < 0 ) nextTime = 0;
+        queue.timer.timeOutObj = setTimeout(() => {this.fixed(queue)}, nextTime);
     }
 
     //Get ServerQueue
@@ -235,9 +416,10 @@ module.exports = class Util {
 
     //信息發送模塊
     async SDM(channel, message, author, trigger){
-        const sentMsg = await channel.send(message);
+        channel.sendTyping();
+        const sentMsg = await channel.send({embeds: [message]});
         await sentMsg.react('🗑');
-        const collector = sentMsg.createReactionCollector((reaction, user) => reaction.emoji.name === '🗑' && !user.bot && user.id === author.id || reaction.message.member.hasPermission('MANAGE_MESSAGES') === true && !user.bot, { time:1000 * 60 * 10, max: 1});
+        const collector = sentMsg.createReactionCollector({ filter: ((reaction, user) => reaction.emoji.name === '🗑' && !user.bot && user.id === author.id || reaction.message.member.permissions.has('MANAGE_MESSAGES') === true && !user.bot && reaction.emoji.name === '🗑'), time: 1800000, max: 1}); //30mins
         collector.on('end', async collected => {
             if(collected.size){
                 try{
@@ -248,30 +430,110 @@ module.exports = class Util {
                 } catch (err) { }
                 return;
             }
-            if(sentMsg.guild.me.hasPermission('MANAGE_MESSAGES')) { await sentMsg.reactions.removeAll() }
-            else{ sentMsg.reactions.removeAll() }
+            if(sentMsg.guild.me.permissions.has('MANAGE_MESSAGES')) { 
+                try{
+                    await sentMsg.reactions.removeAll();
+                } catch(e){}
+            }
+            else{ 
+                try{
+                    sentMsg.reactions.removeAll() 
+                } catch(e){}
+            }
         })
         return sentMsg;
     }
 
-    //Get MusicTimer
-    getMusicTimer(gid){
-        return this.main.musictimer.get(gid);
+    progressbar(total, current, size){
+        current = current || 0;
+        size = size || 30;
+        return `[${pb.splitBar(total, current, size)[0]}]`;
     }
 
+    //function that prevent xss
+    htmlEscape(text) {
+        return text.replace(/&/g, '&amp;').
+        replace(/</g, '&lt;').
+        replace(/"/g, '&quot;').
+        replace(/'/g, '&#027;').
+        replace(/>/g, '&gt').
+        replace(/\//g, '&#047');
+    }
+
+    //Get MusicTimer
+    //getMusicTimer(gid){
+    //    return this.main.musictimer.get(gid);
+    //}
+
     //Check Owner Perm
-    checkOwner(user){
-        if(user.id != this.main.config.ownerID){
+    checkOwner(uid){
+        if(uid != this.main.config.ownerID){
             return false;
         }
         return true;
+    }
+
+    //set bot activity (status)
+    setActivity(ReiNa, status){
+        // status ? ReiNa.bot.user.setActivity(status.string, {type: status.type}): status = { string: `${ReiNa.config.prefix}help | ReiNa Is Here! Nya~~~~`, type: 3};
+		status ? ReiNa.bot.user.setActivity(status.string, {type: status.type}): status = { string: `更新中...功能暫不開放`, type: 3};
+		if(ReiNa.queue.size === 0){
+			ReiNa.bot.user.setActivity(status.string, {type: status.type});
+		}
+    }
+
+
+    //check user perm (allow eval command)
+    checkUserPerm(uid){
+        let pass = this.main.config.adminID.includes(uid) || +uid === +this.main.config.ownerID ? true : false;
+        return pass;
+    }
+    
+
+    //check attachIsImage?
+    attachIsImage(msgAttach){
+        let url = msgAttach.url;
+        if(url.indexOf("png", url.length - "png".length) !== -1){return true}
+        if(url.indexOf("jpg", url.length - "jpg".length) !== -1){return true}
+        if(url.indexOf("gif", url.length - "gif".length) !== -1){return true}
+        if(url.indexOf("jpeg", url.length - "jpeg".length) !== -1){return true}
+        return false;
+    }
+    
+
+    //fetch (return obj)
+    async fetchJSON(url){
+        request.get(url, {}, async (err, req, body) => {
+            if(err || req.statusCode != 200){
+                return undefined;
+            }
+            if(!err && req.statusCode === 200){
+                let obj = await JSON.parse(body);
+                return obj;
+            }
+        });
+    }
+
+    //Get time
+    getTime(){
+        let date_ob = new Date();
+        let date = ("0" + date_ob.getDate()).slice(-2);
+        let year = date_ob.getFullYear();
+        let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+
+        let hours = date_ob.getHours();
+        let minutes = date_ob.getMinutes();
+        let seconds = date_ob.getSeconds();
+        hours = hours < 10 ? `0${hours}` : hours;
+        minutes = minutes < 10 ? `0${minutes}` : minutes;
+        seconds = seconds < 10 ? `0${seconds}` : seconds;
+        return "[" + year + "-" + month + "-" + date + " | " + hours + ":" + minutes + ":" + seconds + "]";
     }
 
     load() {
         let commands = new Map();
         let events = new Map();
         const queue = new Map();
-        const musictimer = new Map();
         let time = Date.now();
         let taken = 0;
         const commandDir = `./Commands/`;
@@ -302,7 +564,7 @@ module.exports = class Util {
                     }
                 });
             });
-            resolve({commands, events, queue, musictimer});
+            resolve({commands, events, queue});
         });
     }
 }

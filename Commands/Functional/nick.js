@@ -22,6 +22,7 @@ module.exports = class NickCommand extends Command {
             await message.member.setNickname(nick, `ReiNa Bot Rework [Set Nick Name]`)
             await this.main.util.SDM(message.channel, setNick, message.author);
         }catch(e){
+            console.log(e)
             if(e.length < 1023){
                 let ErrorMSG = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 暱稱設置失敗`);
                 ErrorMSG.addField('錯誤:', `\`\`\`${e}\`\`\``);

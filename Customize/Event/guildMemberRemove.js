@@ -21,7 +21,7 @@ module.exports.sendByeMessage = async (member) => {
     ctx.strokeStyle = '#74037b';
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-    const avatar = await Canvas.loadImage(member.user.displayAvatarURL());
+    const avatar = await Canvas.loadImage(member.user.displayAvatarURL({format: 'png'}));
     ctx.drawImage(avatar, 150, 30, 150, 150);
     var pixels = ctx.getImageData(150, 30, 150, 150);
     var pixeldata = pixels.data;
@@ -34,5 +34,5 @@ module.exports.sendByeMessage = async (member) => {
     ctx.putImageData(pixels, 150, 30);
     const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'bye.png');
 
-    channel.send(`${member} 逃離了**${member.guild.name}**.`, attachment);
+    channel.send(`${member.user.tag} 逃離了**${member.guild.name}**.`, attachment);
 }

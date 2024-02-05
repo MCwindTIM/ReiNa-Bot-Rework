@@ -1,6 +1,6 @@
 const Command = require('../../Core/command');
 
-module.exports = class TestCommand extends Command {
+module.exports = class ClearMSGCommand extends Command {
     constructor(main){
         super(main, {
             name: "clear",
@@ -14,7 +14,7 @@ module.exports = class TestCommand extends Command {
     }
     async run(message, args, prefix){
         message.delete().catch();
-        if(message.member.hasPermission('MANAGE_MESSAGES') === true){
+        if(message.member.permissions.has('MANAGE_MESSAGES') === true){
             clear.call(this, message, args);
         }else{
             let noPerm = this.main.util.createEmbed(message.author, null, `${message.author}, 你沒有權限 **MANAGE_MESSAGES**, 所以不可以刪除信息!`)
@@ -48,10 +48,14 @@ async function clear(message, args){
 	}
 	  
 	  const fetched = await message.channel.messages.fetch({limit: args[0]});
-	  console.log('正在刪除 ' + fetched.size + ' 條信息...');
 	  
-	
-      message.channel.bulkDelete(fetched)
-      let deleted = this.main.util.createEmbed(message.author, null, `${message.author} 刪除了*${args[0]}*條信息\n我只可以刪除14日內的信息`)
-      this.main.util.SDM(message.channel, deleted, message.author);
+      message.channel.bulkDelete(fetched).then(() => {
+	  console.log(`正在刪除 ${message.guild.name} | ${message.channel.name} (${message.channel.id}) 的 ${fetched.size} 條信息...`);
+        let deleted = this.main.util.createEmbed(message.author, null, `${message.author} 刪除了*${args[0]}*條信息`)
+        this.main.util.SDM(message.channel, deleted, message.author);
+      }).catch(e =>{
+	    console.log(`正在刪除 ${message.guild.name} | ${message.channel.name} (${message.channel.id}) 的 ${fetched.size} 條信息... (超過14天的信息無法刪除)`);
+        let deleted = this.main.util.createEmbed(message.author, null, `${message.author} 嘗試刪除了*${args[0]}*條信息\n超過14天的信息無法刪除!`)
+        this.main.util.SDM(message.channel, deleted, message.author);
+      });
 }

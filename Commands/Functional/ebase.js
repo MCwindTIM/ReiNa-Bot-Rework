@@ -13,6 +13,13 @@ module.exports = class EbaseCommand extends Command {
     async run(message, args, prefix){
         message.delete().catch();
         let mString = args.join(" ");
+        if(mString === ''){
+            let NTE = await this.main.util.createEmbed(message.author, `ReiNa Bot Rework 加密信息`, `${message.author}, 請輸入需要加密的字串!`);
+            try{
+                await this.main.util.SDM(message.channel, NTE, message.author);
+            }catch(e){}
+            return;
+        }
         let tString = Buffer.from(mString).toString('base64');
         let doneMSG = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 加密信息`, tString);
         try{

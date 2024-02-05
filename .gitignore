@@ -3,3 +3,6 @@ Core/config.js
 ffmpeg.exe
 MusicCache/
 node_modules/
+PyScript/
+.history/
+.vscode/

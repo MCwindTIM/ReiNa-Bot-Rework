@@ -19,18 +19,23 @@ module.exports = class MusicNowplayingCommand extends Command {
             }catch(e){}
             return;
         }
-        let playtime = Date.now() - this.main.util.getMusicTimer(message.guild.id);
-        let h = Math.floor(playtime / 3600000);
+        let playtime = serverQueue.playtime;
+        let totalsec = playtime;
+        let h = Math.floor(playtime / 3600);
         if (h < 10) h = "0" + h;
-        playtime = playtime % 3600000;
-        let m = Math.floor(playtime / 60000);
+        playtime = playtime % 3600;
+        let m = Math.floor(playtime / 60);
         if (m < 10) m = "0" + m;
-        playtime = playtime % 60000;
-        let s = Math.floor(playtime / 1000);
+        playtime = playtime % 60;
+        let s = playtime
         if (s < 10) s = "0" + s;
-        playtime = playtime % 1000;
-        if (playtime < 10) playtime = "0" + playtime;
-        let Nowplaying = this.main.util.createEmbed(message.author, null, `${message.author}\n\n🎶 現正播放: ${serverQueue.songs[0].author}添加的**${serverQueue.songs[0].title}** ${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n\n如果Senpai想要網址的話, 我放在下面哦!\n${serverQueue.songs[0].url}`, null, 0xcc0000);
+        let bar;
+        if(serverQueue.songs[0].live && serverQueue.songs[0].lengthSeconds === 0){
+            bar = this.main.util.progressbar(100, 100);
+        }else{
+            bar = this.main.util.progressbar(serverQueue.songs[0].lengthSeconds, totalsec);
+        }
+        let Nowplaying = this.main.util.createEmbed(message.author, null, `${message.author}\n\n🎶 現正播放: ${serverQueue.songs[0].author}添加的**\`${serverQueue.songs[0].title}\`** ${h}:${m}:${s}/${serverQueue.songs[0].length}\n\n${bar}\n\n語音頻道: ${serverQueue.songs[0].guildtag}的${serverQueue.voiceChannel.name}\n\n如果Senpai想要網址的話, 我放在下面哦! __影片ID:__ **${serverQueue.songs[0].id}**\n[[影片連結](${serverQueue.songs[0].url})]\n[[現正播放的時間連結](https://youtu.be/${serverQueue.songs[0].id}?t=${totalsec})]\n 單曲循環播放: ${serverQueue.loop ? "開啟":"關閉"}\n清單循環播放: ${serverQueue.loopAll ? "開啟":"關閉"}`, null, 0xcc0000);
         try{    
             this.main.util.SDM(message.channel, Nowplaying, message.author);
         }catch(e){}

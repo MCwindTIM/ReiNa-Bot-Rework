@@ -66,35 +66,28 @@ module.exports.run = async (ReiNa, message) =>{
 		break;
 	}
 	const attachment = new Discord.MessageAttachment(canvas.toBuffer(), '測謊機.png');
-	message.channel.send(`${kitisgay}, 請在十秒內輸入算式答案以獲得**一般成員**權限!`, attachment).then(msg => {
-		msg.delete({timeout: 10000}).catch(console.log);
-	});
+	message.channel.send({ content: `${kitisgay}, 請在十秒內輸入算式答案以獲得**一般成員**權限!`, files: [attachment]}).then(msg => {
+		setTimeout(() => msg.delete().catch(console.log), 10000);
+	}).catch(console.log);
 	try {
 		var response;
 		const filter = m => m.content > captcha - 1 && m.content < captcha + 1 && array.includes(m.author.id);
-		await message.channel.awaitMessages(filter, {
-			max: 1,
-			time: 10000,
-			errors: ['time']
-		}).then(fetched => {
+		await message.channel.awaitMessages({filter: filter, max: 1, time: 10000, errors: ['time']}).then(fetched => {
 			response = fetched;
 		});
 	} catch (err) {
         let png = canvas.createPNGStream();
         let notpass = ReiNa.util.createEmbed(message.author, `ReiNa Bot Rework 驗證錯誤`, `${kitisgay} 驗證碼錯誤 / 超過輸入時間!`, null, 0xcc0000);
-		notpass
-		.attachFiles(new Discord.MessageAttachment(png, 'Q.png'))
-		.setImage("attachment://Q.png")
-		message.channel.send(notpass).then(msg => {
-			msg.delete({timeout: 5000}).catch(console.log);
+		message.channel.send({embeds: [notpass]}).then(msg => {
+			setTimeout(() => msg.delete().catch(console.log), 5000);
 		});
 		return;
         }
     let pass = ReiNa.util.createEmbed(message.author, null, `${kitisgay}通過驗證!`, null, 0xcc0000);
 	await message.member.roles.add('702950415045754880');
 	await message.member.roles.remove('702950614195241053');
-	await message.channel.send(pass).then(msg => {
-		msg.delete({timeout: 1500}).catch(console.log);
+	await message.channel.send({embeds: [pass]}).then(msg => {
+		setTimeout(() => msg.delete().catch(console.log), 1500);
 	});
 	return;
 }

@@ -3,7 +3,7 @@ let memberuser = 0;
 let alluser = 0;
 let numchars = {'0':'𝟬','1':'𝟭','2':'𝟮','3':'𝟯','4':'𝟰','5':'𝟱','6':'𝟲','7':'𝟳','8':'𝟴','9':'𝟵'};
 
-module.exports.UpdateUser = async function (ReiNa) {
+module.exports.UpdateUser = async (ReiNa) => {
 
     botuser = 0;memberuser = 0;alluser = 0;
     try{

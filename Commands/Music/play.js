@@ -9,7 +9,8 @@ module.exports = class MusicPlayCommand extends Command {
             args: [{
                 name: `url / 搜尋關鍵字`,
                 desc:`放入Youtube連結或者搜尋關鍵字以播放音樂`
-            }],
+            }], 
+            alias: ["p"],
             caseSensitive: true
         });
     }
@@ -41,18 +42,33 @@ module.exports = class MusicPlayCommand extends Command {
         }
         let url = message.content.split(' ')[1] ? message.content.split(' ')[1].replace(/<(.+)>/g, '$1') : '';
         if(url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/) || url.match(/^https:\/\/(?:www\.)?youtube\.com\/watch\?((v=[^&\s]*&list=[^&\s]*)|(list=[^&\s]*&v=[^&\s]*))(&[^&\s]*)*$/)){
-            const playlist = await this.main.util.getPlaylist(url);
+            const playlist = await this.main.util.getPlaylist(url).catch(err =>{
+				if(err.code === 403){
+					let playlistNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author}, 取得播放列表時發生錯誤! Youtube 限額到達上限`, null, 0xcc0000);
+					this.main.util.SDM(message.channel, playlistNotFound, message.author);
+                }
+                let playlistNotFound = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author}, 取得播放列表時發生錯誤! (可能是私人播放清單導致)`, null, 0xcc0000);
+                this.main.util.SDM(message.channel, playlistNotFound, message.author);
+                return;
+            });
+            if(playlist === undefined) return;
             const videos = await this.main.util.getYTVideos(playlist);
             let item = 0;
             for(const video of Object.values(videos)){
                 if(video.raw.status){
-                    item = item + 1;
                     if(video.raw.status.privacyStatus === 'public' || video.raw.status.privacyStatus === 'unlisted'){
-                        const video2 = await this.main.util.getVideoByID(video.id);
-                        await this.main.util.handleVideo(video2, message, message.author, voiceChannel, true);
-                    }else{
-                        if(video.raw.status.privacyStatus === 'private'){item = item - 1}
+                        item++;
+                        await this.main.util.handleVideo(await this.main.util.getVideo(video.id), message, message.author, voiceChannel, true);
                     }
+                    //old code
+                    // item++
+                    // if(video.raw.status.privacyStatus === 'public' || video.raw.status.privacyStatus === 'unlisted'){
+                    //     const video2 = await this.main.util.getVideo(video.id);
+                    //     await this.main.util.handleVideo(video2, message, message.author, voiceChannel, true);
+                    // }else{
+                    //     if(video.raw.status.privacyStatus === 'private')
+                    //         item--;
+                    // }
                 }
             }
             let playlistprocesstime = new Date().getTime();
@@ -65,19 +81,25 @@ module.exports = class MusicPlayCommand extends Command {
         }else{
             try{
                 var video = await this.main.util.getVideo(url);
+                let timeRegex = /(?:.+?)?(?:\\v\\|watch\\|\\?v=|\\&v=|youtu\\.be\\|\\v=|^youtu\\.be\\|\/youtu.be\/)(?:[a-zA-Z0-9_-]{11})+(?:[a-zA-Z0-9;:@#?&%=+\/\$_.-][\d]*)(?:t=|start=)(\d+)/g;
+                let startTime = timeRegex.exec(url);
+                if(startTime != null && !args[1]){
+                        args[1] = +startTime[1];
+                }
             } catch (err){
                 try{
+                    console.log(err);
                     let searchString = args.join(' ');
-                    let videos = await this.main.util.searchVideos(searchString, 15);
+                    let videos = await this.main.util.searchVideos(searchString, 5);
                     let index = 0;
-                    let ChooseSong = this.main.util.createEmbed(message.author, null, `${message.author}` + "\n**歌曲選擇:**\n" + `${videos.map(video2 => `**${++index} -** ${video2.title}`).join('\n')}\n\n請Senpai在1到15號結果中選擇想播放的音樂哦!\n\n`, null, 0xcc0000);
+                    let ChooseSong = this.main.util.createEmbed(message.author, `音樂搜尋列表`, `${message.author}` + "\n**歌曲選擇:**\n" + `${videos.map(video2 => `**${++index}.** \`${video2.title}\``).join('\n')}\n\n請Senpai在1到5號結果中選擇想播放的音樂哦!\n\n`, `https://www.youtube.com/results?search_query=${args.join("+")}`, 0xcc0000);
                     message.channel.send(ChooseSong)
                     .then(msg => {
                         msg.delete({timeout: 5000}).catch(console.error);
                     }).catch();
                     try{
                         var response;
-                        await message.channel.awaitMessages(message2 => message2.content > 0 && message2.content < 16, {
+                        await message.channel.awaitMessages(message2 => message2.content > 0 && message2.content < 6, {
                             max: 1,
                             time: 10000,
                             errors: ['time']
@@ -87,19 +109,19 @@ module.exports = class MusicPlayCommand extends Command {
                         });
                     }catch(err){
                         let OutOfTime = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 沒有正確的參數或者超過輸入參數的時間!`, null, 0xcc0000);
-                        this.main.util.SDM(message.channel, OutOfTime, message.author);
-                        return;
+                        return this.main.util.SDM(message.channel, OutOfTime, message.author);
                     }
                     const videoIndex = parseInt(response.first().content);
-                    var video = await this.main.util.getVideoByID(videos[videoIndex -1].id);
+                    var video = await this.main.util.getVideo(videos[videoIndex -1].id);
+                    return this.main.util.handleVideo(video, message, message.author, voiceChannel, false);
                 } catch(err){
                     console.log(err)
-                    let noResult = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 我沒法取得任何搜尋結果!`, null, 0xcc0000);
+                    let noResult = this.main.util.createEmbed(message.author, `ReiNa Bot Rework 錯誤`, `${message.author} 我沒法取得任何搜尋結果! (可能因為Youtube Api 限額超過上限)`, null, 0xcc0000);
                     this.main.util.SDM(message.channel, noResult, message.author);
                     return;
                 }
             }
-            return this.main.util.handleVideo(video, message, message.author, voiceChannel);
+            return this.main.util.handleVideo(video, message, message.author, voiceChannel, false, args[1]? parseInt(args[1]) : 0);
         }
     }
 }
