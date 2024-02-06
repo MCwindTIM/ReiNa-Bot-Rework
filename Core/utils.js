@@ -31,7 +31,9 @@ module.exports = class Utils {
             "next": "⏭️",
             "refresh": "🔄",
             "wonderful": "💯",
-            "thanks": "🥰"
+            "thanks": "🥰",
+            "left": "◀️",
+            "button": "🖲️"
         }
         this.color = {
             "red": 0xFF0000,
@@ -154,14 +156,17 @@ module.exports = class Utils {
 
     load() {
         let commands = new Discord.Collection();
+        let buttons = new Discord.Collection();
         let RESTcommands = [];
-        const foldersPath = `./Commands/`;
-        const commandFolders = fs.readdirSync(foldersPath);
+        const cFolders = `./Commands/`;
+        const bFolders = `./Buttons`; 
+        const commandFolders = fs.readdirSync(cFolders);
+        const buttonFolders = fs.readdirSync(bFolders);
         
 
         return new Promise((resolve, reject) => {
             for (const folder of commandFolders) {
-                const commandsPath = path.join(foldersPath, folder);
+                const commandsPath = path.join(cFolders, folder);
                 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
                 for (const file of commandFiles) {
                     const filePath = path.join(commandsPath, file);
@@ -171,6 +176,21 @@ module.exports = class Utils {
                         commands.set(command.data.name, command);
                         RESTcommands.push(command.data.toJSON());
                         console.log(`${this.main.util.emoji.file}${file}(${command.data.name})載入完成!`)
+                    } else {
+                        console.log(`${this.main.util.emoji.warning} 指令 ${filePath} 缺失 "data" 或 "execute" 属性.`);
+                    }
+                }
+            }
+
+            for (const folder of buttonFolders){
+                const buttonsPath = path.join(bFolders, folder);
+                const buttonFiles = fs.readdirSync(buttonsPath).filter(file => file.endsWith('.js'));
+                for (const file of buttonFiles) {
+                    const filePath = path.join(buttonsPath, file);
+                    const button = require(`../${filePath}`);
+                    if ('btn' in button && 'run' in button) {
+                        buttons.set(button.btn.data.custom_id, button);
+                        console.log(`${this.main.util.emoji.button}${file}(${button.btn.data.custom_id})載入完成!`)
                     } else {
                         console.log(`${this.main.util.emoji.warning} 指令 ${filePath} 缺失 "data" 或 "execute" 属性.`);
                     }
@@ -195,7 +215,7 @@ module.exports = class Utils {
                     console.error(error);
                 }
             })();
-            resolve({commands});
+            resolve({commands, buttons});
         });
     }
 

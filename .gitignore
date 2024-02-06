@@ -2,3 +2,4 @@ Core/config.js
 node_modules/
 .history/
 .vscode/
+*vscode-profile*

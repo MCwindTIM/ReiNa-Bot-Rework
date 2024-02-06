@@ -1,6 +1,6 @@
 const Discord = require("discord.js")
 
-module.exports = class Buttons {
+module.exports = class Rows {
     constructor(main){
         this.main = main;
 
@@ -56,6 +56,11 @@ module.exports = class Buttons {
             .setCustomId("musicNext")
             .setLabel(`${this.main.util.emoji.next}`)
             .setStyle(Discord.ButtonStyle.Secondary);
+        
+        this.queueButton = new Discord.ButtonBuilder()
+            .setCustomId('musicQueue')
+            .setLabel(`${this.main.util.emoji.queue}`)
+            .setStyle(Discord.ButtonStyle.Secondary);
 
         this.refreshButton = new Discord.ButtonBuilder()
             .setCustomId('musicRefresh')
@@ -71,7 +76,17 @@ module.exports = class Buttons {
             .setCustomId('second')
             .setLabel('2')
             .setStyle(Discord.ButtonStyle.Secondary);
+            
+        //Queue Menu
+        this.nextPageButton = new Discord.ButtonBuilder()
+            .setCustomId('nextPage')
+            .setLabel(`${this.main.util.emoji.play} 下一頁`)
+            .setStyle(Discord.ButtonStyle.Secondary);
 
+        this.previousPageButton = new Discord.ButtonBuilder()
+            .setCustomId('previousPage')
+            .setLabel(`${this.main.util.emoji.left} 上一頁`)
+            .setStyle(Discord.ButtonStyle.Secondary);
         
         //Row (A collection of buttons. Max buttons for a row is up to 5);
         this.musicPanelRow = new Discord.ActionRowBuilder().addComponents(
@@ -91,8 +106,14 @@ module.exports = class Buttons {
         );
 
         this.musicPanelRow3 = new Discord.ActionRowBuilder().addComponents(
+            this.queueButton,
             this.refreshButton,
         );
+
+        this.queuePanel = new Discord.ActionRowBuilder().addComponents(
+            this.previousPageButton,
+            this.nextPageButton
+        )
 
         this.testRow = new Discord.ActionRowBuilder().addComponents(
             this.playButton,

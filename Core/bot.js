@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 const Config = require("./config");
 const Util = require("./utils");
 const Events = require("./events");
-const Buttons = require("./buttons")
+const Rows = require("./rows")
 
 //音樂依賴
 const { DisTube } = require('distube')
@@ -34,10 +34,11 @@ module.exports = class ReiNaRework{
         this.config = new Config(option);
         this.util = new Util(this);
         this.events = new Events(this);
-        this.buttons = new Buttons(this);
+        this.rows = new Rows(this);
         this.queue = new Map();
         this.util.load(this).then((data) => {
             this.commands = data.commands;
+            this.buttons = data.buttons;
             this.finishLoad = Date.now();
             this.loginTime = "";
             this.bot.login(this.config.token);

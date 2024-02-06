@@ -11,7 +11,7 @@ module.exports = {
         let testMSG = ReiNa.util.createEmbed(interaction.user, `測試`, `測試內容`, null, 0xAAFF00)
         const response = await interaction.editReply({
             embeds: [testMSG],
-            components: [ ReiNa.buttons.testRow ],
+            components: [ ReiNa.rows.testRow ],
         });
 
         //Components collector
@@ -22,11 +22,11 @@ module.exports = {
                 if (confirmation.customId === 'musicPlay') {
                     const playMSG = ReiNa.util.createEmbed(interaction.user, `測試followUp`, `play`, null, 0xAAFF00);
                     await interaction.followUp({embeds: [playMSG], ephemeral: true});
-                    await confirmation.update({components: [ ReiNa.buttons.testRow ]});
+                    await confirmation.update({components: [ ReiNa.rows.testRow ]});
                 } else if (confirmation.customId === 'musicPause') {
                     const pauseMSG = ReiNa.util.createEmbed(interaction.user, `測試followUp`, `pause`, null, 0xAAFF00);
                     await interaction.followUp({embeds: [pauseMSG], ephemeral: true});
-                    await confirmation.update({components: [ ReiNa.buttons.testRow ]});
+                    await confirmation.update({components: [ ReiNa.rows.testRow ]});
                 }
             }
         } catch (e) {

@@ -32,7 +32,7 @@ module.exports = {
             const updatedQueue = ReiNa.bot.distube.getQueue(interaction);
             //reply with music control
             const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-            response = await interaction.editReply({ embeds: [musicEmbed], components: [ ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
+            response = await interaction.editReply({ embeds: [musicEmbed], components: [ ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
             
             //add timer to update musicPanel for each 5 seconds
             const timer = setInterval(async () => {
@@ -43,8 +43,8 @@ module.exports = {
                     return await ReiNa.queue.delete(updatedQueue.id);
                 }
                 const musicEmbed = await await ReiNa.util.getMusicEmbed(interaction);
-                await response.edit({ embeds: [musicEmbed], components: [ ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-            }, 5000)
+                await response.edit({ embeds: [musicEmbed], components: [ ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+            }, 15000)
             ReiNa.queue.set(interaction.guildId, {
                 "message": response,
                 "timer": timer
@@ -78,173 +78,189 @@ module.exports = {
             )
             return await interaction.editReply({ embeds: [addSongMSG]}).then(msg => {
                 setTimeout(() => msg.delete(), 5000)
-              })
-              .catch();
+            }).catch();
         }
 
         //Components collector
         try {
-            while(true){
-                const updatedQueue = ReiNa.bot.distube.getQueue(interaction);
                 //Only who use command can react to buttons (05-Feb-24 added all user can react,
                 //should remove the filter instead, only reason this still hereis keeping for debug)
                 const collectorFilter = i => i.user.id === interaction.user.id || i.user.id != interaction.user.id;
-                const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 1000 * 60 * 60 * 24 });
-                if (confirmation.customId === 'musicPlay') {
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-                    //play music
-                    if (!ReiNa.bot.distube.getQueue(interaction).playing){
-                        await ReiNa.bot.distube.getQueue(interaction).resume(interaction);
-                        //get update music emebed
-                        const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                        await response.edit({embeds: [musicEmbed]});
-                    }    
-                    await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                } 
-                if (confirmation.customId === 'musicPause') {
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-                    //pause music
-                    if(!ReiNa.bot.distube.getQueue(interaction).paused){
-                        await ReiNa.bot.distube.getQueue(interaction).pause(interaction);
-                        //get update music emebed
-                        const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                        await response.edit({embeds: [musicEmbed]});
-                    }
-                    await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                }   
-                if(confirmation.customId === 'musicStop'){
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-                    //stop music
-                    await updatedQueue.stop();
-                    const stopMSG = ReiNa.util.getMusicEmbed(interaction, true);
-                    await response.edit({embeds: [stopMSG]});
-                    return await confirmation.update({components: []});
-                }
-                if(confirmation.customId === 'musicUpVolume'){
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-                    //tune up volume
-                    ReiNa.bot.distube.getQueue(interaction).setVolume(
-                        ReiNa.bot.distube.getQueue(interaction).volume + 10
-                    )
-                    const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                    await response.edit({embeds: [musicEmbed]});
-                    await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                }
-                if(confirmation.customId === 'musicDownVolume'){
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-                    //tune down volume
-                    ReiNa.bot.distube.getQueue(interaction).setVolume(
-                        ReiNa.bot.distube.getQueue(interaction).volume - 10
-                    )
-                    const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                    await response.edit({embeds: [musicEmbed]});
-                    await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                }
-                if(confirmation.customId === 'musicPrevious'){
-                    if(!updatedQueue?.previousSongs?.length != 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `歷史清單是空的 (沒有上一首歌)`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                    }
-                    else{
+                const collector = await response.createMessageComponentCollector({
+                    filter: collectorFilter, 
+                    time: 1000 * 60 * 60 * 24,
+                    componentType: Discord.ComponentType.Button,
+                });
+                collector.on(`collect`, async (cInteraction) => {
+                    const updatedQueue = ReiNa.bot.distube.getQueue(cInteraction); 
+
+                    if (cInteraction.customId === 'musicPlay') {
                         if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                            let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            let nullMSG = ReiNa.util.createEmbed(collector.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
                             await response.edit({embeds: [nullMSG]});
-                            return await confirmation.update({components: []});
+                            return await cInteraction.update({components: []});
                         }
-                        await ReiNa.bot.distube.getQueue(interaction).previous();
+                        //play music
+                        if (!updatedQueue.playing){
+                            await updatedQueue.resume(cInteraction);
+                            //get update music emebed
+                            const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                            await response.edit({embeds: [musicEmbed]});
+                        }    
+                        await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                    } 
+                    if (cInteraction.customId === 'musicPause') {
+                        if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            return await cInteraction.update({components: []});
+                        }
+                        //pause music
+                        if(!updatedQueue.paused){
+                            await updatedQueue.pause(cInteraction);
+                            //get update music emebed
+                            const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                            await response.edit({embeds: [musicEmbed]});
+                        }
+                        await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                    }  
+                    if(cInteraction.customId === 'musicStop'){
+                        if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            return await cInteraction.update({components: []});
+                        }
+                        //stop music
+                        await updatedQueue.stop();
+                        const stopMSG = ReiNa.util.getMusicEmbed(cInteraction, true);
+                        await response.edit({embeds: [stopMSG]});
+                        return await cInteraction.update({components: []});
+                    }
+                    if(cInteraction.customId === 'musicUpVolume'){
+                        if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            return await cInteraction.update({components: []});
+                        }
+                        //tune up volume
+                        updatedQueue.setVolume(
+                            updatedQueue.volume + 10
+                        )
+                        const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                        await response.edit({embeds: [musicEmbed]});
+                        await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                    }
+                    if(cInteraction.customId === 'musicDownVolume'){
+                        if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            return await cInteraction.update({components: []});
+                        }
+                        //tune down volume
+                        updatedQueue.setVolume(
+                            updatedQueue.volume - 10
+                        )
+                        const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                        await response.edit({embeds: [musicEmbed]});
+                        await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                    }
+                    if(cInteraction.customId === 'musicPrevious'){
+                        if(!updatedQueue?.previousSongs?.length != 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `歷史清單是空的 (沒有上一首歌)`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                        }
+                        else{
+                            if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                                let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                                await response.edit({embeds: [nullMSG]});
+                                return await cInteraction.update({components: []});
+                            }
+                            await updatedQueue.previous();
+                            const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                            await response.edit({embeds: [musicEmbed]});
+                            await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                        }
+                    }
+                    if(cInteraction.customId === 'musicRewinding'){
+                        if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            return await cInteraction.update({components: []});
+                        }
+                        await updatedQueue.seek(
+                            updatedQueue.currentTime - 30 <= 0 ?
+                            0 : updatedQueue.currentTime - 30
+    
+                        )
+                        const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                        await response.edit({embeds: [musicEmbed]});
+                        await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                    }
+                    if(cInteraction.customId === 'musicFastForward'){
+                        if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            return await cInteraction.update({components: []});
+                        }
+                        const playingSong = updatedQueue.songs[0];
+                        await updatedQueue.seek(
+                            updatedQueue.currentTime + 30 >= playingSong.duration ?
+                            playingSong.duration - 2 :
+                            updatedQueue.currentTime + 30
+                        )
+                        const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                        await response.edit({embeds: [musicEmbed]});
+                        await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                    }
+                    if(cInteraction.customId === 'musicNext'){
+                        if(!(updatedQueue?.songs?.length >= 2)){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `沒有下一首音樂, 請使用 </play:1201204129951907942> 加入音樂`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                        }
+                        else{
+                            await updatedQueue.skip();
+                            const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                            await response.edit({embeds: [musicEmbed]});
+                            await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                        }
+                    }
+                    if(cInteraction.customId === "musicRepeat"){
+                        if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            return await cInteraction.update({components: []});
+                        }
+    
+                        updatedQueue.setRepeatMode();
+                        const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
+                        await response.edit({embeds: [musicEmbed]});
+                        await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                    }
+
+                    if(cInteraction.customId === "musicRefresh"){
+                        if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                            let nullMSG = ReiNa.util.createEmbed(cInteraction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                            await response.edit({embeds: [nullMSG]});
+                            return await cInteraction.update({components: []});
+                        }
                         const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
                         await response.edit({embeds: [musicEmbed]});
-                        await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
+                        await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
                     }
-                }
-                if(confirmation.customId === 'musicRewinding'){
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-                    await ReiNa.bot.distube.getQueue(interaction).seek(
-                        ReiNa.bot.distube.getQueue(interaction).currentTime - 30 <= 0 ?
-                        0 : ReiNa.bot.distube.getQueue(interaction).currentTime - 30
-
-                    )
-                    const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                    await response.edit({embeds: [musicEmbed]});
-                    await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                }
-                if(confirmation.customId === 'musicFastForward'){
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-                    const playingSong = updatedQueue.songs[0];
-                    await ReiNa.bot.distube.getQueue(interaction).seek(
-                        ReiNa.bot.distube.getQueue(interaction).currentTime + 30 >= playingSong.duration ?
-                        playingSong.duration - 2 :
-                        ReiNa.bot.distube.getQueue(interaction).currentTime + 30
-                    )
-                    const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                    await response.edit({embeds: [musicEmbed]});
-                    await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                }
-                if(confirmation.customId === 'musicNext'){
-                    if(!(updatedQueue?.songs?.length >= 2)){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `沒有下一首音樂, 請使用 </play:1201204129951907942> 加入音樂`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                    }
-                    else{
-                        await ReiNa.bot.distube.getQueue(interaction).skip();
-                        const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                        await response.edit({embeds: [musicEmbed]});
-                        await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                    }
-                }
-                if(confirmation.customId === "musicRepeat"){
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-
-                    ReiNa.bot.distube.getQueue(interaction).setRepeatMode();
-                    const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                    await response.edit({embeds: [musicEmbed]});
-                    await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                }
-                if(confirmation.customId === "musicRefresh"){
-                    if(updatedQueue === undefined || updatedQueue.songs.length === 0){
-                        let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
-                        await response.edit({embeds: [nullMSG]});
-                        return await confirmation.update({components: []});
-                    }
-                    const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
-                    await response.edit({embeds: [musicEmbed]});
-                    await confirmation.update({components: [ReiNa.buttons.musicPanelRow, ReiNa.buttons.musicPanelRow2, ReiNa.buttons.musicPanelRow3]});
-                }
-            }
+                })
+                //TODO: implement reply queue list in ephemeral true mode
+                //TODO: try implement page function
+                // if(collector.customId === "musicQueue"){
+                //     if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                //         let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.error} | 錯誤`, `清單是空的`, null, ReiNa.util.color.red, null, null, null, null);
+                //         await response.edit({embeds: [nullMSG]});
+                //         return await cInteraction.update({components: []});
+                //     }
+                //     await interaction.followUp({content: `test`, ephemeral: true, components: [ReiNa.rows.queuePanel]});
+                //     await cInteraction.update({components: [ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
+                // }
         } catch (e) {
             if(!e.message.includes(`time`)){
                 console.log(e);

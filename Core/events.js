@@ -20,21 +20,36 @@ module.exports = class Events {
         .on(Discord.Events.InteractionCreate, async interaction => {
             if (!interaction.isChatInputCommand()) return;            
             if(interaction.isButton()) {
-                consol.log(true)
+                const button = this.main.buttons.get(interaction.customId);
+                
+                if (!button) return console.error(`找不到交互按鈕 ${this.main.util.emoji.this} ${interaction.customId} .`);
+                try {
+                    await button.run(this.main, interaction);
+                } catch (error) {
+                    console.error(error);
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: `${this.main.util.emoji.error} 哎呀! 出錯啦!`, ephemeral: true });
+                    } else {
+                        await interaction.reply({ content: `${this.main.util.emoji.error} 哎呀! 出錯啦!`, ephemeral: true });
+                    }
+                }
             }
-            const command = this.main.commands.get(interaction.commandName);
-            
-            if (!command) return console.error(`找不到指令 ${this.main.util.emoji.this} ${interaction.commandName} .`);
 
-            try {
-                console.log(`${this.main.util.getTime()}${this.main.util.emoji.user} ${interaction.member.displayName}(${interaction.user.id}) | ${this.main.util.emoji.channel} ${interaction.channel.name}(${interaction.channel.id}) | ${this.main.util.emoji.file} ${command.data.name}) `)
-                await command.run(this.main, interaction);
-            } catch (error) {
-                console.error(error);
-                if (interaction.replied || interaction.deferred) {
-                    await interaction.followUp({ content: `${this.main.util.emoji.error} 哎呀! 出錯啦!`, ephemeral: true });
-                } else {
-                    await interaction.reply({ content: `${this.main.util.emoji.error} 哎呀! 出錯啦!`, ephemeral: true });
+            if(interaction.isCommand()){
+                const command = this.main.commands.get(interaction.commandName);
+                
+                if (!command) return console.error(`找不到指令 ${this.main.util.emoji.this} ${interaction.commandName} .`);
+
+                try {
+                    console.log(`${this.main.util.getTime()}${this.main.util.emoji.user} ${interaction.member.displayName}(${interaction.user.id}) | ${this.main.util.emoji.channel} ${interaction.channel.name}(${interaction.channel.id}) | ${this.main.util.emoji.file} ${command.data.name}) `)
+                    await command.run(this.main, interaction);
+                } catch (error) {
+                    console.error(error);
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: `${this.main.util.emoji.error} 哎呀! 出錯啦!`, ephemeral: true });
+                    } else {
+                        await interaction.reply({ content: `${this.main.util.emoji.error} 哎呀! 出錯啦!`, ephemeral: true });
+                    }
                 }
             }
         });
