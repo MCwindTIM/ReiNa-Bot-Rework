@@ -12,6 +12,7 @@ const { YtDlpPlugin } = require('@distube/yt-dlp')
 
 module.exports = class ReiNaRework{
     constructor(option){
+        this.config = new Config(this);
         this.bot = new Discord.Client({ intents: [
             Discord.GatewayIntentBits.Guilds,
             Discord.GatewayIntentBits.GuildMessages,
@@ -29,9 +30,10 @@ module.exports = class ReiNaRework{
                 }),
                 new SoundCloudPlugin(),
                 new YtDlpPlugin()
-            ]
+            ],
+            youtubeCookie: this.config.youtubeCookie
         })
-        this.config = new Config(option);
+        
         this.util = new Util(this);
         this.events = new Events(this);
         this.rows = new Rows(this);

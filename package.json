@@ -4,7 +4,8 @@
   "description": "ReiNa Bot Rework for MCwind's Discord Server",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -x \"node index.js || copy /b index.js +,,\""
+    "start": "nodemon -x \"node index.js || copy /b index.js +,,\"",
+    "debug": "node index.js"
   },
   "author": "MCwind",
   "license": "MIT",

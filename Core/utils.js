@@ -114,6 +114,14 @@ module.exports = class Utils {
         return musicEmbed;
     }
 
+    getQueueEmbed(interaction){
+        const updatedQueue = this.main.bot.distube.getQueue(interaction);
+        const q = updatedQueue.songs
+            .map((song, i) => `${i === 0 ? '播放中:' : `${i}.`} ${song.name} - \`${song.formattedDuration}\``)
+            .join('\n');
+            return this.createEmbed(interaction.user, `${this.emoji.queue} | **播放清單**`, q, null, this.color.orange);
+    }
+
     //Check Owner Perm
     checkOwner(uid){
         if(uid != this.main.config.ownerID){
