@@ -1,38 +1,33 @@
 const Discord = require('discord.js');
+const superagent = require('superagent');
+const cheerio = require('cheerio');
+const { API, TagTypes, } = require('nhentai-api');
+const { CookieJar } = require('tough-cookie');
+
+const _httpCookie = require('http-cookie-agent/http');
+const { HttpsCookieAgent: CookieAgent } = _httpCookie;
+
+const jar = new CookieJar();
+const agent = new CookieAgent({ cookies: { jar, }, });
+jar.setCookie('cf_clearance=gR8wuCcpj_pcCjtzNOwQZnDlQpIG3HoEVIHWE3ht9MI-1708739619-1.0-AUg73HvTFij8FMp4JHxOEN7rleYezFgDPBxyfc4t/3Q/UyFIdNo7cDTbNCbFwG/9eM6N5l87ItgZUjq4XHs+IyU=', 'https://nhentai.net/');
+
+const api = new API({ agent, });
 
 module.exports = {
 	data: new Discord.SlashCommandBuilder()
 		.setName('test')
 		.setDescription('開發人員測試指令'),
 	async run(ReiNa, interaction) {
-        await interaction.deferReply({ ephemeral: true });
-        if(!ReiNa.util.checkUserPerm(interaction.user.id)) return await interaction.editReply(`${ReiNa.util.emoji.error} | 你沒有權限使用此指令!`);
-
-        let testMSG = ReiNa.util.createEmbed(interaction.user, `測試`, `測試內容`, null, 0xAAFF00)
-        const response = await interaction.editReply({
-            embeds: [testMSG],
-            components: [ ReiNa.rows.testRow ],
-        });
-
-        //Components collector
-        const filter = i => i.user.id === interaction.user.id;
-        try {
-            while(1){
-                const confirmation = await response.awaitMessageComponent({ filter: filter, time: 10000 });
-                if (confirmation.customId === 'musicPlay') {
-                    const playMSG = ReiNa.util.createEmbed(interaction.user, `測試followUp`, `play`, null, 0xAAFF00);
-                    await interaction.followUp({embeds: [playMSG], ephemeral: true});
-                    await confirmation.update({components: [ ReiNa.rows.testRow ]});
-                } else if (confirmation.customId === 'musicPause') {
-                    const pauseMSG = ReiNa.util.createEmbed(interaction.user, `測試followUp`, `pause`, null, 0xAAFF00);
-                    await interaction.followUp({embeds: [pauseMSG], ephemeral: true});
-                    await confirmation.update({components: [ ReiNa.rows.testRow ]});
-                }
-            }
-        } catch (e) {
-            if(!e.message.includes(`time`)) return console.log(e);
-            const testMSG = ReiNa.util.createEmbed(interaction.user, `測試followUp`, `超時`, null, 0xAAFF00);
-            return await interaction.editReply({ embeds: [testMSG.setDescription(`超時`)], components: [] });
-        }
+        await interaction.deferReply();
+        let msg = await getData(interaction, ReiNa)
+        return await interaction.editReply({ embeds: [msg]});
 	},
 };
+
+async function getData(interaction, ReiNa){
+    return new Promise((resolve, reject) => {
+        api.getBook(497727).then(book => {
+            console.log(book.title.pretty);
+        });
+    })
+}

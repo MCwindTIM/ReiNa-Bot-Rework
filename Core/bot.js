@@ -16,6 +16,9 @@ module.exports = class ReiNaRework{
         this.bot = new Discord.Client({ intents: [
             Discord.GatewayIntentBits.Guilds,
             Discord.GatewayIntentBits.GuildMessages,
+            Discord.GatewayIntentBits.GuildMembers,
+            Discord.GatewayIntentBits.GuildModeration,
+            Discord.GatewayIntentBits.GuildMessageReactions,
             Discord.GatewayIntentBits.GuildVoiceStates,
             Discord.GatewayIntentBits.MessageContent
         ]});

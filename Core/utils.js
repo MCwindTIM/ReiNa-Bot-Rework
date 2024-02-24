@@ -80,7 +80,7 @@ module.exports = class Utils {
             text: Footer,
             iconURL: FooterURL
         })
-        if (!url === "music"){
+        if (!(url === "music")){
             embed.setURL(url);
         }
 		if(imgURL){
