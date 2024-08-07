@@ -103,6 +103,7 @@ module.exports = {
                         //play music
                         if (!updatedQueue.playing){
                             await updatedQueue.resume(cInteraction);
+                            updatedQueue.playing = true;
                             //get update music emebed
                             const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
                             await response.edit({embeds: [musicEmbed]});
@@ -118,6 +119,7 @@ module.exports = {
                         //pause music
                         if(!updatedQueue.paused){
                             await updatedQueue.pause(cInteraction);
+                            updatedQueue.playing = false;
                             //get update music emebed
                             const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
                             await response.edit({embeds: [musicEmbed]});
