@@ -34,12 +34,15 @@ module.exports = {
             const musicEmbed = await ReiNa.util.getMusicEmbed(interaction);
             response = await interaction.editReply({ embeds: [musicEmbed], components: [ ReiNa.rows.musicPanelRow, ReiNa.rows.musicPanelRow2, ReiNa.rows.musicPanelRow3]});
             
-            //add timer to update musicPanel for each 5 seconds
+            //add timer to update musicPanel for each 15 seconds
             const timer = setInterval(async () => {
-                if(updatedQueue === undefined || updatedQueue.songs.length === 0){
+                console.log(updatedQueue.songs.length)
+                if(updatedQueue.songs.length === 0){
                     let nullMSG = ReiNa.util.createEmbed(interaction.user, `${ReiNa.util.emoji.thanks} | 播放完畢`, `**感謝你使用此服務!**\n\n這是一個開源專案, 你可以到 [Github](https://github.com/MCwindTIM/ReiNa-Bot-Rework) 查看我的源代碼!`, null, ReiNa.util.color.pink, null, null, null, null);
                     await response.edit({embeds: [nullMSG], components: []});
-                    await clearInterval(ReiNa.queue.get(updatedQueue.id).timer);
+                    if(ReiNa.queue.get(updatedQueue.id)?.timer) {
+                        await clearInterval(ReiNa.queue.get(updatedQueue.id).timer);
+                    }
                     return await ReiNa.queue.delete(updatedQueue.id);
                 }
                 const musicEmbed = await await ReiNa.util.getMusicEmbed(interaction);
@@ -101,9 +104,8 @@ module.exports = {
                             return await cInteraction.update({components: []});
                         }
                         //play music
-                        if (!updatedQueue.playing){
+                        if (!updatedQueue.isPlaying()){
                             await updatedQueue.resume(cInteraction);
-                            updatedQueue.playing = true;
                             //get update music emebed
                             const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
                             await response.edit({embeds: [musicEmbed]});
@@ -117,9 +119,8 @@ module.exports = {
                             return await cInteraction.update({components: []});
                         }
                         //pause music
-                        if(!updatedQueue.paused){
+                        if(!updatedQueue.isPaused()){
                             await updatedQueue.pause(cInteraction);
-                            updatedQueue.playing = false;
                             //get update music emebed
                             const musicEmbed = await ReiNa.util.getMusicEmbed(cInteraction);
                             await response.edit({embeds: [musicEmbed]});
