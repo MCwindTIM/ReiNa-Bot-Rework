@@ -38,7 +38,8 @@ module.exports = class ReiNaRework{
                 new SoundCloudPlugin(),
                 new YouTubePlugin({
                     cookies: this.config.youtubeCookie
-                })
+                }),
+                // new YtDlpPlugin({ update: true })
             ],
         })
         
