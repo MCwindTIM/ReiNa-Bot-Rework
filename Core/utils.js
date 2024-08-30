@@ -98,7 +98,7 @@ module.exports = class Utils {
         const updatedQueue = this.main.bot.distube.getQueue(interaction);
 
         let status = `**暫停中** ${this.emoji.pause}`;
-        if(updatedQueue.playing) status = `**播放中 ${this.emoji.play}**`;
+        if(updatedQueue.isPlaying()) status = `**播放中 ${this.emoji.play}**`;
         const musicEmbed = this.createEmbed(interaction.user, `${this.emoji.music} ${status}`, `[${updatedQueue.songs[0].name}](${updatedQueue.songs[0].url})`, `music`, this.color.green, null, null, null, updatedQueue.songs[0].thumbnail);
         musicEmbed.addFields(
             {name: `點播用戶`, value: `<@${interaction.user.id}>`, inline: true},

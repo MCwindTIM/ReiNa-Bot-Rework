@@ -23,7 +23,6 @@ module.exports = class Events {
             setInterval(() => {
                 this.main.util.setActivity(this.main);
             }, 60000);
-
         })
         .on(Discord.Events.InteractionCreate, async interaction => {
             if (!interaction.isChatInputCommand()) return;            
